@@ -51,6 +51,7 @@ public class ShipperActivity extends AppCompatActivity {
         post.start();
 
     }
+    //設定toolBar
     private void toolBar() {
         //Toolbar 設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -72,7 +73,7 @@ public class ShipperActivity extends AppCompatActivity {
             }
         });
     }
-
+    //取得上一頁傳過來的資料
     private void getPreviousPage() {
         //上一頁傳過來的資料取得
         Intent intent = getIntent();
@@ -83,10 +84,11 @@ public class ShipperActivity extends AppCompatActivity {
         textView.setText(cUserName + "您好");
     }
 
-    // 執行緒 - 執行PostUserInfo()方法
+    // 執行緒 - 執行PostCustomerInfo方法
     class Post extends Thread{
         @Override
         public void run() {
+            //POST後取得客戶清單
             PostCustomerInfo();
         }
 
@@ -136,11 +138,13 @@ public class ShipperActivity extends AppCompatActivity {
                     try {
                         //建立一個ArrayList
                         final ArrayList<String> trans = new ArrayList<String>();
-                        //建立一個JSONArray 並把POST回傳資料json(JSOM檔)帶入
+                        //建立一個JSONArray 並把POST回傳資料json(JSON檔)帶入
                         JSONArray array = new JSONArray(json2);
                         //ArrayList 新增 請選擇這一單項
                         trans.add("請選擇");
                         //用迴圈取出JSONArray內的JSONObject標題為"CustomerName"的值
+                        //用迴圈取出JSONArray內的JSONObject標題為"Total"的值
+                        //另設一字串把"CustomerName"的值和"Total"的值帶入
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             //String id = obj.getString("cCustomerID");
@@ -148,7 +152,7 @@ public class ShipperActivity extends AppCompatActivity {
                             String listTotal = obj.getString("Total");
                             String newTotal = listname+"("+listTotal+")";
                             Log.e("okHTTP5", listname);
-                            //ArrayList 新增JSONObject標題為"cCustomerName"的值
+                            //ArrayList 新增JSONObject標題為"newTotal"的值
                             trans.add(newTotal);
 
                         }
@@ -220,11 +224,12 @@ public class ShipperActivity extends AppCompatActivity {
                                     public void onResponse(Call call, Response response) throws IOException {
 
                                         //取得POST上去後所得到的JSON檔
-                                        //[{"cShippersID":"S20160000011"}] 依所點的上傳 所以回傳不同
+                                        //{"result":"1","CustomerPickups":[{"PickupNo":"S20160000004","Total":300.00},{"PickupNo":"S20160000014","Total":2000.00}]}
                                         String json3 = response.body().string();
                                         Log.e("OkHttp6", response.toString());
                                         Log.e("OkHttp7", json3);
                                         //取出CustomerPickups
+                                        //[{"PickupNo":"S20160000004","Total":300},{"PickupNo":"S20160000014","Total":2000}]
                                         try {
                                             JSONObject j = new JSONObject(json3);
                                             json4 = j.getString("CustomerPickups");
@@ -245,11 +250,13 @@ public class ShipperActivity extends AppCompatActivity {
                                     for (int i = 0; i < array.length(); i++) {
                                         JSONObject obj = array.getJSONObject(i);
                                         //取得標題為"PickupNo"的內容
+                                        //用迴圈取出JSONArray內的JSONObject標題為"Total"的值
+                                        //另設一字串把"PickupNo"的值和"Total"的值帶入
                                         listname = obj.getString("PickupNo");
                                         listTotal= obj.getString("Total");
                                         String newName=listname+"("+listTotal+")";
                                         Log.e("okHTTP8", newName);
-                                        //ArrayList新增listname項目
+                                        //ArrayList新增newName項目
                                         trans.add(newName);
                                     }
                                     final ListView listView = (ListView) findViewById(R.id.listView);

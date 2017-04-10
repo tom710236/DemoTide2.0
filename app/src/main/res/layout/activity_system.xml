@@ -8,53 +8,52 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
-    tools:context="com.example.user.demotide20.ShipperActivity"
+    tools:context="com.example.user.demotide20.SystemActivity"
     android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <FrameLayout android:layout_height="wrap_content"
+        android:layout_width="match_parent">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:elevation="0dp"
             android:gravity="center"
-            android:minHeight="56dp">
+            android:background="?attr/colorPrimary"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            android:elevation="0dp">
 
         </android.support.v7.widget.Toolbar>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="56dp"
-            android:layout_gravity="top|center_horizontal"
-            android:gravity="center_horizontal|center"
             android:text="世潮檢貨系統"
+            android:textSize="18sp"
             android:textColor="#000000"
-            android:textSize="18sp" />
+            android:gravity="center_horizontal|center"
+            android:layout_gravity="top|center_horizontal" />
 
         <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:orientation="horizontal">
+            android:layout_gravity="right">
 
             <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                android:orientation="horizontal"></LinearLayout>
+                android:layout_weight="4"></LinearLayout>
 
             <TextView
-                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
+                android:id="@+id/textView3"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:textSize="14sp"
                 android:textColor="#000000"
-                android:textSize="14sp" />
+                android:gravity="center" />
 
         </LinearLayout>
 
@@ -71,17 +70,20 @@
         android:paddingRight="16dp"
         android:weightSum="1">
 
+        <View
+            android:id="@+id/view"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="30dp"
+            android:background="#000000" />
+
         <TextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:gravity="bottom"
-            android:text="出貨資訊" />
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#000000" />
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:text="系統設定值"
+            android:textSize="20sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -94,7 +96,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.00"
                 android:gravity="center_vertical|center_horizontal"
-                android:text="客戶"
+                android:text="資料同步時間"
                 android:textColor="@android:color/black"
                 android:textSize="18sp" />
 
@@ -103,34 +105,48 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical|center"
-                android:layout_weight="2.00"
-                android:gravity="center_vertical|center_horizontal|start" />
+                android:layout_weight="1"
+                android:gravity="center_vertical|center_horizontal|start"
+                android:scrollbarSize="18dp" />
         </LinearLayout>
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="#000000" />
-
-        <TextView
-            android:id="@+id/textView8"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="請選擇出貨單" />
-
-        <ListView
-            android:id="@+id/listView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
 
         <Button
             android:id="@+id/button3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="enter"
-            android:text="確定"
+            android:layout_marginTop="10dp"
+            android:onClick="upthing"
+            android:text="立即同步商品"
             android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="delThing"
+            android:text="刪除全部商品"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="back"
+            android:text="返回"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="out"
+            android:text="登出"
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -155,4 +171,6 @@
             android:gravity="center_vertical|center" />
     </FrameLayout>
 
+
 </LinearLayout>
+

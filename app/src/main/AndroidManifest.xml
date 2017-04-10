@@ -21,7 +21,13 @@
         <activity android:name=".AllListActivity" />
         <activity android:name=".ShipperActivity" />
         <activity android:name=".PurchaseActivity" />
-        <activity android:name=".ShipperOrderActivity"></activity>
+        <activity android:name=".ShipperOrderActivity" />
+        <activity android:name=".SystemActivity"></activity>
+
+        <service
+            android:name=".Delay"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

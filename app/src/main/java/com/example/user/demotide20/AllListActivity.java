@@ -24,6 +24,10 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         setContentView(R.layout.activity_all_list);
         getPreviousPage();
         toolBar();
+        //啟動Delay service
+        Intent intent2 = new Intent(this,Delay.class);
+        stopService(intent2);
+        startService(intent2);
 
         //自訂ListView
         ListView list = (ListView) findViewById(R.id.list);
@@ -76,6 +80,13 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 bag1.putString("cUserName",cUserName);
                 intent1.putExtras(bag1);
                 startActivity(intent1);
+                AllListActivity.this.finish();
+            case 4:
+                Intent intent4 = new Intent(AllListActivity.this,SystemActivity.class);
+                Bundle bag4 = new Bundle();
+                bag4.putString("cUserName",cUserName);
+                intent4.putExtras(bag4);
+                startActivity(intent4);
                 AllListActivity.this.finish();
         }
 
