@@ -325,6 +325,7 @@ public class SystemActivity extends AppCompatActivity {
                 Intent intent = new Intent(SystemActivity.this, AllListActivity.class);
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
+                bag.putString("cUserID",cUserID);
                 intent.putExtras(bag);
                 startActivity(intent);
                 SystemActivity.this.finish();
