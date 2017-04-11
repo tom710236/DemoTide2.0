@@ -33,11 +33,11 @@ import okhttp3.Response;
 
 public class ShipperActivity extends AppCompatActivity {
     String cUserName,listname,listTotal,json4,door1=null,cUserID;
-    final String[] name = new String[1];
-    final int[] index = new int[1];
+    String name,order ;
+    int index ;
     ArrayList<String> checked;
     ArrayList<String> json2;
-    ProductInfo cName;
+
     //檢貨單 客戶API
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     public class ProductInfo {
@@ -201,7 +201,7 @@ public class ShipperActivity extends AppCompatActivity {
                         //宣告並取得Spinner
                         final Spinner spinner = (Spinner) findViewById(R.id.spinner);
                         //設定Spinner
-                        final ArrayAdapter<ProductInfo> list = new ArrayAdapter<>(
+                        final ArrayAdapter list = new ArrayAdapter<>(
                                 ShipperActivity.this,
                                 android.R.layout.simple_spinner_dropdown_item,
                                 trans);
@@ -220,16 +220,20 @@ public class ShipperActivity extends AppCompatActivity {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                 //所點擊的索引值
-                                index[0] = spinner.getSelectedItemPosition();
+                                index = spinner.getSelectedItemPosition();
                                 //所點擊的內容文字
-                                name[0] = spinner.getSelectedItem().toString();
-                                cName = (ProductInfo)spinner.getSelectedItem();
-                                String text = cName.cCustomerName;
-                                Log.e("TEXT",text);
-                                Log.e("客戶清單點擊 數字", String.valueOf(index[0]));
-                                Log.e("客戶清單點擊 名字", name[0]);
+                                name = spinner.getSelectedItem().toString();
+                                //index=0 為請選擇 所以不能用 ProductInfo
+                                if(index !=0){
+                                    ProductInfo cName = (ProductInfo) list.getItem(index) ;
+                                    order = cName.cCustomerName;
+                                    Log.e("客戶名稱",order );
+                                }
+
+                                Log.e("客戶清單點擊 數字", String.valueOf(index));
+                                Log.e("客戶清單點擊 名字", name);
                                 //點擊後所要執行的方法 並把所回傳的json和索引值帶入
-                                postjson2(String.valueOf(json2), index[0]);
+                                postjson2(String.valueOf(json2), index);
 
                             }
 
@@ -287,20 +291,11 @@ public class ShipperActivity extends AppCompatActivity {
                             //POST成功後把回傳的值(陣列)取出來 用listView顯示 把JSON2帶進來
                             private void parseJson2(String json4) {
                                 try {
-                                    final ArrayList<PickNOInfo> trans = new ArrayList<>();
+                                    final ArrayList trans = new ArrayList<>();
                                     final JSONArray array = new JSONArray(json4);
                                     for (int i = 0; i < array.length(); i++) {
                                         JSONObject obj = array.getJSONObject(i);
-                                        //取得標題為"PickupNo"的內容
-                                        //用迴圈取出JSONArray內的JSONObject標題為"Total"的值
-                                        //另設一字串把"PickupNo"的值和"Total"的值帶入
-                                        //listname = obj.getString("PickupNo");
-                                        //listTotal= obj.getString("Total");
                                         trans.add(new PickNOInfo(obj.optString("PickupNo"), obj.optString("Total")));
-                                        //String newName=listname+"("+listTotal+")";
-                                        //Log.e("顯示在listView", newName);
-                                        //ArrayList新增newName項目
-                                        //trans.add(newName);
                                         Log.e("單號和總數量", String.valueOf(trans));
                                     }
                                     final ListView listView = (ListView) findViewById(R.id.listView);
@@ -326,7 +321,7 @@ public class ShipperActivity extends AppCompatActivity {
                                             //設定 ListView 的接收器, 做為選項的來源
                                             listView.setAdapter(list);
                                             //假如選到請選擇 list將不會出現
-                                            if (index[0] ==0){
+                                            if (index ==0){
                                                 listView.setVisibility(View.GONE);
                                             }
 
@@ -380,13 +375,13 @@ public class ShipperActivity extends AppCompatActivity {
     }
     public void enter (View v){
 
-        if(!(checked == null || index[0] == 0)){
+        if(!(checked == null || index == 0)){
 
             //點擊後到下一頁和所要傳的資料
             Intent intent = new Intent(ShipperActivity.this,ShipperOrderActivity.class);
             Bundle bag = new Bundle();
             bag.putString("checked", String.valueOf(checked));
-            bag.putString("order", String.valueOf(name));
+            bag.putString("order", String.valueOf(order));
             bag.putString("cUserID",cUserID);
             bag.putString("cUserName",cUserName);
             intent.putExtras(bag);
