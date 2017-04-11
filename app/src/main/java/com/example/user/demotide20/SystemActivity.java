@@ -33,16 +33,17 @@ import okhttp3.Response;
 
 
 public class SystemActivity extends AppCompatActivity {
-    String cUserName,today;
+    String cUserName,today,tblTable4,cUserID;
     //商品同步API
     String url = "http://demo.shinda.com.tw/ModernWebApi/getProduct.aspx";
     //建立一個類別存JSON
     //資料庫名稱
     final String DB_NAME = "tblTable";
+
     //商品資訊資料庫建立
-    MyDBhelper helper;MyDBhelper2 helper2;
-    SQLiteDatabase db,db2,db3;
-    ContentValues addbase;
+    MyDBhelper helper;MyDBhelper2 helper2;MyDBhelper4 helper4;
+    SQLiteDatabase db,db2,db3,db4;
+    ContentValues addbase,addbase2;
 
     //String ID,name,NO,DT;
 
@@ -64,6 +65,24 @@ public class SystemActivity extends AppCompatActivity {
         @Override
         public String toString() {
             return this.cProductID +  this.cProductName  + this.cGoodsNo + this.cUpdateDT;
+        }
+    }
+    public class BarcodesInfo {
+        private String cProductID;
+        private String cBarcode;
+
+
+        //建構子
+        BarcodesInfo(final String ProductID, final String Barcode) {
+            this.cProductID = ProductID;
+            this.cBarcode = Barcode;
+
+
+        }
+        //方法
+        @Override
+        public String toString() {
+            return this.cProductID + this.cBarcode;
         }
     }
     @Override
@@ -99,14 +118,18 @@ public class SystemActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String json = response.body().string();
-                    Log.e("json",json);
+                    Log.e("商品清單回傳",json);
                     parseJson(json);
                 }
                 //解析JSON 放入SQL
                 private void parseJson(String json) {
+
                     ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
+                    ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
                     try {
-                        JSONArray array = new JSONArray(json);
+                        String json2 = new JSONObject(json).getString("Products");
+                        Log.e("JSON2",json2);
+                        JSONArray array = new JSONArray(json2);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT")));
@@ -124,7 +147,29 @@ public class SystemActivity extends AppCompatActivity {
                             addbase.put("cUpdateDT", DT);
                             db.insert(DB_NAME, null, addbase);
                             db.close();
+
                         }
+                        String json3 = new JSONObject(json).getString("ProductBarcodes");
+                        Log.e("JSON3",json3);
+                        JSONArray array1 = new JSONArray(json3);
+                        for (int i = 0; i < array1.length(); i++) {
+                            JSONObject obj = array1.getJSONObject(i);
+                            trans2.add(new BarcodesInfo(obj.optString("cProductID"), obj.optString("cBarcode")));
+                            String BID = obj.optString("cProductID");
+                            Log.e("BID",BID);
+                            String Bcode = obj.optString("cBarcode");
+                            Log.e("Bcode",Bcode);
+                            //建立SQL
+                            setBarcodeSQL();
+                            //放入SQL
+                            addbase2 = new ContentValues();
+                            addbase2.put("cProductID", BID);
+                            addbase2.put("cBarcode", Bcode);
+                            db4.insert("tblTable4", null, addbase2);
+                            db4.close();
+
+                        }
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -141,6 +186,8 @@ public class SystemActivity extends AppCompatActivity {
         setThingSQL();
         //先刪除舊有資料表格
         db.delete(DB_NAME, null, null);
+        setBarcodeSQL();
+        db4.delete("tblTable4",null,null);
         //放入新增表格
         Get get = new Get();
         get.start();
@@ -151,11 +198,15 @@ public class SystemActivity extends AppCompatActivity {
     public void delThing(View v){
         setThingSQL();
         db.delete(DB_NAME,null,null);
+        setBarcodeSQL();
+        db4.delete("tblTable4",null,null);
     }
     //返回鍵 暫時用來看資料庫內容
     public void back (View v){
-        setThingSQL();
-        cursor3();
+        //setThingSQL();
+        //cursor3();
+        setBarcodeSQL();
+        cursor4();
     }
     //登出鍵
     public void out (View v){
@@ -163,7 +214,7 @@ public class SystemActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    //查詢資料庫 並把查詢結果放進listView
+    //查詢商品清單資料庫 並把查詢結果放進listView
     private void cursor3(){
 
         Cursor c=db.rawQuery("SELECT * FROM "+DB_NAME, null);
@@ -177,6 +228,23 @@ public class SystemActivity extends AppCompatActivity {
                 new String[] {"_id", "cProductID", "cProductName", "cGoodsNo", "cUpdateDT"},
                 //new int[] {android.R.id.text1,android.R.id.text2},
                 new int[] {R.id.textView19,R.id.textView18,R.id.textView17,R.id.textView16,R.id.textView15},
+                0);
+        lv.setAdapter(adapter);
+    }
+    //查詢商品條碼資料庫 並把查詢結果放進listView
+    private void cursor4(){
+
+        Cursor c=db4.rawQuery("SELECT * FROM "+"tblTable4", null);
+        ListView lv = (ListView)findViewById(R.id.listView);
+        SimpleCursorAdapter adapter;
+        adapter = new SimpleCursorAdapter(this,
+                //android.R.layout.simple_expandable_list_item_2,
+                R.layout.lview2,
+                c,
+                //new String[] {"info","amount"},
+                new String[] {"_id", "cProductID", "cBarcode"},
+                //new int[] {android.R.id.text1,android.R.id.text2},
+                new int[] {R.id.textView19,R.id.textView18,R.id.textView17},
                 0);
         lv.setAdapter(adapter);
     }
@@ -205,7 +273,7 @@ public class SystemActivity extends AppCompatActivity {
                 int index = spinner.getSelectedItemPosition();
                 Log.e("SPINNER", String.valueOf(index));
                 if (index==1){
-                    String timeUp="18:30";
+                    String timeUp="14:08";
                     setTime(timeUp);
                 }
                 else if(index==2){
@@ -223,6 +291,12 @@ public class SystemActivity extends AppCompatActivity {
 
             }
         });
+    }
+    //商品條碼SQL
+    private void setBarcodeSQL(){
+        helper4 = new MyDBhelper4(this, "tblTable4" , null, 1);
+        //實做 db(繼承SQLiteDatabase)類別 getWritableDatabase用來更新 新增修改刪除
+        db4 = helper4.getWritableDatabase();
     }
     //商品清單SQL
     private void setThingSQL(){
@@ -264,6 +338,7 @@ public class SystemActivity extends AppCompatActivity {
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
+        cUserID = bag.getString("cUserID",null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }

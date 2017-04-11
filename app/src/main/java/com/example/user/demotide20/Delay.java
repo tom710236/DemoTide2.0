@@ -37,9 +37,11 @@ public class Delay extends Service {
     String url = "http://demo.shinda.com.tw/ModernWebApi/getProduct.aspx";
     private MyDBhelper helper;
     private MyDBhelper2 helper2;
-    SQLiteDatabase db,db2,db3;
+    private MyDBhelper4 helper4;
+    SQLiteDatabase db,db2,db3,db4;
     final String DB_NAME = "tblTable";
-    ContentValues addbase;
+    String tblTable4;
+    ContentValues addbase,addbase2;
     String today,timeUp2="07:00";
     public class ProductInfo {
         private String cProductID;
@@ -59,6 +61,24 @@ public class Delay extends Service {
         @Override
         public String toString() {
             return this.cProductID +  this.cProductName  + this.cGoodsNo + this.cUpdateDT;
+        }
+    }
+    public class BarcodesInfo {
+        private String cProductID;
+        private String cBarcode;
+
+
+        //建構子
+        BarcodesInfo(final String ProductID, final String Barcode) {
+            this.cProductID = ProductID;
+            this.cBarcode = Barcode;
+
+
+        }
+        //方法
+        @Override
+        public String toString() {
+            return this.cProductID + this.cBarcode;
         }
     }
     @Override
@@ -158,14 +178,18 @@ public class Delay extends Service {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String json = response.body().string();
-                    Log.e("json",json);
+                    Log.e("商品清單回傳",json);
                     parseJson(json);
                 }
                 //解析JSON 放入SQL
                 private void parseJson(String json) {
+
                     ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
+                    ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
                     try {
-                        JSONArray array = new JSONArray(json);
+                        String json2 = new JSONObject(json).getString("Products");
+                        Log.e("JSON2",json2);
+                        JSONArray array = new JSONArray(json2);
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT")));
@@ -183,14 +207,35 @@ public class Delay extends Service {
                             addbase.put("cUpdateDT", DT);
                             db.insert(DB_NAME, null, addbase);
                             db.close();
+
                         }
+                        String json3 = new JSONObject(json).getString("ProductBarcodes");
+                        Log.e("JSON3",json3);
+                        JSONArray array1 = new JSONArray(json3);
+                        for (int i = 0; i < array1.length(); i++) {
+                            JSONObject obj = array1.getJSONObject(i);
+                            trans2.add(new BarcodesInfo(obj.optString("cProductID"), obj.optString("cBarcode")));
+                            String BID = obj.optString("cProductID");
+                            Log.e("BID",BID);
+                            String Bcode = obj.optString("cBarcode");
+                            Log.e("Bcode",Bcode);
+                            //建立SQL
+                            setBarcodeSQL();
+                            //放入SQL
+                            addbase2 = new ContentValues();
+                            addbase2.put("cProductID", BID);
+                            addbase2.put("cBarcode", Bcode);
+                            db4.insert("tblTable4", null, addbase2);
+                            db4.close();
+
+                        }
+
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
             });
-
 
         }
 
@@ -219,5 +264,11 @@ public class Delay extends Service {
     private void setDateSQL(){
         helper2 = new MyDBhelper2(this,"tblOrder2",null,1);
         db2=helper2.getWritableDatabase();
+    }
+    //商品條碼SQL
+    private void setBarcodeSQL(){
+        helper4 = new MyDBhelper4(this, "tblTable4" , null, 1);
+        //實做 db(繼承SQLiteDatabase)類別 getWritableDatabase用來更新 新增修改刪除
+        db4 = helper4.getWritableDatabase();
     }
 }

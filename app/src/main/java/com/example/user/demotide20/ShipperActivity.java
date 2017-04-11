@@ -22,7 +22,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -33,14 +32,51 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ShipperActivity extends AppCompatActivity {
-    String cUserName,listname,listTotal,json4,door1=null;
+    String cUserName,listname,listTotal,json4,door1=null,cUserID;
     final String[] name = new String[1];
     final int[] index = new int[1];
-    List<String> checked;
-    ArrayList<String> newCheck;
+    ArrayList<String> checked;
     ArrayList<String> json2;
+    ProductInfo cName;
     //檢貨單 客戶API
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
+    public class ProductInfo {
+        private String cCustomerName;
+        private String cTotal;
+
+
+        //建構子
+        ProductInfo(final String CustomerName, final String Total) {
+            this.cCustomerName = CustomerName;
+            this.cTotal = Total;
+
+
+        }
+        //方法
+        @Override
+        public String toString() {
+            return this.cCustomerName + "("+ this.cTotal +")";
+        }
+    }
+    public class PickNOInfo {
+        private String cPickupNo;
+        private String cTotal;
+
+
+        //建構子
+        PickNOInfo(final String PickupNo, final String Total) {
+            this.cPickupNo = PickupNo;
+            this.cTotal = Total;
+
+
+        }
+        //方法
+        @Override
+        public String toString() {
+            return this.cPickupNo + "("+ this.cTotal +")";
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +103,7 @@ public class ShipperActivity extends AppCompatActivity {
                 Intent intent = new Intent(ShipperActivity.this, AllListActivity.class);
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
+                bag.putString("cUserID",cUserID);
                 intent.putExtras(bag);
                 startActivity(intent);
                 ShipperActivity.this.finish();
@@ -80,6 +117,8 @@ public class ShipperActivity extends AppCompatActivity {
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
+        cUserID = bag.getString("cUserID",null);
+        Log.e("cUserID",cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
@@ -97,7 +136,7 @@ public class ShipperActivity extends AppCompatActivity {
             OkHttpClient client = new OkHttpClient();
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
-            String json = "{\"Token\":\"\" ,\"Action\":\"customer\",\"UserID\":\"S000000001\"}";
+            String json = "{\"Token\":\"\" ,\"Action\":\"customer\",\"UserID\":\""+cUserID+"\"}";
             Log.e("JSON",json);
             RequestBody body = RequestBody.create(JSON,json);
             Request request = new Request.Builder()
@@ -117,7 +156,7 @@ public class ShipperActivity extends AppCompatActivity {
                     Log.e("客戶API回傳JSON",json);
                     //解析 回傳JSON
                     //{"result":"1","PickUpCustomers":[{"CustomerID":"C000000003","CustomerName":"磯法資訊","Total":19500.00},{"CustomerID":"C000000002","CustomerName":"新達科技","Total":13100.00},{"CustomerID":"C000000001","CustomerName":"大島屋企業","Total":9400.00}]}
-                    json2 = new ArrayList<String>();
+                    json2 = new ArrayList<>();
                     try {
                         JSONObject j = new JSONObject(json);
                         for(int i=0;i<j.getJSONArray("PickUpCustomers").length();i++){
@@ -137,7 +176,7 @@ public class ShipperActivity extends AppCompatActivity {
                     //取值
                     try {
                         //建立一個ArrayList
-                        final ArrayList<String> trans = new ArrayList<String>();
+                        final ArrayList trans = new ArrayList<>();
                         //建立一個JSONArray 並把POST回傳資料json(JSON檔)帶入
                         JSONArray array = new JSONArray(json2);
                         //ArrayList 新增 請選擇這一單項
@@ -148,19 +187,21 @@ public class ShipperActivity extends AppCompatActivity {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             //String id = obj.getString("cCustomerID");
-                            String listname = obj.getString("CustomerName");
-                            String listTotal = obj.getString("Total");
-                            String newTotal = listname+"("+listTotal+")";
-                            Log.e("okHTTP5", listname);
+                            trans.add(new ProductInfo(obj.optString("CustomerName"), obj.optString("Total")));
+                            //String listname = obj.getString("CustomerName");
+                            //String listTotal = obj.getString("Total");
+                            //String newTotal = listname+"("+listTotal+")";
+                            Log.e("客戶清單和金額", String.valueOf(trans));
                             //ArrayList 新增JSONObject標題為"newTotal"的值
-                            trans.add(newTotal);
+                            //顯示在Spinner的資訊
+
 
                         }
 
                         //宣告並取得Spinner
                         final Spinner spinner = (Spinner) findViewById(R.id.spinner);
                         //設定Spinner
-                        final ArrayAdapter<String> list = new ArrayAdapter<>(
+                        final ArrayAdapter<ProductInfo> list = new ArrayAdapter<>(
                                 ShipperActivity.this,
                                 android.R.layout.simple_spinner_dropdown_item,
                                 trans);
@@ -182,8 +223,11 @@ public class ShipperActivity extends AppCompatActivity {
                                 index[0] = spinner.getSelectedItemPosition();
                                 //所點擊的內容文字
                                 name[0] = spinner.getSelectedItem().toString();
-                                Log.e("index", String.valueOf(index[0]));
-                                Log.e("name", name[0]);
+                                cName = (ProductInfo)spinner.getSelectedItem();
+                                String text = cName.cCustomerName;
+                                Log.e("TEXT",text);
+                                Log.e("客戶清單點擊 數字", String.valueOf(index[0]));
+                                Log.e("客戶清單點擊 名字", name[0]);
                                 //點擊後所要執行的方法 並把所回傳的json和索引值帶入
                                 postjson2(String.valueOf(json2), index[0]);
 
@@ -193,9 +237,9 @@ public class ShipperActivity extends AppCompatActivity {
                             private void postjson2(String json2, int index) {
 
                                 try {
-                                    //把點到的索引值-1(多了請選擇) 就能連結到所點到的json的客戶ID
+                                    //把點到的索引值-1(多了請選擇) 就能連結到所點到的json2的客戶ID
                                     door1 = new JSONArray(json2).getJSONObject(index - 1).getString("CustomerID");
-                                    Log.e("ARRAY", door1);
+                                    Log.e("Spnner點選後的客戶ID", door1);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -204,14 +248,14 @@ public class ShipperActivity extends AppCompatActivity {
                                 OkHttpClient client = new OkHttpClient();
                                 final MediaType JSON
                                         = MediaType.parse("application/json; charset=utf-8");
-                                String json = "{\"Token\":\"\" ,\"Action\":\"pickups\",\"UserID\":\"S000000001\",\"CustomerID\":\""+door1+"\"}";
-                                Log.e("JSON", json);
+                                //取客戶有的撿貨單
+                                String json = "{\"Token\":\"\" ,\"Action\":\"pickups\",\"UserID\":\""+cUserID+"\",\"CustomerID\":\""+door1+"\"}";
+                                Log.e("取客戶有的撿貨單", json);
                                 RequestBody body = RequestBody.create(JSON, json);
                                 Request request = new Request.Builder()
                                         .url(url)
                                         .post(body)
                                         .build();
-                                Log.e("UP2", body.toString());
                                 //使用OkHttp的newCall方法建立一個呼叫物件(尚未連線至主機)
                                 Call call = client.newCall(request);
                                 call.enqueue(new Callback() {
@@ -222,18 +266,16 @@ public class ShipperActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onResponse(Call call, Response response) throws IOException {
-
                                         //取得POST上去後所得到的JSON檔
                                         //{"result":"1","CustomerPickups":[{"PickupNo":"S20160000004","Total":300.00},{"PickupNo":"S20160000014","Total":2000.00}]}
                                         String json3 = response.body().string();
-                                        Log.e("OkHttp6", response.toString());
-                                        Log.e("OkHttp7", json3);
+                                        Log.e("取客戶有的撿貨單回傳", json3);
                                         //取出CustomerPickups
                                         //[{"PickupNo":"S20160000004","Total":300},{"PickupNo":"S20160000014","Total":2000}]
                                         try {
                                             JSONObject j = new JSONObject(json3);
                                             json4 = j.getString("CustomerPickups");
-                                            Log.e("JSON4",json4);
+                                            Log.e("取CustomerPickups",json4);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -245,19 +287,21 @@ public class ShipperActivity extends AppCompatActivity {
                             //POST成功後把回傳的值(陣列)取出來 用listView顯示 把JSON2帶進來
                             private void parseJson2(String json4) {
                                 try {
-                                    final ArrayList<String> trans = new ArrayList<String>();
+                                    final ArrayList<PickNOInfo> trans = new ArrayList<>();
                                     final JSONArray array = new JSONArray(json4);
                                     for (int i = 0; i < array.length(); i++) {
                                         JSONObject obj = array.getJSONObject(i);
                                         //取得標題為"PickupNo"的內容
                                         //用迴圈取出JSONArray內的JSONObject標題為"Total"的值
                                         //另設一字串把"PickupNo"的值和"Total"的值帶入
-                                        listname = obj.getString("PickupNo");
-                                        listTotal= obj.getString("Total");
-                                        String newName=listname+"("+listTotal+")";
-                                        Log.e("okHTTP8", newName);
+                                        //listname = obj.getString("PickupNo");
+                                        //listTotal= obj.getString("Total");
+                                        trans.add(new PickNOInfo(obj.optString("PickupNo"), obj.optString("Total")));
+                                        //String newName=listname+"("+listTotal+")";
+                                        //Log.e("顯示在listView", newName);
                                         //ArrayList新增newName項目
-                                        trans.add(newName);
+                                        //trans.add(newName);
+                                        Log.e("單號和總數量", String.valueOf(trans));
                                     }
                                     final ListView listView = (ListView) findViewById(R.id.listView);
                                     // 設定 ListView 選擇的方式 :
@@ -268,7 +312,7 @@ public class ShipperActivity extends AppCompatActivity {
                                     // RadioButton Layout 樣式 : android.R.layout.simple_list_item_single_choice
                                     // CheckBox Layout 樣式    : android.R.layout.simple_list_item_multiple_choice
                                     // trans 是陣列
-                                    final ArrayAdapter<String> list = new ArrayAdapter<>(
+                                    final ArrayAdapter<PickNOInfo> list = new ArrayAdapter<>(
                                             ShipperActivity.this,
                                             android.R.layout.simple_list_item_multiple_choice,
                                             trans);
@@ -296,33 +340,26 @@ public class ShipperActivity extends AppCompatActivity {
                                             Adapter adapter = list.getAdapter();
                                             SparseBooleanArray array = list.getCheckedItemPositions();
                                             checked = new ArrayList<>(list.getCheckedItemCount());
-                                            newCheck = new ArrayList<String>();
+
                                             for (int i = 0; i < array.size(); i++) {
                                                 int key = array.keyAt(i);
                                                 if (array.get(key)) {
-                                                    checked.add((String) adapter.getItem(key));
-                                                    Log.e("CHECK", String.valueOf(checked));
-                                                    for(int i2=0;i2<checked.size();i2++)
-                                                    {
-                                                        String newPickupNo=checked.get(i2);
-                                                        Log.e("newPickupNo",newPickupNo);
-                                                        int i3 = newPickupNo.indexOf("(");
-                                                        Log.e("indexOf", String.valueOf(i3));
-                                                        String newPickupNo2 = (String) newPickupNo.subSequence(0,i3);
-                                                        Log.e("newPickupNo2",newPickupNo2);
-                                                        newCheck.add(newPickupNo2);
+                                                    //超重要 只取出項目裡的cPickupNO
+                                                    PickNOInfo checkNO = (PickNOInfo)adapter.getItem(key);
+                                                    checked.add(checkNO.cPickupNo);
+                                                    Log.e("被點擊到的listView", String.valueOf(checked));
 
-                                                    }
                                                 }
 
                                             }
+
                                         }
                                     });
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                Log.e("CHECKED", String.valueOf(checked));
+
                             }
                             @Override
                             public void onNothingSelected(AdapterView<?> parent) {
@@ -348,8 +385,9 @@ public class ShipperActivity extends AppCompatActivity {
             //點擊後到下一頁和所要傳的資料
             Intent intent = new Intent(ShipperActivity.this,ShipperOrderActivity.class);
             Bundle bag = new Bundle();
-            bag.putString("checked", String.valueOf(newCheck));
+            bag.putString("checked", String.valueOf(checked));
             bag.putString("order", String.valueOf(name));
+            bag.putString("cUserID",cUserID);
             bag.putString("cUserName",cUserName);
             intent.putExtras(bag);
             startActivity(intent);

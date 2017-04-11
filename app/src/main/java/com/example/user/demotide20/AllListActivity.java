@@ -16,7 +16,7 @@ import static com.example.user.demotide20.R.layout.lview;
 
 
 public class AllListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-    String cUserName, dateUp2;
+    String cUserName, dateUp2,cUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +24,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         setContentView(R.layout.activity_all_list);
         getPreviousPage();
         toolBar();
-        //啟動Delay service
+        //啟動Delay service 每次到這畫面就會啟動一次 所以先停止再啟動
         Intent intent2 = new Intent(this,Delay.class);
         stopService(intent2);
         startService(intent2);
@@ -58,6 +58,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         Intent intent = getIntent();
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
+        cUserID = bag.getString("cUserID",null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
@@ -70,6 +71,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 Intent intent = new Intent(AllListActivity.this,ShipperActivity.class);
                 Bundle bag = new Bundle();
                 bag.putString("cUserName",cUserName);
+                bag.putString("cUserID",cUserID);
                 intent.putExtras(bag);
                 startActivity(intent);
                 AllListActivity.this.finish();
@@ -78,6 +80,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 Intent intent1 = new Intent(AllListActivity.this,PurchaseActivity.class);
                 Bundle bag1 = new Bundle();
                 bag1.putString("cUserName",cUserName);
+                bag1.putString("cUserID",cUserID);
                 intent1.putExtras(bag1);
                 startActivity(intent1);
                 AllListActivity.this.finish();
@@ -85,6 +88,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 Intent intent4 = new Intent(AllListActivity.this,SystemActivity.class);
                 Bundle bag4 = new Bundle();
                 bag4.putString("cUserName",cUserName);
+                bag4.putString("cUserID",cUserID);
                 intent4.putExtras(bag4);
                 startActivity(intent4);
                 AllListActivity.this.finish();

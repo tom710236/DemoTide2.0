@@ -16,7 +16,7 @@ import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -24,7 +24,7 @@ import okhttp3.Response;
 
 
 public class LoginActivity extends AppCompatActivity {
-    String cStatus, userName, passWord, cUserName;
+    String cStatus, userName, passWord, cUserName,cUserID;
     //帳號登入的API
     String url = "http://demo.shinda.com.tw/ModernWebApi/WebApiLogin.aspx";
 
@@ -62,12 +62,12 @@ public class LoginActivity extends AppCompatActivity {
 
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
-        RequestBody body = new FormBody.Builder()
-                //.add("postdata", "{\"cAccount\":\"carlos\",\"cPassword\":\"123\"}")
-                .add("postdata", "{\"cAccount\":\"" + userName + "\",\"cPassword\":\"" + passWord + "\"}")
-                .build();
-        //來設定一個連線必要的資訊
-        final Request request = new Request.Builder()
+        final MediaType JSON
+                = MediaType.parse("application/json; charset=utf-8");
+        String json = "{\"Token\":\"\" ,\"cAccount\":\""+userName+"\",\"cPassword\":\""+passWord+"\"}";
+        Log.e("POST",json);
+        RequestBody body = RequestBody.create(JSON,json);
+        Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
@@ -89,8 +89,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
-                Log.e("OkHttp", response.toString());
-                Log.e("OkHttp2", json);
+                Log.e("POST後的回傳值", json);
                 //所要執行的方法 - 解析JSON
                 parseJson(json);
             }
@@ -101,15 +100,22 @@ public class LoginActivity extends AppCompatActivity {
 
         try {
             //從回傳資料json 抓取cStatus項目裡的內容
-            cStatus = new JSONObject(json).getString("cStatus");
+            cStatus = new JSONObject(json).getString("result");
             //從回傳資料json 抓取cUserName項目內的內容
-            cUserName = new JSONObject(json).getString("cUserName");
-            Log.e("JSOM", cStatus);
+            Log.e("result",cStatus);
+
+
             if (cStatus.equals("1")) {
+                //確定登入後再抓回傳的值 不然會一直try
+                cUserName = new JSONObject(json).getString("UserName");
+                Log.e("UserName", cUserName);
+                cUserID = new JSONObject(json).getString("UserID");
+                Log.e("UserID",cUserID);
                 //另一頁 用Bundle把所需資料帶到另一頁
                 Intent intent = new Intent(LoginActivity.this, AllListActivity.class);
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
+                bag.putString("cUserID",cUserID);
                 intent.putExtras(bag);
                 startActivity(intent);
                 LoginActivity.this.finish();
@@ -120,8 +126,8 @@ public class LoginActivity extends AppCompatActivity {
                         .putString("userName", userName)
                         .commit();
 
-
-            } else {
+            } else if (cStatus.equals("0")) {
+                Log.e("NO","NO");
                 //非主執行緒顯示UI(Toast)
                 runOnUiThread(new Runnable() {
                     @Override
