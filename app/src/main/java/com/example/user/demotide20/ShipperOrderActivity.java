@@ -10,7 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -278,11 +280,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }
 
                     listView = (ListView) findViewById(R.id.list);
-                    list = new ArrayAdapter(ShipperOrderActivity.this, android.R.layout.simple_list_item_1, trans);
+                    final IconAdapter gAdapter = new IconAdapter();
+                    //list.setAdapter(gAdapter);
+                    //list = new ArrayAdapter(ShipperOrderActivity.this, android.R.layout.simple_list_item_1, trans);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            listView.setAdapter(list);
+                            listView.setAdapter(gAdapter);
 
                         }
                     });
@@ -291,7 +295,43 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
 
     }
+    class IconAdapter extends BaseAdapter {
 
+        //ProductInfo[] func = (ProductInfo[]) trans.toArray(new ProductInfo[trans.size()]);
+
+        //int陣列方式將功能儲存在icons陣列
+        //int[] icons = {};
+        @Override
+        public int getCount() {
+            return trans.size();
+        }
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            //設定listView
+            View v = convertView;
+            if(v == null){
+                v =getLayoutInflater().inflate(lview3,null);
+                //ImageView image = (ImageView)v.findViewById(R.id.img);
+                TextView text = (TextView)v.findViewById(R.id.textView5);
+                //呼叫setImageResource方法設定圖示的圖檔資源
+                //image.setImageResource(icons[position]);
+                //呼叫setText方法設定圖示上的文字
+                text.setText(String.valueOf(trans.get(position)));
+            }
+            return v;
+
+        }
+
+    }
 
     //商品清單SQL
     private void setThingSQL() {
