@@ -230,8 +230,8 @@ public class ShipperActivity extends AppCompatActivity {
                                     Log.e("客戶名稱",order );
                                 }
 
-                                Log.e("客戶清單點擊 數字", String.valueOf(index));
-                                Log.e("客戶清單點擊 名字", name);
+                                Log.e("客戶清單點擊 索引值", String.valueOf(index));
+                                Log.e("客戶清單點擊 內容", name);
                                 //點擊後所要執行的方法 並把所回傳的json和索引值帶入
                                 postjson2(String.valueOf(json2), index);
 
@@ -378,6 +378,8 @@ public class ShipperActivity extends AppCompatActivity {
         if(!(checked == null || index == 0)){
 
             //點擊後到下一頁和所要傳的資料
+            //BUG 最後一個會有殘留值
+
             Intent intent = new Intent(ShipperActivity.this,ShipperOrderActivity.class);
             Bundle bag = new Bundle();
             bag.putString("checked", String.valueOf(checked));
