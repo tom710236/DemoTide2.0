@@ -34,6 +34,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.example.user.demotide20.R.layout.lview3;
+
 public class ShipperOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, order, checked, checked2, checked3, cProductIDeSQL;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
@@ -276,7 +278,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }
 
                     listView = (ListView) findViewById(R.id.list);
-                    list = new ArrayAdapter(ShipperOrderActivity.this, android.R.layout.simple_list_item_activated_1, trans);
+                    list = new ArrayAdapter(ShipperOrderActivity.this, android.R.layout.simple_list_item_1, trans);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -289,6 +291,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
 
     }
+
 
     //商品清單SQL
     private void setThingSQL() {

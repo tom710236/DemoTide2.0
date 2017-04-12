@@ -12,7 +12,8 @@
     tools:context="com.example.user.demotide20.ShipperOrderActivity"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:weightSum="1">
     <FrameLayout android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
@@ -49,13 +50,13 @@
                 android:layout_weight="4"></LinearLayout>
 
             <TextView
+                android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
-                android:id="@+id/textView3"
                 android:layout_weight="1"
-                android:textSize="14sp"
+                android:gravity="center"
                 android:textColor="#000000"
-                android:gravity="center" />
+                android:textSize="14sp" />
 
         </LinearLayout>
 
@@ -63,16 +64,15 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="5dp"
         android:orientation="vertical">
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
         android:orientation="horizontal">
 
         <Button
@@ -117,7 +117,7 @@
     <LinearLayout
         android:id="@+id/linear"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:orientation="horizontal"
@@ -173,33 +173,29 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp">
+        android:orientation="vertical">
 
         <View
+            android:id="@+id/view2"
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="#000000"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="#000000" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
             android:layout_weight="1"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="30dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:layout_weight="1"
                 android:text="客戶"
                 android:textSize="16sp" />
@@ -208,6 +204,7 @@
                 android:id="@+id/textView11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
                 android:layout_weight="1"
                 android:text="TextView"
                 android:textSize="16sp" />
@@ -217,17 +214,15 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="#000000"
             android:layout_marginLeft="30dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="#000000" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="30dp">
+            android:layout_height="50dp"
+            android:layout_marginLeft="30dp"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textView13"
@@ -241,7 +236,7 @@
                 android:id="@+id/editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="3"
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:singleLine="true"
@@ -258,12 +253,13 @@
 
 
         </LinearLayout>
+
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="#000000"
             android:layout_marginLeft="30dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="#000000" />
 
     </LinearLayout>
 
@@ -272,11 +268,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
         android:text="出貨項目" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp">
 
@@ -288,58 +285,9 @@
             <ListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
-                android:layout_height="100dp" />
+                android:layout_height="277dp"
+                android:clipToPadding="false" />
 
-        </LinearLayout>
-    </ScrollView>
-
-    <TextView
-        android:id="@+id/textView25"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:text="上傳照片" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:orientation="vertical">
-
-            <ImageView
-                android:id="@+id/imageView12"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/pig64" />
-
-            <ImageView
-                android:id="@+id/imageView11"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/pig64" />
-
-            <ImageView
-                android:id="@+id/imageView10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/pig64" />
-
-            <ImageView
-                android:id="@+id/imageView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/pig64" />
-
-            <ImageView
-                android:id="@+id/imageView8"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/pig64" />
         </LinearLayout>
     </ScrollView>
 
