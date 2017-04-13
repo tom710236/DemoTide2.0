@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -252,8 +253,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     Log.e("json22", json2);
                     trans = new ArrayList();
                     trans2 = new ArrayList();
-                    HashMap<String, String> map = new HashMap<String, String>();
-                    ArrayList<HashMap<String, String>> myList = new ArrayList<HashMap<String, String>>();
+
+                    ArrayList<Map<String, String>> myList = new ArrayList<Map<String, String>>();
                     try {
                         final JSONArray array = new JSONArray(json2);
                         for (int i = 0; i < array.length(); i++) {
@@ -273,13 +274,16 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 Log.e("cProductName", cProductName);
                             }
                             //用自訂類別 把JSONArray的值取出來
-                            map.put("cProductName",cProductName);
-                            map.put("ProductNo",obj.optString("ProductNo"));
-                            map.put("Qty", obj.optString("Qty"));
+                            Map<String, String> map = new HashMap<String, String>();
+
+
+
                             map.put("NowQty",obj.optString("NowQty"));
+                            map.put("ProductNo",obj.optString("ProductNo"));
+                            map.put("cProductName",cProductName);
+                            map.put("Qty", obj.optString("Qty"));
                             myList.add(map);
                             Log.e("mylist", String.valueOf(myList));
-
                             trans.add(new ProductInfo(cProductName, obj.optString("ProductNo"), obj.optInt("Qty"), obj.optInt("NowQty")));
                             trans2.add(new ProductInfo2(obj.optString("ProductNo"), obj.optInt("NowQty")));
                             Log.e("trans", String.valueOf(trans));

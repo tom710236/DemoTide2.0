@@ -315,6 +315,7 @@ public class TakePictures extends AppCompatActivity {
 
     }
     public void onUpdate(View v){
+
             newAllBase64 = new ArrayList();
             newAllBase64.add(Abase64);
             newAllBase64.add(Bbase64);
