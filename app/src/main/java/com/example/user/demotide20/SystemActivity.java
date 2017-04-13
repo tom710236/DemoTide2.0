@@ -193,6 +193,7 @@ public class SystemActivity extends AppCompatActivity {
         get.start();
         //用來紀錄更新日期和次數
         upDateTimes();
+        db4.close();
     }
     //刪除全部商品鍵
     public void delThing(View v){
@@ -200,6 +201,7 @@ public class SystemActivity extends AppCompatActivity {
         db.delete(DB_NAME,null,null);
         setBarcodeSQL();
         db4.delete("tblTable4",null,null);
+        db4.close();
     }
     //返回鍵 暫時用來看資料庫內容
     public void back (View v){
@@ -255,6 +257,7 @@ public class SystemActivity extends AppCompatActivity {
         ContentValues addbase = new ContentValues();
         addbase.put("timeUp",timeUp);
         db3.insert("tblTable3",null,addbase);
+        db3.close();
     }
     //設定更新時間
     private void setUpDateTime(){

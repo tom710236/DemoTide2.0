@@ -97,7 +97,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
     }
 
 
-
+    //String[]{} 自訂 listView
     class IconAdapter extends BaseAdapter {
         String[] func = {"出貨單檢貨", "採購單點貨", "儲位與商品管理", "空白表單","系統管理",
                 dateUp2};

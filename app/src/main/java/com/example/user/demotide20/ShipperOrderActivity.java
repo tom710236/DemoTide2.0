@@ -274,6 +274,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             trans2.add(new ProductInfo2(obj.optString("ProductNo"), obj.optInt("NowQty")));
                             Log.e("trans", String.valueOf(trans));
                             Log.e("trans2", String.valueOf(trans2));
+                            db.close();
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -295,6 +296,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
 
     }
+    //arraylist 自訂 listView
     class IconAdapter extends BaseAdapter {
 
         //ProductInfo[] func = (ProductInfo[]) trans.toArray(new ProductInfo[trans.size()]);
@@ -364,8 +366,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
             Log.e("cBarcode", cProductIDeSQL);
             Btrans.add(cProductIDeSQL);
 
-
-
         }
 
         int i = c.getCount();
@@ -378,6 +378,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
             //stringArray = (String[]) Btrans.toArray(new String[0]);
             chooseThings();
+            db4.close();
         }
 
     }
@@ -400,6 +401,15 @@ public class ShipperOrderActivity extends AppCompatActivity {
         builder.setCancelable(true);
         AlertDialog dialog=builder.create();
         dialog.show();
+    }
+    public void onPicture (View v){
+        Intent intent = new Intent(ShipperOrderActivity.this,TakePictures.class);
+        Bundle bag = new Bundle();
+        bag.putString("cUserName",cUserName);
+        bag.putString("cUserID",cUserID);
+        intent.putExtras(bag);
+        startActivity(intent);
+        ShipperOrderActivity.this.finish();
     }
 
 }

@@ -87,6 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:onClick="onPicture"
             android:text="照片" />
 
         <LinearLayout
@@ -108,6 +109,8 @@
                 android:id="@+id/switch2"
                 android:layout_width="98dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="5dp"
                 android:switchTextAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textOff="關閉"
                 android:textOn="開啟" />
@@ -118,6 +121,7 @@
         android:id="@+id/linear"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
         android:orientation="horizontal"
@@ -172,7 +176,9 @@
         <View
             android:id="@+id/view2"
             android:layout_width="fill_parent"
-            android:layout_height="1dp"
+            android:layout_height="2dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:background="#000000" />
 
@@ -207,6 +213,7 @@
             android:layout_width="fill_parent"
             android:layout_height="1dp"
             android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
             android:layout_weight="1"
             android:background="#000000" />
 
@@ -214,6 +221,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginLeft="30dp"
+            android:layout_marginRight="10dp"
             android:orientation="horizontal">
 
             <TextView
@@ -228,11 +236,11 @@
                 android:id="@+id/editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="2.3"
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:singleLine="true"
-                android:textSize="20sp" />
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/button6"
@@ -248,8 +256,9 @@
 
         <View
             android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="30dp"
+            android:layout_height="2dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:background="#000000" />
 
@@ -266,30 +275,8 @@
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="235dp"
+        android:layout_height="match_parent"
         android:divider="#00000000" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:layout_gravity="bottom|end">
-
-        <android.support.v7.widget.Toolbar
-            android:layout_width="match_parent"
-            android:background="?attr/colorPrimary"
-            android:theme="?attr/actionBarTheme"
-            android:minHeight="?attr/actionBarSize"
-            android:id="@+id/toolbar3"
-            android:layout_height="30dp" />
-
-        <TextView
-            android:text="世潮企業股份有限公司"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:id="@+id/textView9"
-            android:gravity="center_vertical|center" />
-    </FrameLayout>
 
 
 </LinearLayout>

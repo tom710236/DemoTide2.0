@@ -3,6 +3,9 @@
     package="com.example.user.demotide20">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -22,12 +25,14 @@
         <activity android:name=".ShipperActivity" />
         <activity android:name=".PurchaseActivity" />
         <activity android:name=".ShipperOrderActivity" />
-        <activity android:name=".SystemActivity"></activity>
+        <activity android:name=".SystemActivity" />
 
         <service
             android:name=".Delay"
             android:enabled="true"
             android:exported="true" />
+
+        <activity android:name=".TakePictures"></activity>
     </application>
 
 </manifest>

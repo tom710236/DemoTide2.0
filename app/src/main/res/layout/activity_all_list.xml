@@ -73,29 +73,8 @@
     <ListView
         android:id="@+id/lv"
         android:layout_width="match_parent"
-        android:layout_height="125dp"
+        android:layout_height="match_parent"
         android:layout_weight="0.96" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom">
-
-        <android.support.v7.widget.Toolbar
-            android:layout_width="match_parent"
-            android:background="?attr/colorPrimary"
-            android:theme="?attr/actionBarTheme"
-            android:minHeight="?attr/actionBarSize"
-            android:id="@+id/toolbar3"
-            android:layout_height="30dp" />
-
-        <TextView
-            android:text="世潮企業股份有限公司"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:id="@+id/textView9"
-            android:gravity="center_vertical|center" />
-    </FrameLayout>
 
 
 </LinearLayout>
