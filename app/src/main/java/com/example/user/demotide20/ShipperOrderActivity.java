@@ -480,18 +480,29 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Log.e("Ebase64",Ebase64);
     }
     private void AllBase64(){
+        if(AArray!=null){
+            AmakeBase64();
+        }
+        if(BArray!=null){
+            BmakeBase64();
+        }
+        if(CArray!=null){
+            CmakeBase64();
+        }
+        if(DArray!=null){
+            DmakeBase64();
+        }
+        if(EArray!=null){
+            EmakeBase64();
+        }
 
-        AmakeBase64();
-        BmakeBase64();
-        CmakeBase64();
-        DmakeBase64();
-        //EmakeBase64();
+
         allbase64 = new ArrayList();
         allbase64.add(Abase64);
         allbase64.add(Bbase64);
         allbase64.add(Cbase64);
         allbase64.add(Dbitmap);
-        //allbase64.add(Ebase64);
+        allbase64.add(Ebase64);
 
     }
     public void onActivity(View v){
