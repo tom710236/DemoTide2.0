@@ -4,10 +4,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,20 +45,23 @@ import okhttp3.Response;
 import static com.example.user.demotide20.R.layout.lview3;
 
 public class ShipperOrderActivity extends AppCompatActivity {
-    String cUserName, cUserID, order, checked, checked2, checked3, cProductIDeSQL;
+    String cUserName, cUserID, order, checked, cProductIDeSQL,newbase64;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     LinearLayout linear;
     ArrayAdapter list;
     ListView listView;
     int addNum = 0;
     String[] stringArray;
-
+    Bitmap Abitmap,Bbitmap,Cbitmap,Dbitmap,Ebitmap;
+    String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
     ArrayList trans, trans2, Btrans;
     MyDBhelper helper;
     MyDBhelper4 helper4;
     SQLiteDatabase db, db4;
     final String DB_NAME = "tblTable";
-
+    byte[] AArray,BArray,CArray,DArray,EArray;
+    final String[] activity = {"換人檢", "結案"};
+    ArrayList allbase64;
     //顯示用
     public class ProductInfo {
         private String mProductName;
@@ -138,21 +145,23 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
+        /**
+         * TakePicture的資料
+         */
+        AArray = bag.getByteArray("AArray");
+        BArray = bag.getByteArray("BArray");
+        CArray = bag.getByteArray("CArray");
+        DArray = bag.getByteArray("DArray");
+        EArray = bag.getByteArray("EArray");
+
+        /**
+         * ShipperActivity的資料
+         */
         cUserName = bag.getString("cUserName", null);
-        Log.e("cUserName", cUserName);
         cUserID = bag.getString("cUserID", null);
-        Log.e("cUserID", cUserID);
         order = bag.getString("order", null);
-        Log.e("order", order);
         checked = bag.getString("checked", null);
-        Log.e("checked", checked);
-        //把逗號的空白處取代
-        checked2 = checked.replaceAll(", ", ",");
-        int i = checked2.length();
-        //再取字串範圍 (0和最後是[])
-        //回傳指定範圍(1.i-1)第二個和倒數第二個
-        checked3 = checked2.substring(1, i - 1);
-        Log.e("checked3", checked3);
+
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
         TextView textView1 = (TextView) findViewById(R.id.textView11);
@@ -216,7 +225,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             OkHttpClient client = new OkHttpClient();
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
-            String json = "{\"Token\":\"\" ,\"Action\":\"dopickups\",\"UserID\":\"" + cUserID + "\",\"PickupNumbers\":\"" + checked3 + "\"}";
+            String json = "{\"Token\":\"\" ,\"Action\":\"dopickups\",\"UserID\":\"" + cUserID + "\",\"PickupNumbers\":\"" + checked + "\"}";
             Log.e("POST的JSON", json);
             RequestBody body = RequestBody.create(JSON, json);
             Request request = new Request.Builder()
@@ -418,13 +427,102 @@ public class ShipperOrderActivity extends AppCompatActivity {
         dialog.show();
     }
     public void onPicture (View v){
+        String activity = "Shipper";
         Intent intent = new Intent(ShipperOrderActivity.this,TakePictures.class);
         Bundle bag = new Bundle();
         bag.putString("cUserName",cUserName);
         bag.putString("cUserID",cUserID);
+        bag.putString("activity",activity);
+        bag.putString("checked", checked);
+        bag.putString("order",order);
         intent.putExtras(bag);
         startActivity(intent);
         ShipperOrderActivity.this.finish();
     }
+    private void AmakeBase64(){
+        Abitmap = BitmapFactory.decodeByteArray(AArray, 0, AArray.length);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Abitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        byte bytes[] = stream.toByteArray();
+        Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+        Log.e("Abase64",Abase64);
+    }
+    private void BmakeBase64(){
+        Bbitmap = BitmapFactory.decodeByteArray(BArray, 0, BArray.length);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Bbitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        byte bytes[] = stream.toByteArray();
+        Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+        Log.e("Bbase64",Bbase64);
+    }
+    private void CmakeBase64(){
+        Cbitmap = BitmapFactory.decodeByteArray(CArray, 0, CArray.length);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Cbitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        byte bytes[] = stream.toByteArray();
+        Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+        Log.e("Cbase64",Cbase64);
+    }
+    private void DmakeBase64(){
+        Dbitmap = BitmapFactory.decodeByteArray(DArray, 0, DArray.length);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Dbitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        byte bytes[] = stream.toByteArray();
+        Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+        Log.e("Dbase64",Dbase64);
+    }
+    private void EmakeBase64(){
+        Ebitmap = BitmapFactory.decodeByteArray(EArray, 0, EArray.length);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Ebitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        byte bytes[] = stream.toByteArray();
+        Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+        Log.e("Ebase64",Ebase64);
+    }
+    private void AllBase64(){
+
+        AmakeBase64();
+        BmakeBase64();
+        CmakeBase64();
+        DmakeBase64();
+        //EmakeBase64();
+        allbase64 = new ArrayList();
+        allbase64.add(Abase64);
+        allbase64.add(Bbase64);
+        allbase64.add(Cbase64);
+        allbase64.add(Dbitmap);
+        //allbase64.add(Ebase64);
+
+    }
+    public void onActivity(View v){
+        chooseActivity();
+    }
+    private void chooseActivity(){
+        AlertDialog.Builder dialog_list = new AlertDialog.Builder(this);
+        dialog_list.setTitle("挑選照片");
+        dialog_list.setItems(activity, new DialogInterface.OnClickListener() {
+            @Override
+            //只要你在onClick處理事件內，使用which參數，就可以知道按下陣列裡的哪一個了
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                Toast.makeText(ShipperOrderActivity.this, "你選的是" + activity[which], Toast.LENGTH_SHORT).show();
+                Log.e("選取", activity[which]);
+                Log.e("選取數字", String.valueOf(which));
+                if (which == 0) {
+
+                }
+                else if(which ==1) {
+
+                    AllBase64();
+                    Log.e("allbase64", String.valueOf(allbase64));
+                }
+
+            }
+        });
+        dialog_list.show();
+    }
+
+
+
 
 }

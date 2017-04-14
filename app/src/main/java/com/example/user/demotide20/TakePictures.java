@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,7 +16,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,12 +32,13 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Environment.DIRECTORY_PICTURES;
 
 public class TakePictures extends AppCompatActivity {
-    String cUserName, cUserID;
+    String cUserName, cUserID,activity,checked,order;
     private static final int REQUEST_CONTACTS = 1;
     final String[] picture = {"照片一", "照片二", "照片三","照片四","照片五"};
     Uri imgUri;
     ArrayList newAllBase64;
-    String Abase64,Bbase64,Cbase64,Dbase64,Ebase64 ;
+    Bitmap Abmp,Bbmp,Cbmp,Dbmp,Ebmp ;
+    byte[] AArray,BArray,CArray,DArray,EArray;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +71,7 @@ public class TakePictures extends AppCompatActivity {
         });
     }
 
-    //取得上一頁傳過來的資料
+    //取得上一頁傳過來的資料(ShipperOrderActivity)
     private void getPreviousPage() {
         //上一頁傳過來的資料取得
         Intent intent = getIntent();
@@ -78,13 +79,16 @@ public class TakePictures extends AppCompatActivity {
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
-        Log.e("cUserID", cUserID);
+        activity = bag.getString("activity",null);
+        checked = bag.getString("checked", null);
+        order = bag.getString("order", null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
     public void onTake (View v){
         takePicture();
     }
+    //詢問 是否有拍照和讀取寫入的權限 沒有->詢問 有->執行拍照動作
     private void takePicture() {
         int permission = ActivityCompat.checkSelfPermission(this,
                 CAMERA);
@@ -103,7 +107,7 @@ public class TakePictures extends AppCompatActivity {
             makePicture();
         }
     }
-
+    //拍照並儲存 然後Intent的識別碼為100
     private void makePicture() {
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 DIRECTORY_PICTURES).toString();
@@ -114,6 +118,7 @@ public class TakePictures extends AppCompatActivity {
         it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 100);
     }
+    //依照Intent的識別碼來執行意圖
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -121,8 +126,8 @@ public class TakePictures extends AppCompatActivity {
             if(requestCode==100){
                 Intent it = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, imgUri);//設為系統共享媒體檔
                 sendBroadcast(it);
-                ImageView imv = (ImageView)findViewById(R.id.imageView19);
-                showImg(imv,requestCode);
+                //ImageView imv = (ImageView)findViewById(R.id.imageView19);
+                //showImg(imv,requestCode);
             }
             else if(requestCode==101){
                 imgUri = convertUri(data.getData());  //取得選取相片的 Uri 並做 Uri 格式轉換
@@ -155,6 +160,7 @@ public class TakePictures extends AppCompatActivity {
             Toast.makeText(this, "沒有拍到照片", Toast.LENGTH_LONG).show();
         }
     }
+    //顯示照片
     void showImg(ImageView imv,int i) {
         int iw, ih, vw, vh;
         boolean needRotate;  //用來儲存是否需要旋轉
@@ -162,15 +168,35 @@ public class TakePictures extends AppCompatActivity {
         BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
         option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
         BitmapFactory.decodeFile(imgUri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
         iw = option.outWidth;   //由 option 中讀出圖檔寬度
         ih = option.outHeight;  //由 option 中讀出圖檔高度
         vw = imv.getWidth();    //取得 ImageView 的寬度
         vh = imv.getHeight();   //取得 ImageView 的高度
 
+        int scaleFactor;
+        if(iw<ih) {    //如果圖片的寬度小於高度
+            needRotate = false;       				//不需要旋轉
+           scaleFactor = Math.min(iw/vw, ih/vh);   // 計算縮小比率
+        }
+        else {
+            needRotate = true;       				//需要旋轉
+            scaleFactor = Math.min(iw/vh, ih/vw);   // 將 ImageView 的寬、高互換來計算縮小比率
+        }
+
         option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
-        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+        option.inSampleSize = scaleFactor*2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
         Bitmap  bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
-        //轉成base64
+        if(needRotate) { //如果需要旋轉
+            Matrix matrix = new Matrix();  //建立 Matrix 物件
+            matrix.postRotate(90);         //設定旋轉角度
+            bmp = Bitmap.createBitmap(bmp , //用原來的 Bitmap 產生一個新的 Bitmap
+                    0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+        }
+
+        imv.setImageBitmap(bmp);
+
+        //轉成byte
         if(i==101){
             makeBase64101(bmp);
         }
@@ -186,9 +212,6 @@ public class TakePictures extends AppCompatActivity {
         if(i==105){
             makeBase64105(bmp);
         }
-
-
-        imv.setImageBitmap(bmp);
         new AlertDialog.Builder(this)
                 .setTitle("圖檔資訊")
                 .setMessage("圖檔路徑:" + imgUri.getPath() +
@@ -203,6 +226,7 @@ public class TakePictures extends AppCompatActivity {
     public void onChoose (View v){
         choosePicture();
     }
+
     private void choosePicture(){
         AlertDialog.Builder dialog_list = new AlertDialog.Builder(TakePictures.this);
         dialog_list.setTitle("挑選照片");
@@ -233,7 +257,6 @@ public class TakePictures extends AppCompatActivity {
         });
         dialog_list.show();
     }
-
 
 
     private void pickPicture1(int i ) {
@@ -273,59 +296,69 @@ public class TakePictures extends AppCompatActivity {
         return uri;   //傳回 Uri 物件
     }
 
+
+
     private void makeBase64101(Bitmap bmp){
+        Abmp = bmp;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Abmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+        AArray= out.toByteArray();
+
+        /*
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
         byte bytes[] = stream.toByteArray();
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Abase64",Abase64);
-
+          */
     }
     private void makeBase64102(Bitmap bmp){
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
-        byte bytes[] = stream.toByteArray();
-        Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Bbase64",Bbase64);
-
+        Bbmp = bmp;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Abmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+        BArray= out.toByteArray();
     }
     private void makeBase64103(Bitmap bmp){
-
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
-        byte bytes[] = stream.toByteArray();
-        Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Cbase64",Cbase64);
-
+        Cbmp = bmp;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Abmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+        CArray= out.toByteArray();
     }
     private void makeBase64104(Bitmap bmp){
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
-        byte bytes[] = stream.toByteArray();
-        Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Dbase64",Dbase64);
-
+        Dbmp = bmp;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Abmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+        DArray= out.toByteArray();
     }
     private void makeBase64105(Bitmap bmp){
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
-        byte bytes[] = stream.toByteArray();
-        Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Ebase64",Ebase64);
-
+        Ebmp = bmp;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Abmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+        EArray= out.toByteArray();
     }
     public void onUpdate(View v){
 
-            newAllBase64 = new ArrayList();
-            newAllBase64.add(Abase64);
-            newAllBase64.add(Bbase64);
-            newAllBase64.add(Cbase64);
-            newAllBase64.add(Dbase64);
-            newAllBase64.add(Ebase64);
-            Log.e("newAllBase64", String.valueOf(newAllBase64));
+        if(activity.equals("Shipper")){
+            Intent intent = new Intent(this,ShipperOrderActivity.class);
+
+            Bundle bag = new Bundle();
+            //bag.putString("BITMAP", String.valueOf(AImv.getDrawingCache())); //这里可以放一个bitmap
+            //bag.putString("newbase64", String.valueOf(newAllBase64));
+            bag.putByteArray("AArray",AArray);
+            bag.putByteArray("BArray",BArray);
+            bag.putByteArray("CArray",CArray);
+            bag.putByteArray("DArray",DArray);
+            bag.putByteArray("EArray",EArray);
+            bag.putString("cUserName", cUserName);
+            bag.putString("cUserID", cUserID);
+            bag.putString("checked", String.valueOf(checked));
+            bag.putString("order",order);
+            intent.putExtras(bag);
+            startActivity(intent);
+            this.finish();
         }
 
     }
 
-
+}
 

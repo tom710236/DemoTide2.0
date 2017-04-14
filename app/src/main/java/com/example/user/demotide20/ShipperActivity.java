@@ -34,6 +34,7 @@ import okhttp3.Response;
 public class ShipperActivity extends AppCompatActivity {
     String cUserName,listname,listTotal,json4,door1=null,cUserID;
     String name,order ;
+    String checked2,checked3;
     int index ;
     ArrayList<String> checked;
     ArrayList<String> json2;
@@ -379,10 +380,16 @@ public class ShipperActivity extends AppCompatActivity {
 
             //點擊後到下一頁和所要傳的資料
             //BUG 最後一個會有殘留值
-
+            //把逗號的空白處取代
+            checked2 = String.valueOf(checked).replaceAll(", ", ",");
+            int i = checked2.length();
+            //再取字串範圍 (0和最後是[])
+            //回傳指定範圍(1.i-1)第二個和倒數第二個
+            checked3 = checked2.substring(1, i - 1);
+            Log.e("CHECK3",checked3);
             Intent intent = new Intent(ShipperActivity.this,ShipperOrderActivity.class);
             Bundle bag = new Bundle();
-            bag.putString("checked", String.valueOf(checked));
+            bag.putString("checked", checked3);
             bag.putString("order", String.valueOf(order));
             bag.putString("cUserID",cUserID);
             bag.putString("cUserName",cUserName);
