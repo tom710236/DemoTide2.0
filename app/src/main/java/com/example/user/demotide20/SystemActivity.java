@@ -205,10 +205,10 @@ public class SystemActivity extends AppCompatActivity {
     }
     //返回鍵 暫時用來看資料庫內容
     public void back (View v){
-        //setThingSQL();
-        //cursor3();
-        setBarcodeSQL();
-        cursor4();
+        setThingSQL();
+        cursor3();
+        //setBarcodeSQL();
+        //cursor4();
     }
     //登出鍵
     public void out (View v){

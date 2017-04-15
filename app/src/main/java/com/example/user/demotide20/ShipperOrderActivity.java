@@ -20,6 +20,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -283,10 +284,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 Log.e("cProductName", cProductName);
                             }
                             //用自訂類別 把JSONArray的值取出來
+
                             Map<String, String> map = new HashMap<String, String>();
-
-
-
                             map.put("NowQty",obj.optString("NowQty"));
                             map.put("ProductNo",obj.optString("ProductNo"));
                             map.put("cProductName",cProductName);
@@ -304,14 +303,21 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }
 
                     listView = (ListView) findViewById(R.id.list);
-                    final IconAdapter gAdapter = new IconAdapter();
+                    //SimpleAdapter 顯示
+                    final SimpleAdapter simpleAdapter = new SimpleAdapter(ShipperOrderActivity.this,
+                            myList,
+                            R.layout.lview4,
+                            new String[]{"cProductName","ProductNo","Qty","NowQty"},
+                            new int[]{R.id.textView21,R.id.textView22,R.id.textView23,R.id.textView24});
+
+                    //final IconAdapter gAdapter = new IconAdapter();
                     //list.setAdapter(gAdapter);
                     //list = new ArrayAdapter(ShipperOrderActivity.this, android.R.layout.simple_list_item_1, trans);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            listView.setAdapter(gAdapter);
-
+                            //listView.setAdapter(gAdapter);
+                            listView.setAdapter(simpleAdapter);
                         }
                     });
                 }
@@ -321,9 +327,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
     //arraylist 自訂 listView
     class IconAdapter extends BaseAdapter {
-
         //ProductInfo[] func = (ProductInfo[]) trans.toArray(new ProductInfo[trans.size()]);
-
         //int陣列方式將功能儲存在icons陣列
         //int[] icons = {};
         @Override
@@ -520,10 +524,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 Log.e("選取", activity[which]);
                 Log.e("選取數字", String.valueOf(which));
                 if (which == 0) {
-
                 }
                 else if(which ==1) {
-
                     AllBase64();
                     Log.e("allbase64", String.valueOf(allbase64));
                 }
