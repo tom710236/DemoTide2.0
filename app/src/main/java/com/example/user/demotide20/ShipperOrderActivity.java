@@ -51,7 +51,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     LinearLayout linear;
     ArrayAdapter list;
     ListView listView;
-    int addNum = 0;
+    int addNum = 0,iMax=0;
     String[] stringArray;
     Bitmap Abitmap,Bbitmap,Cbitmap,Dbitmap,Ebitmap;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
@@ -108,6 +108,47 @@ public class ShipperOrderActivity extends AppCompatActivity {
             return "{\"ProductNo\":\"" + this.mProductID + "\",\"NowQty\":" + this.mNowQty + "}";
         }
     }
+    public class ProductIDInfo{
+        private String mProductID;
+
+        ProductIDInfo(String ProductID){
+            this.mProductID = ProductID;
+        }
+        public String toString(){
+            return mProductID;
+        }
+    }
+    public class ProductNameInfo{
+        private String mProductName;
+
+        ProductNameInfo(String ProductID){
+            this.mProductName = ProductID;
+        }
+        public String toString(){
+            return mProductName;
+        }
+    }
+    public class QtyInfo{
+        private String mmQty;
+
+        QtyInfo(String ProductID){
+            this.mmQty = ProductID;
+        }
+        public String toString(){
+            return mmQty;
+        }
+    }
+    public class NowQtyInfo{
+        private String mNowQty;
+
+        NowQtyInfo(String ProductID){
+            this.mNowQty = ProductID;
+        }
+        public String toString(){
+            return mNowQty;
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,8 +312,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     myList = new ArrayList<Map<String, String>>();
                     try {
                         final JSONArray array = new JSONArray(json2);
-                        for (int i = 0; i < array.length(); i++) {
-                            JSONObject obj = array.getJSONObject(i);
+                        for ( iMax = 0; iMax < array.length(); iMax++) {
+                            JSONObject obj = array.getJSONObject(iMax);
                             //開啟資料庫 用ProductNo比對SQL的cProductID
                             setThingSQL();
                             Cursor c = db.query("tblTable",                            // 資料表名字
@@ -290,10 +331,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             //用自訂類別 把JSONArray的值取出來
 
                             map = new HashMap<String, String>();
-                            map.put("NowQty",obj.optString("NowQty"));
-                            map.put("ProductNo",obj.optString("ProductNo"));
-                            map.put("cProductName",cProductName);
-                            map.put("Qty", obj.optString("Qty"));
+                            map.put("NowQty", String.valueOf(new NowQtyInfo(obj.optString("NowQty"))));
+                            map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
+                            map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
+                            map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
                             myList.add(map);
                             Log.e("mylist", String.valueOf(myList));
                             Log.e("map", String.valueOf(map));
@@ -416,8 +457,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 map.remove("NowQty");
                 map.put("NowQty", String.valueOf(i2));
                 simpleAdapter.notifyDataSetChanged();
-
             }
+
+
 
         } else if (i > 1) {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
@@ -428,7 +470,35 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
     }
     public void enter(View v) {
-        cBarcode();
+        //cBarcode();
+
+        EditText editText1 = (EditText)findViewById(R.id.editText);
+        String getText = editText1.getText().toString();
+        Log.e("GETTEXT",getText);
+        for(int i=0; i < iMax; i++){
+            Log.e("NEWTEXT",myList.get(i).get("ProductNo"));
+            if(getText.equals(myList.get(i).get("ProductNo"))){
+                Toast.makeText(this,myList.get(i).get("ProductNo"), Toast.LENGTH_SHORT).show();
+                int i2 = Integer.parseInt(myList.get(i).get("NowQty"));
+                i2++;
+                Log.e("I2", String.valueOf(i2));
+                map.put("NowQty", String.valueOf(i2));
+                Log.e("map", String.valueOf(map));
+                Map<String, String> newMap;
+                newMap = new HashMap<String, String>();
+                newMap.put("NowQty", String.valueOf(i2));
+                newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                newMap.put("cProductName",myList.get(i).get("cProductName") );
+                newMap.put("Qty",myList.get(i).get("Qty") );
+                myList.set(i,newMap);
+                //myList.remove(i).get("NowQty");
+                //Log.e("myList",myList.remove(i).get("NowQty"));
+                simpleAdapter.notifyDataSetChanged();
+            }
+        }
+
+
+
     }
 
     private void chooseThings() {
