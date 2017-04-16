@@ -407,7 +407,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         if (i == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
         } else if (i == 1) {
-
+            //GIT
             if (cProductIDeSQL.equals(map.get("ProductNo"))) {
                 Toast.makeText(this, map.get("ProductNo"), Toast.LENGTH_SHORT).show();
                 int i2 = Integer.parseInt(map.get("NowQty"));
