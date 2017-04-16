@@ -55,6 +55,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     String[] stringArray;
     Bitmap Abitmap,Bbitmap,Cbitmap,Dbitmap,Ebitmap;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
+    ArrayList<Map<String, String>> myList;
     ArrayList trans, trans2, Btrans;
     MyDBhelper helper;
     MyDBhelper4 helper4;
@@ -63,6 +64,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
     byte[] AArray,BArray,CArray,DArray,EArray;
     final String[] activity = {"換人檢", "結案"};
     ArrayList allbase64;
+    Map<String, String> map;
+    SimpleAdapter simpleAdapter;
+    final String[] newStringArray = new String[1];
     //顯示用
     public class ProductInfo {
         private String mProductName;
@@ -264,7 +268,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     trans = new ArrayList();
                     trans2 = new ArrayList();
 
-                    ArrayList<Map<String, String>> myList = new ArrayList<Map<String, String>>();
+                    myList = new ArrayList<Map<String, String>>();
                     try {
                         final JSONArray array = new JSONArray(json2);
                         for (int i = 0; i < array.length(); i++) {
@@ -285,17 +289,19 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             }
                             //用自訂類別 把JSONArray的值取出來
 
-                            Map<String, String> map = new HashMap<String, String>();
+                            map = new HashMap<String, String>();
                             map.put("NowQty",obj.optString("NowQty"));
                             map.put("ProductNo",obj.optString("ProductNo"));
                             map.put("cProductName",cProductName);
                             map.put("Qty", obj.optString("Qty"));
                             myList.add(map);
                             Log.e("mylist", String.valueOf(myList));
+                            Log.e("map", String.valueOf(map));
                             trans.add(new ProductInfo(cProductName, obj.optString("ProductNo"), obj.optInt("Qty"), obj.optInt("NowQty")));
                             trans2.add(new ProductInfo2(obj.optString("ProductNo"), obj.optInt("NowQty")));
                             Log.e("trans", String.valueOf(trans));
                             Log.e("trans2", String.valueOf(trans2));
+
                             db.close();
                         }
                     } catch (JSONException e) {
@@ -304,7 +310,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                     listView = (ListView) findViewById(R.id.list);
                     //SimpleAdapter 顯示
-                    final SimpleAdapter simpleAdapter = new SimpleAdapter(ShipperOrderActivity.this,
+                    simpleAdapter = new SimpleAdapter(ShipperOrderActivity.this,
                             myList,
                             R.layout.lview4,
                             new String[]{"cProductName","ProductNo","Qty","NowQty"},
@@ -401,21 +407,32 @@ public class ShipperOrderActivity extends AppCompatActivity {
         if (i == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
         } else if (i == 1) {
-            Toast.makeText(this, cProductIDeSQL, Toast.LENGTH_SHORT).show();
+
+            if (cProductIDeSQL.equals(map.get("ProductNo"))) {
+                Toast.makeText(this, map.get("ProductNo"), Toast.LENGTH_SHORT).show();
+                int i2 = Integer.parseInt(map.get("NowQty"));
+                i2++;
+                Log.e("I2", String.valueOf(i2));
+                map.remove("NowQty");
+                map.put("NowQty", String.valueOf(i2));
+                simpleAdapter.notifyDataSetChanged();
+
+            }
+
         } else if (i > 1) {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
             //stringArray = (String[]) Btrans.toArray(new String[0]);
             chooseThings();
-            db4.close();
+
+
         }
-
     }
-
     public void enter(View v) {
         cBarcode();
     }
 
     private void chooseThings() {
+
         AlertDialog.Builder  builder=new AlertDialog.Builder(this);
         builder.setTitle("請選擇商品編號");
         builder.setItems(stringArray, new DialogInterface.OnClickListener() {
@@ -423,12 +440,25 @@ public class ShipperOrderActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 Toast.makeText(getApplicationContext(), "You clicked "+stringArray[i], Toast.LENGTH_SHORT).show();
                 Log.e("點擊",stringArray[i]);
+                newStringArray[0] = stringArray[i];
+                Log.e("點擊2",newStringArray[0]);
+                Log.e("PRODUCTNO",map.get("ProductNo"));
+                if (newStringArray[0].equals(map.get("ProductNo"))) {
+                    int i2 = Integer.parseInt(map.get("NowQty"));
+                    Toast.makeText(ShipperOrderActivity.this, map.get("ProductNo")+"1", Toast.LENGTH_SHORT).show();
+                    i2++;
+                    Log.e("I2", String.valueOf(i2));
+                    map.remove("NowQty");
+                    map.put("NowQty", String.valueOf(i2));
+                    simpleAdapter.notifyDataSetChanged();
+                }
             }
         });
 
         builder.setCancelable(true);
         AlertDialog dialog=builder.create();
         dialog.show();
+
     }
     public void onPicture (View v){
         String activity = "Shipper";

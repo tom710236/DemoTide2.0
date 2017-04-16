@@ -284,9 +284,17 @@ public class TakePictures extends AppCompatActivity {
             startActivityForResult(intent, i);
         }
     }
-    Uri convertUri(Uri uri) {
+        //放入多張照片的路徑 (從這邊下手)
+
+        Uri convertUri(Uri uri) {
         if(uri.toString().substring(0, 7).equals("content")) {  //如果是以 "content" 開頭
             String[] colName = { MediaStore.MediaColumns.DATA };    //宣告要查詢的欄位
+            Log.e("colName", String.valueOf(colName));
+            /*
+            for(int i =1; i<colName.length;i++){
+                Log.e("colName",  colName[i]);
+            }
+                */
             Cursor cursor = getContentResolver().query(uri, colName,  //以 imgUri 進行查詢
                     null, null, null);
             cursor.moveToFirst();      //移到查詢結果的第一筆記錄
