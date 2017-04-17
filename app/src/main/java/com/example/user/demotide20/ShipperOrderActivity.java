@@ -35,6 +35,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -576,9 +577,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Log.e("myList", String.valueOf(myList));
         Log.e("size", String.valueOf(myList.size()));
         for(int i=0; i < myList.size(); i++){
-            upMap = new HashMap<String, String>();
-            upMap.put("NowQty", myList.get(i).get("NowQty"));
+            //LinkedHashMap<String, String>() 會依照put的順序
+            upMap = new LinkedHashMap<String, String>();
             upMap.put("ProductNo", myList.get(i).get("ProductNo"));
+            upMap.put("NowQty", myList.get(i).get("NowQty"));
             upList.add(upMap);
             }
         Log.e("upList", String.valueOf(upList));
@@ -750,7 +752,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\"S20160000004,S20160000014\",\"PickupProducts\":"+upList+",\"imgbase64\": "+"["+Abase64+"]"+"}";
+        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upList+",\"imgbase64\": "+"["+Abase64+"]"+"}";
         Log.e("POST",json);
         RequestBody body = RequestBody.create(JSON,json);
         Request request = new Request.Builder()
