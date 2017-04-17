@@ -1,5 +1,6 @@
 package com.example.user.demotide20;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -66,6 +67,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
     ArrayList allbase64;
     Map<String, String> map;
     SimpleAdapter simpleAdapter;
+    SpecialAdapter adapter;
+
     final String[] newStringArray = new String[1];
     //顯示用
     public class ProductInfo {
@@ -256,7 +259,21 @@ public class ShipperOrderActivity extends AppCompatActivity {
     public void addAll(View v) {
         addNum = 99999;
     }
+    public class SpecialAdapter extends SimpleAdapter {
+        private int[] colors = new int[] { 0x30ffffff, 0x30696969 };
 
+        public SpecialAdapter(Context context, ArrayList<Map<String, String>> items, int resource, String[] from, int[] to) {
+            super(context, items, resource, from, to);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            int colorPos = position % colors.length;
+            view.setBackgroundColor(colors[colorPos]);
+            return view;
+        }
+    }
     // 執行緒 - 執行PostUserInfo()方法
     class Post extends Thread {
         String cProductName;
@@ -281,82 +298,90 @@ public class ShipperOrderActivity extends AppCompatActivity {
             //使用OkHttp的newCall方法建立一個呼叫物件(尚未連線至主機)
             Call call = client.newCall(request);
             call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
+                             @Override
+                             public void onFailure(Call call, IOException e) {
 
-                }
+                             }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    //POST後 回傳的JSON檔
-                    String json = response.body().string();
-                    Log.e("回傳的JSON", json);
-                    String json2 = null;
-                    try {
-                        JSONObject j = new JSONObject(json);
-                        json2 = j.getString("PickUpProducts");
-                        Log.e("取出PickUpProducts", json2);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    parseJson(json2);
+                             @Override
+                             public void onResponse(Call call, Response response) throws IOException {
+                                 //POST後 回傳的JSON檔
+                                 String json = response.body().string();
+                                 Log.e("回傳的JSON", json);
+                                 String json2 = null;
+                                 try {
+                                     JSONObject j = new JSONObject(json);
+                                     json2 = j.getString("PickUpProducts");
+                                     Log.e("取出PickUpProducts", json2);
+                                 } catch (JSONException e) {
+                                     e.printStackTrace();
+                                 }
+                                 parseJson(json2);
 
-                }
+                             }
 
-                //解析取出PickUpProducts的值
-                private void parseJson(String json2) {
-                    Log.e("json22", json2);
-                    trans = new ArrayList();
-                    trans2 = new ArrayList();
+                             //解析取出PickUpProducts的值
+                             private void parseJson(String json2) {
+                                 Log.e("json22", json2);
+                                 trans = new ArrayList();
+                                 trans2 = new ArrayList();
 
-                    myList = new ArrayList<Map<String, String>>();
-                    try {
-                        final JSONArray array = new JSONArray(json2);
-                        for ( iMax = 0; iMax < array.length(); iMax++) {
-                            JSONObject obj = array.getJSONObject(iMax);
-                            //開啟資料庫 用ProductNo比對SQL的cProductID
-                            setThingSQL();
-                            Cursor c = db.query("tblTable",                            // 資料表名字
-                                    null,                                              // 要取出的欄位資料
-                                    "cProductID=?",                                    // 查詢條件式(WHERE)
-                                    new String[]{obj.optString("ProductNo")},                           // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
-                                    null,                                              // Group By字串語法
-                                    null,                                              // Having字串法
-                                    null);                                             // Order By字串語法(排序)
+                                 myList = new ArrayList<Map<String, String>>();
+                                 try {
+                                     final JSONArray array = new JSONArray(json2);
+                                     for (iMax = 0; iMax < array.length(); iMax++) {
+                                         JSONObject obj = array.getJSONObject(iMax);
+                                         //開啟資料庫 用ProductNo比對SQL的cProductID
+                                         setThingSQL();
+                                         Cursor c = db.query("tblTable",                            // 資料表名字
+                                                 null,                                              // 要取出的欄位資料
+                                                 "cProductID=?",                                    // 查詢條件式(WHERE)
+                                                 new String[]{obj.optString("ProductNo")},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                                                 null,                                              // Group By字串語法
+                                                 null,                                              // Having字串法
+                                                 null);                                             // Order By字串語法(排序)
 
-                            while (c.moveToNext()) {
-                                cProductName = c.getString(c.getColumnIndex("cProductName"));
-                                Log.e("cProductName", cProductName);
-                            }
-                            //用自訂類別 把JSONArray的值取出來
+                                         while (c.moveToNext()) {
+                                             cProductName = c.getString(c.getColumnIndex("cProductName"));
+                                             Log.e("cProductName", cProductName);
+                                         }
+                                         //用自訂類別 把JSONArray的值取出來
 
-                            map = new HashMap<String, String>();
-                            map.put("NowQty", String.valueOf(new NowQtyInfo(obj.optString("NowQty"))));
-                            map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
-                            map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
-                            map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
-                            myList.add(map);
-                            Log.e("mylist", String.valueOf(myList));
-                            Log.e("map", String.valueOf(map));
-                            trans.add(new ProductInfo(cProductName, obj.optString("ProductNo"), obj.optInt("Qty"), obj.optInt("NowQty")));
-                            trans2.add(new ProductInfo2(obj.optString("ProductNo"), obj.optInt("NowQty")));
-                            Log.e("trans", String.valueOf(trans));
-                            Log.e("trans2", String.valueOf(trans2));
+                                         map = new HashMap<String, String>();
+                                         map.put("NowQty", String.valueOf(new NowQtyInfo(obj.optString("NowQty"))));
+                                         map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
+                                         map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
+                                         map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
+                                         myList.add(map);
+                                         Log.e("mylist", String.valueOf(myList));
+                                         Log.e("map", String.valueOf(map));
+                                         trans.add(new ProductInfo(cProductName, obj.optString("ProductNo"), obj.optInt("Qty"), obj.optInt("NowQty")));
+                                         trans2.add(new ProductInfo2(obj.optString("ProductNo"), obj.optInt("NowQty")));
+                                         Log.e("trans", String.valueOf(trans));
+                                         Log.e("trans2", String.valueOf(trans2));
 
-                            db.close();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                                         db.close();
+                                     }
+                                 } catch (JSONException e) {
+                                     e.printStackTrace();
+                                 }
 
-                    listView = (ListView) findViewById(R.id.list);
-                    //SimpleAdapter 顯示
-                    simpleAdapter = new SimpleAdapter(ShipperOrderActivity.this,
-                            myList,
-                            R.layout.lview4,
-                            new String[]{"cProductName","ProductNo","Qty","NowQty"},
-                            new int[]{R.id.textView21,R.id.textView22,R.id.textView23,R.id.textView24});
+                                 listView = (ListView) findViewById(R.id.list);
+                                 //SimpleAdapter 顯示
 
+                                 /*
+                                 simpleAdapter = new SimpleAdapter(ShipperOrderActivity.this,
+                                         myList,
+                                         R.layout.lview4,
+                                         new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
+                                         new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
+                                 */
+                                         adapter = new SpecialAdapter(
+                                         ShipperOrderActivity.this,
+                                         myList,
+                                         R.layout.lview4,
+                                         new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
+                                         new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
                     //final IconAdapter gAdapter = new IconAdapter();
                     //list.setAdapter(gAdapter);
                     //list = new ArrayAdapter(ShipperOrderActivity.this, android.R.layout.simple_list_item_1, trans);
@@ -364,7 +389,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             //listView.setAdapter(gAdapter);
-                            listView.setAdapter(simpleAdapter);
+                            listView.setAdapter(adapter);
+
                         }
                     });
                 }
@@ -493,7 +519,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 myList.set(i,newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
-                simpleAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
         }
 
