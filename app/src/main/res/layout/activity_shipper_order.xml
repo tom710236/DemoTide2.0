@@ -14,47 +14,49 @@
     android:focusableInTouchMode="true"
     android:orientation="vertical"
     android:weightSum="1">
-    <FrameLayout android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:gravity="center"
-            android:background="?attr/colorPrimary"
             android:layout_height="wrap_content"
-            android:minHeight="56dp"
-            android:elevation="0dp">
+            android:background="?attr/colorPrimary"
+            android:elevation="0dp"
+            android:gravity="center"
+            android:minHeight="56dp">
 
         </android.support.v7.widget.Toolbar>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="56dp"
-            android:text="世潮檢貨系統"
-            android:textSize="18sp"
-            android:textColor="#000000"
+            android:layout_gravity="top|center_horizontal"
             android:gravity="center_horizontal|center"
-            android:layout_gravity="top|center_horizontal" />
+            android:text="世潮檢貨系統"
+            android:textColor="#000000"
+            android:textSize="18sp" />
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="right">
+            android:layout_gravity="right"
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="4"></LinearLayout>
+                android:layout_weight="4"
+                android:orientation="horizontal"></LinearLayout>
 
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="right|center"
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
@@ -185,7 +187,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_marginLeft="30dp"
             android:layout_weight="1"
             android:orientation="horizontal">
@@ -197,7 +199,8 @@
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
                 android:text="客戶"
-                android:textSize="16sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView11"
@@ -206,7 +209,8 @@
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
                 android:text="TextView"
-                android:textSize="16sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -220,7 +224,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="10dp"
             android:orientation="horizontal">
@@ -231,17 +235,19 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="商品條碼"
-                android:textSize="16sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/editText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2.3"
+                android:layout_weight="2.4"
                 android:ems="10"
                 android:inputType="textPersonName"
                 android:singleLine="true"
-                android:textSize="18sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/button6"
@@ -250,7 +256,7 @@
                 android:layout_weight="1"
                 android:onClick="enter"
                 android:text="確定"
-                android:textSize="16sp" />
+                android:textSize="14sp" />
 
 
         </LinearLayout>
@@ -269,9 +275,9 @@
         android:id="@+id/textView14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
         android:layout_marginTop="10dp"
-        android:text="出貨項目" />
+        android:text="出貨項目"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -283,28 +289,32 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="商品名稱" />
+            android:text="商品名稱"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView20"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="商品編號" />
+            android:text="商品編號"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="商品總量" />
+            android:text="總量"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView25"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="數量" />
+            android:text="數量"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

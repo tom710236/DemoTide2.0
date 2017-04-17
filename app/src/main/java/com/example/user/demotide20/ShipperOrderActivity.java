@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -56,7 +57,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     String[] stringArray;
     Bitmap Abitmap,Bbitmap,Cbitmap,Dbitmap,Ebitmap;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
-    ArrayList<Map<String, String>> myList;
+    ArrayList<Map<String, String>> myList,upList;
     ArrayList trans, trans2, Btrans;
     MyDBhelper helper;
     MyDBhelper4 helper4;
@@ -64,11 +65,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
     final String DB_NAME = "tblTable";
     byte[] AArray,BArray,CArray,DArray,EArray;
     final String[] activity = {"換人檢", "結案"};
-    ArrayList allbase64;
+    ArrayList AllImgUri;
     Map<String, String> map;
     SimpleAdapter simpleAdapter;
     SpecialAdapter adapter;
-
+    Uri imgUri,AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
+    Map<String, String> newMap;
+    ArrayList upUri;
     final String[] newStringArray = new String[1];
     //顯示用
     public class ProductInfo {
@@ -194,15 +197,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
-        /**
-         * TakePicture的資料
-         */
-        AArray = bag.getByteArray("AArray");
-        BArray = bag.getByteArray("BArray");
-        CArray = bag.getByteArray("CArray");
-        DArray = bag.getByteArray("DArray");
-        EArray = bag.getByteArray("EArray");
 
+        AllImgUri = bag.getStringArrayList("AllImgUri");
         /**
          * ShipperActivity的資料
          */
@@ -307,12 +303,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
                              public void onResponse(Call call, Response response) throws IOException {
                                  //POST後 回傳的JSON檔
                                  String json = response.body().string();
-                                 Log.e("回傳的JSON", json);
+                                 //Log.e("回傳的JSON", json);
                                  String json2 = null;
                                  try {
                                      JSONObject j = new JSONObject(json);
                                      json2 = j.getString("PickUpProducts");
-                                     Log.e("取出PickUpProducts", json2);
+                                     //Log.e("取出PickUpProducts", json2);
                                  } catch (JSONException e) {
                                      e.printStackTrace();
                                  }
@@ -322,7 +318,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                              //解析取出PickUpProducts的值
                              private void parseJson(String json2) {
-                                 Log.e("json22", json2);
+                                 //Log.e("json22", json2);
                                  trans = new ArrayList();
                                  trans2 = new ArrayList();
 
@@ -343,7 +339,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                                          while (c.moveToNext()) {
                                              cProductName = c.getString(c.getColumnIndex("cProductName"));
-                                             Log.e("cProductName", cProductName);
+                                             //Log.e("cProductName", cProductName);
                                          }
                                          //用自訂類別 把JSONArray的值取出來
 
@@ -353,12 +349,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                          map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
                                          map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
                                          myList.add(map);
-                                         Log.e("mylist", String.valueOf(myList));
-                                         Log.e("map", String.valueOf(map));
+                                         //Log.e("mylist", String.valueOf(myList));
+                                         //Log.e("map", String.valueOf(map));
                                          trans.add(new ProductInfo(cProductName, obj.optString("ProductNo"), obj.optInt("Qty"), obj.optInt("NowQty")));
                                          trans2.add(new ProductInfo2(obj.optString("ProductNo"), obj.optInt("NowQty")));
-                                         Log.e("trans", String.valueOf(trans));
-                                         Log.e("trans2", String.valueOf(trans2));
+                                         //Log.e("trans", String.valueOf(trans));
+                                         //Log.e("trans2", String.valueOf(trans2));
 
                                          db.close();
                                      }
@@ -510,7 +506,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 Log.e("I2", String.valueOf(i2));
                 map.put("NowQty", String.valueOf(i2));
                 Log.e("map", String.valueOf(map));
-                Map<String, String> newMap;
+
                 newMap = new HashMap<String, String>();
                 newMap.put("NowQty", String.valueOf(i2));
                 newMap.put("ProductNo", myList.get(i).get("ProductNo"));
@@ -565,82 +561,161 @@ public class ShipperOrderActivity extends AppCompatActivity {
         bag.putString("activity",activity);
         bag.putString("checked", checked);
         bag.putString("order",order);
+        bag.putStringArrayList("AllImgUri",AllImgUri);
         intent.putExtras(bag);
         startActivity(intent);
         ShipperOrderActivity.this.finish();
     }
-    private void AmakeBase64(){
-        Abitmap = BitmapFactory.decodeByteArray(AArray, 0, AArray.length);
+
+    private void AllBase64() {
+        Log.e("AllImgUri", String.valueOf(AllImgUri));
+        checkUri();
+        Map<String, String> upMap;
+
+        upList = new ArrayList<Map<String, String>>();
+        Log.e("myList", String.valueOf(myList));
+        Log.e("size", String.valueOf(myList.size()));
+        for(int i=0; i < myList.size(); i++){
+            upMap = new HashMap<String, String>();
+            upMap.put("NowQty", myList.get(i).get("NowQty"));
+            upMap.put("ProductNo", myList.get(i).get("ProductNo"));
+            upList.add(upMap);
+            }
+        Log.e("upList", String.valueOf(upList));
+
+    }
+
+    private void checkUri(){
+        if (AllImgUri != null && !AllImgUri.isEmpty()) {
+            if (AllImgUri.get(0) != null) {
+                AImgUri = (Uri) AllImgUri.get(0);
+                AImgUriBase64(AImgUri);
+            }
+            if (AllImgUri.get(1) != null) {
+                BImgUri = (Uri) AllImgUri.get(1);
+                BImgUriBase64(BImgUri);
+            }
+            if (AllImgUri.get(2) != null) {
+                CImgUri = (Uri) AllImgUri.get(2);
+                CImgUriBase64(CImgUri);
+            }
+            if (AllImgUri.get(3) != null) {
+                DImgUri = (Uri) AllImgUri.get(3);
+                DImgUriBase64(DImgUri);
+            }
+            if (AllImgUri.get(4) != null) {
+                EImgUri = (Uri) AllImgUri.get(4);
+                EImgUriBase64(EImgUri);
+            }
+
+        }
+    }
+    void AImgUriBase64(Uri uri) {
+
+        BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+        option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+        BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+
+        option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+        Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
+
+
+        //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Abitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
         byte bytes[] = stream.toByteArray();
+        // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Abase64",Abase64);
     }
-    private void BmakeBase64(){
-        Bbitmap = BitmapFactory.decodeByteArray(BArray, 0, BArray.length);
+    void BImgUriBase64(Uri uri) {
+
+        BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+        option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+        BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+
+        option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+        Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
+
+
+        //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Bbitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
         byte bytes[] = stream.toByteArray();
+        // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Bbase64",Bbase64);
     }
-    private void CmakeBase64(){
-        Cbitmap = BitmapFactory.decodeByteArray(CArray, 0, CArray.length);
+    void CImgUriBase64(Uri uri) {
+
+        BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+        option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+        BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+
+        option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+        Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
+
+
+        //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Cbitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
         byte bytes[] = stream.toByteArray();
+        // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Cbase64",Cbase64);
     }
-    private void DmakeBase64(){
-        Dbitmap = BitmapFactory.decodeByteArray(DArray, 0, DArray.length);
+    void DImgUriBase64(Uri uri) {
+
+        BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+        option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+        BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+
+        option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+        Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
+
+
+        //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Dbitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
         byte bytes[] = stream.toByteArray();
+        // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Dbase64",Dbase64);
     }
-    private void EmakeBase64(){
-        Ebitmap = BitmapFactory.decodeByteArray(EArray, 0, EArray.length);
+    void EImgUriBase64(Uri uri) {
+
+        BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+        option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+        BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+
+        option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+        Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
+
+
+        //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        Ebitmap.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
         byte bytes[] = stream.toByteArray();
+        // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Ebase64",Ebase64);
-    }
-    private void AllBase64(){
-        if(AArray!=null){
-            AmakeBase64();
-        }
-        if(BArray!=null){
-            BmakeBase64();
-        }
-        if(CArray!=null){
-            CmakeBase64();
-        }
-        if(DArray!=null){
-            DmakeBase64();
-        }
-        if(EArray!=null){
-            EmakeBase64();
-        }
-
-
-        allbase64 = new ArrayList();
-        allbase64.add(Abase64);
-        allbase64.add(Bbase64);
-        allbase64.add(Cbase64);
-        allbase64.add(Dbitmap);
-        allbase64.add(Ebase64);
-
     }
     public void onActivity(View v){
         chooseActivity();
     }
     private void chooseActivity(){
         AlertDialog.Builder dialog_list = new AlertDialog.Builder(this);
-        dialog_list.setTitle("挑選照片");
+        dialog_list.setTitle("動作");
         dialog_list.setItems(activity, new DialogInterface.OnClickListener() {
             @Override
             //只要你在onClick處理事件內，使用which參數，就可以知道按下陣列裡的哪一個了
@@ -653,7 +728,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 }
                 else if(which ==1) {
                     AllBase64();
-                    Log.e("allbase64", String.valueOf(allbase64));
+                    PostInfo post = new PostInfo();
+                    post.start();
                 }
 
             }
@@ -661,7 +737,49 @@ public class ShipperOrderActivity extends AppCompatActivity {
         dialog_list.show();
     }
 
+    class PostInfo extends Thread{
+        @Override
+        public void run() {
+            PostUserInfo();
+        }
+    }
+    //把輸入的帳號密碼轉成JSON 用OkHttp Post登入API
+    private void PostUserInfo() {
 
+        final OkHttpClient client = new OkHttpClient();
+        //要上傳的內容(JSON)--帳號登入
+        final MediaType JSON
+                = MediaType.parse("application/json; charset=utf-8");
+        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\"S20160000004,S20160000014\",\"PickupProducts\":"+upList+",\"imgbase64\": "+"["+Abase64+"]"+"}";
+        Log.e("POST",json);
+        RequestBody body = RequestBody.create(JSON,json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            //post 失敗後執行
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //非主執行緒顯示UI(Toast)
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ShipperOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            //post 成功後執行
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //取得回傳資料json 還是JSON檔
+                String json = response.body().string();
+                Log.e("POST後的回傳值", json);
+
+            }
+        });
+    }
 
 
 }
