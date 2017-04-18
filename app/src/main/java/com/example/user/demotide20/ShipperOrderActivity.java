@@ -210,7 +210,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     public void addAll(View v) {
-        addNum = 99999;
+        addNum = 999999;
     }
     //改變listView(SimpleAdapter) item的顏色
     public class SpecialAdapter extends SimpleAdapter {
@@ -366,37 +366,66 @@ public class ShipperOrderActivity extends AppCompatActivity {
             Btrans.add(cProductIDeSQL);
 
         }
-
         int i = c.getCount();
         Log.e("筆數", String.valueOf(i));
         if (i == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
         } else if (i == 1) {
-            if (addNum == 0) {
-                final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
-                new AlertDialog.Builder(ShipperOrderActivity.this)
-                        .setTitle("請輸入數量")
-                        .setView(item)
-                        .setNegativeButton("取消", null)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                EditText editText = (EditText) item.findViewById(R.id.editText2);
-                                if(editText.length()!=0){
-                                    getint = Integer.parseInt(editText.getText().toString());
-                                    setNOWQty(getint);
+            if(checkID()==true){
+                if (addNum == 0) {
+                    final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
+                    new AlertDialog.Builder(ShipperOrderActivity.this)
+                            .setTitle("請輸入數量")
+                            .setView(item)
+                            .setNegativeButton("取消", null)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    EditText editText = (EditText) item.findViewById(R.id.editText2);
+                                    if(editText.length()!=0){
+                                        getint = Integer.parseInt(editText.getText().toString());
+                                        setNOWQty(getint);
+                                    }
+
+
                                 }
-
-
-                            }
-                        }).show();
-
+                            }).show();
+                }else if(addNum ==1){
+                    setNOWQty(addNum);
+                }else if(addNum ==5) {
+                    setNOWQty(addNum);
+                }else if(addNum ==10) {
+                    setNOWQty(addNum);
+                }else if(addNum == 999999){
+                    setNOWQty(addNum);
+                }
+            }else {
+                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             }
+
 
         } else if (i > 1) {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
             chooseThings();
         }
+    }
+    private boolean checkID() {
+        for (int i3 = 0; i3 < iMax; i3++) {
+            if(cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))){
+                return true;
+            }
+            Log.e("CHECK",myList.get(i3).get("ProductNo"));
+        }
+        return false;
+    }
+    private boolean checkID2(){
+        for (int i3 = 0; i3 < iMax; i3++) {
+            if(newStringArray[0].equals(myList.get(i3).get("ProductNo"))){
+                return true;
+            }
+            Log.e("CHECK",myList.get(i3).get("ProductNo"));
+        }
+        return false;
     }
     private void setNOWQty(int getint2){
         for (int i3 = 0; i3 < iMax; i3++) {
@@ -406,12 +435,26 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 Log.e("I22", String.valueOf(i2));
                 Log.e("I44", String.valueOf(i4));
                 //數量
-                if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
-                    i2 = i4;
-                    Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-                } else {
-                    i2 = i2 + getint2;
+                if(getint2!=1){
+                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                        i2 = i4;
+                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if(i2==1){
+                            i2=getint2;
+                        }else {
+                            i2 = i2 + getint2;
+                        }
+                    }
+                }else{
+                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                        i2 = i4;
+                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                    }else {
+                            i2 = i2 + getint2;
+                        }
                 }
+
 
                 Log.e("I2", String.valueOf(i2));
                 newMap = new HashMap<String, String>();
@@ -426,55 +469,82 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
         }
     }
-    private void setNOWQty2(){
-        if (addNum == 0) {
-            final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
-            new AlertDialog.Builder(ShipperOrderActivity.this)
-                    .setTitle("請輸入數量")
-                    .setView(item)
-                    .setNegativeButton("取消", null)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            EditText editText = (EditText) item.findViewById(R.id.editText2);
-                            if(editText.length()!=0){
-                                getint = Integer.parseInt(editText.getText().toString());
-                                for (int i3 = 0; i3 < iMax; i3++) {
-                                    if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
-                                        int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
-                                        int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
-                                        Log.e("I22", String.valueOf(i2));
-                                        Log.e("I44", String.valueOf(i4));
-                                        //數量
-                                        if (i2 + getint > i4 || getint > i4 || i2 > i4) {
-                                            i2 = i4;
-                                            Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            i2 = i2 + getint;
-                                        }
+    private void setNOWQty2(int getint2){
+        for (int i3 = 0; i3 < iMax; i3++) {
+            if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
+                int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
+                int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
+                Log.e("I22", String.valueOf(i2));
+                Log.e("I44", String.valueOf(i4));
+                //數量
+                if(getint2!=1){
+                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                        i2 = i4;
+                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if(i2==1){
+                            i2=getint2;
+                        }else {
+                            i2 = i2 + getint2;
+                        }
+                    }
+                }else{
+                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                        i2 = i4;
+                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                    }else {
+                        i2 = i2 + getint2;
+                    }
+                }
 
-                                        Log.e("I2", String.valueOf(i2));
-                                        newMap = new HashMap<String, String>();
-                                        newMap.put("NowQty", String.valueOf(i2));
-                                        newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
-                                        newMap.put("cProductName", myList.get(i3).get("cProductName"));
-                                        newMap.put("Qty", myList.get(i3).get("Qty"));
-                                        myList.set(i3, newMap);
-                                        //myList.remove(i).get("NowQty");
-                                        //Log.e("myList",myList.remove(i).get("NowQty"));
-                                        adapter.notifyDataSetChanged();
-                                    }
+
+                Log.e("I2", String.valueOf(i2));
+                newMap = new HashMap<String, String>();
+                newMap.put("NowQty", String.valueOf(i2));
+                newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
+                newMap.put("cProductName", myList.get(i3).get("cProductName"));
+                newMap.put("Qty", myList.get(i3).get("Qty"));
+                myList.set(i3, newMap);
+                //myList.remove(i).get("NowQty");
+                //Log.e("myList",myList.remove(i).get("NowQty"));
+                adapter.notifyDataSetChanged();
+            }
+        }
+    }
+    private void addNOWQty(){
+        if(checkID2()==true){
+            if (addNum == 0) {
+                final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
+                new AlertDialog.Builder(ShipperOrderActivity.this)
+                        .setTitle("請輸入數量")
+                        .setView(item)
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText editText = (EditText) item.findViewById(R.id.editText2);
+                                if (editText.length() != 0) {
+                                    getint = Integer.parseInt(editText.getText().toString());
+                                    setNOWQty2(getint);
                                 }
                             }
+                        }).show();
 
-
-                        }
-
-                    }).show();
-
+            }else if(addNum==1){
+                setNOWQty2(addNum);
+            }else if(addNum==5){
+                setNOWQty2(addNum);
+            }else if(addNum==10) {
+                setNOWQty2(addNum);
+            }else if(addNum==999999) {
+                setNOWQty2(addNum);
+            }
+        }else{
+            Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
         }
 
     }
+
     //按確定後 所執行
     public void enter(View v) {
         cBarcode();
@@ -487,12 +557,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
         builder.setItems(stringArray, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Toast.makeText(getApplicationContext(), "You clicked "+stringArray[i], Toast.LENGTH_SHORT).show();
                 Log.e("點擊",stringArray[i]);
                 newStringArray[0] = stringArray[i];
                 Log.e("點擊2",newStringArray[0]);
                 Log.e("PRODUCTNO",map.get("ProductNo"));
-                setNOWQty2();
+                addNOWQty();
             }
         });
 
@@ -521,7 +590,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     //從myList取出ProductNo NowQty 放入upList POST用
     private void AllBase64() {
         Log.e("AllImgUri", String.valueOf(AllImgUri));
-        checkUri();
+
         Map<String, String> upMap;
 
         upList = new ArrayList<Map<String, String>>();
@@ -586,8 +655,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Abase64","\"" +Abase64+"\"");
-
+        Allbase64 = new ArrayList();
+        Allbase64.add("\"" +Abase64+"\"");
     }
     void BImgUriBase64(Uri uri) {
 
@@ -696,9 +765,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 Log.e("選取數字", String.valueOf(which));
                 //換人檢
                 if (which == 0) {
+                    AllBase64();
+                    PostChangeInfo post = new PostChangeInfo();
+                    post.start();
                 }
                 //結案
                 else if(which ==1) {
+                    checkUri();
                     AllBase64();
                     PostEndInfo post = new PostEndInfo();
                     post.start();
@@ -711,17 +784,61 @@ public class ShipperOrderActivity extends AppCompatActivity {
     class PostEndInfo extends Thread{
         @Override
         public void run() {
-            PostUserInfo();
+            PostendInfo();
         }
     }
-    //結案 用OkHttp Post登入API
-    private void PostUserInfo() {
+    //結案 用OkHttp PostAPI
+    private void PostendInfo() {
 
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
         String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upStringList+",\"imgbase64\": "+Allbase64+"}";
+        Log.e("POST",json);
+        RequestBody body = RequestBody.create(JSON,json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            //post 失敗後執行
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //非主執行緒顯示UI(Toast)
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ShipperOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            //post 成功後執行
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //取得回傳資料json 還是JSON檔
+                String json = response.body().string();
+                Log.e("結案後POST的回傳值", json);
+                //Toast.makeText(ShipperOrderActivity.this, json, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    //換人檢
+    class PostChangeInfo extends Thread{
+        @Override
+        public void run() {
+            PostChangeInfo();
+        }
+    }
+    //換人檢 用OkHttp PostAPI
+    private void PostChangeInfo() {
+
+        final OkHttpClient client = new OkHttpClient();
+        //要上傳的內容(JSON)--帳號登入
+        final MediaType JSON
+                = MediaType.parse("application/json; charset=utf-8");
+        String json = "{\"Token\":\"\" ,\"Action\":\"save\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upStringList+"}";
         Log.e("POST",json);
         RequestBody body = RequestBody.create(JSON,json);
         Request request = new Request.Builder()
