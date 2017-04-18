@@ -66,7 +66,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
     Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     Map<String, String> newMap;
     int getint;
-
     String upStringList;
     final String[] newStringArray = new String[1];
 
@@ -116,9 +115,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shipper_order);
+        //取得上一頁資料
         getPreviousPage();
+        //toolBar設定
         toolBar();
+        //Switch設定
         setSwitch();
+        //Post後回傳放入listView
         Post post = new Post();
         post.start();
     }
@@ -368,11 +371,16 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
         int i = c.getCount();
         Log.e("筆數", String.valueOf(i));
+        //條碼找不到商品編號
         if (i == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+        //條碼找到一筆商品編號
         } else if (i == 1) {
+            //先判斷條碼內的商品號碼是否有在listView裡
             if(checkID()==true){
+                //Switch 關閉時
                 if (addNum == 0) {
+                    //跳出輸入數字對話框
                     final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
                     new AlertDialog.Builder(ShipperOrderActivity.this)
                             .setTitle("請輸入數量")
@@ -382,8 +390,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     EditText editText = (EditText) item.findViewById(R.id.editText2);
+                                    //如果有輸入數字 執行setNOWQty
                                     if(editText.length()!=0){
                                         getint = Integer.parseInt(editText.getText().toString());
+                                        //判斷有無商品代碼 並帶入數字
                                         setNOWQty(getint);
                                     }
 
@@ -402,13 +412,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             }
-
-
+          //條碼找到一筆以上商品編號
         } else if (i > 1) {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
             chooseThings();
         }
     }
+    //判斷條碼內的商品是否有在list裡 有就回傳true
     private boolean checkID() {
         for (int i3 = 0; i3 < iMax; i3++) {
             if(cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))){
