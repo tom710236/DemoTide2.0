@@ -66,13 +66,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
     final String DB_NAME = "tblTable";
     byte[] AArray,BArray,CArray,DArray,EArray;
     final String[] activity = {"換人檢", "結案"};
-    ArrayList AllImgUri;
+    ArrayList AllImgUri,Allbase64;
     Map<String, String> map;
     SimpleAdapter simpleAdapter;
     SpecialAdapter adapter;
     Uri imgUri,AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     Map<String, String> newMap;
     ArrayList upUri;
+    String upStringList;
     final String[] newStringArray = new String[1];
     //顯示用
     public class ProductInfo {
@@ -444,7 +445,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         helper4 = new MyDBhelper4(this, "tblTable4", null, 1);
         db4 = helper4.getWritableDatabase();
     }
-
+    //判斷掃描
     private void cBarcode() {
         Btrans = new ArrayList();
         EditText editText = (EditText) findViewById(R.id.editText);
@@ -471,15 +472,22 @@ public class ShipperOrderActivity extends AppCompatActivity {
         if (i == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
         } else if (i == 1) {
+                for(int i3=0; i3 < iMax; i3++){
+                    if(cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))){
+                        int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
+                        i2++;
+                        Log.e("I2", String.valueOf(i2));
+                        newMap = new HashMap<String, String>();
+                        newMap.put("NowQty", String.valueOf(i2));
+                        newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
+                        newMap.put("cProductName",myList.get(i3).get("cProductName") );
+                        newMap.put("Qty",myList.get(i3).get("Qty") );
+                        myList.set(i3,newMap);
+                        //myList.remove(i).get("NowQty");
+                        //Log.e("myList",myList.remove(i).get("NowQty"));
+                        adapter.notifyDataSetChanged();
+                    }
 
-            if (cProductIDeSQL.equals(map.get("ProductNo"))) {
-                Toast.makeText(this, map.get("ProductNo"), Toast.LENGTH_SHORT).show();
-                int i2 = Integer.parseInt(map.get("NowQty"));
-                i2++;
-                Log.e("I2", String.valueOf(i2));
-                map.remove("NowQty");
-                map.put("NowQty", String.valueOf(i2));
-                simpleAdapter.notifyDataSetChanged();
             }
 
 
@@ -492,9 +500,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         }
     }
+    //按確定後 所執行
     public void enter(View v) {
-        //cBarcode();
-
+        cBarcode();
+        /*
         EditText editText1 = (EditText)findViewById(R.id.editText);
         String getText = editText1.getText().toString();
         Log.e("GETTEXT",getText);
@@ -518,12 +527,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 adapter.notifyDataSetChanged();
             }
-        }
 
+        }
+        */
 
 
     }
-
+    //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
     private void chooseThings() {
 
         AlertDialog.Builder  builder=new AlertDialog.Builder(this);
@@ -536,15 +546,23 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 newStringArray[0] = stringArray[i];
                 Log.e("點擊2",newStringArray[0]);
                 Log.e("PRODUCTNO",map.get("ProductNo"));
-                if (newStringArray[0].equals(map.get("ProductNo"))) {
-                    int i2 = Integer.parseInt(map.get("NowQty"));
-                    Toast.makeText(ShipperOrderActivity.this, map.get("ProductNo")+"1", Toast.LENGTH_SHORT).show();
-                    i2++;
-                    Log.e("I2", String.valueOf(i2));
-                    map.remove("NowQty");
-                    map.put("NowQty", String.valueOf(i2));
-                    simpleAdapter.notifyDataSetChanged();
-                }
+                for(int i3=0; i3 < iMax; i3++){
+                    if(newStringArray[0].equals(myList.get(i3).get("ProductNo"))){
+                        int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
+                        i2++;
+                        Log.e("I2", String.valueOf(i2));
+                        newMap = new HashMap<String, String>();
+                        newMap.put("NowQty", String.valueOf(i2));
+                        newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
+                        newMap.put("cProductName",myList.get(i3).get("cProductName") );
+                        newMap.put("Qty",myList.get(i3).get("Qty") );
+                        myList.set(i3,newMap);
+                        //myList.remove(i).get("NowQty");
+                        //Log.e("myList",myList.remove(i).get("NowQty"));
+                        adapter.notifyDataSetChanged();
+                        }
+
+                    }
             }
         });
 
@@ -553,45 +571,51 @@ public class ShipperOrderActivity extends AppCompatActivity {
         dialog.show();
 
     }
+    //拍照按鍵 切換到拍照頁面 並把所需的資料傳遞過去
     public void onPicture (View v){
         String activity = "Shipper";
         Intent intent = new Intent(ShipperOrderActivity.this,TakePictures.class);
         Bundle bag = new Bundle();
         bag.putString("cUserName",cUserName);
         bag.putString("cUserID",cUserID);
+        //判斷是從哪一頁傳過去的
         bag.putString("activity",activity);
         bag.putString("checked", checked);
         bag.putString("order",order);
+        //把拍照頁的Uri回傳回去(讓照片不消失)
         bag.putStringArrayList("AllImgUri",AllImgUri);
         intent.putExtras(bag);
         startActivity(intent);
         ShipperOrderActivity.this.finish();
     }
-
+    //從myList取出ProductNo NowQty 放入upList POST用
     private void AllBase64() {
         Log.e("AllImgUri", String.valueOf(AllImgUri));
         checkUri();
         Map<String, String> upMap;
 
         upList = new ArrayList<Map<String, String>>();
-        Log.e("myList", String.valueOf(myList));
-        Log.e("size", String.valueOf(myList.size()));
         for(int i=0; i < myList.size(); i++){
             //LinkedHashMap<String, String>() 會依照put的順序
             upMap = new LinkedHashMap<String, String>();
-            upMap.put("ProductNo", myList.get(i).get("ProductNo"));
-            upMap.put("NowQty", myList.get(i).get("NowQty"));
+            upMap.put("\"ProductNo\"","\"" +myList.get(i).get("ProductNo")+ "\"" );
+            upMap.put("\"NowQty\"", myList.get(i).get("NowQty"));
             upList.add(upMap);
             }
         Log.e("upList", String.valueOf(upList));
+        String upString = String.valueOf(upList).replaceAll("=", ":");
+        upStringList = upString.replaceAll(", ",",");
+        Log.e("upStringList", String.valueOf(upStringList));
 
     }
-
+    // 假如拍照頁面傳過來的AllImgUri不為空值 執行Uri轉換
     private void checkUri(){
+
         if (AllImgUri != null && !AllImgUri.isEmpty()) {
             if (AllImgUri.get(0) != null) {
                 AImgUri = (Uri) AllImgUri.get(0);
                 AImgUriBase64(AImgUri);
+
             }
             if (AllImgUri.get(1) != null) {
                 BImgUri = (Uri) AllImgUri.get(1);
@@ -611,7 +635,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
 
         }
+
     }
+    // Uri 轉成Bitmap 再轉成 base64
+    // bitmap 要轉成 jpg 然後上傳時要給提示 (未做)
     void AImgUriBase64(Uri uri) {
 
         BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
@@ -623,14 +650,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
         option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
         Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
 
-
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Abase64",Abase64);
+        Log.e("Abase64","\"" +Abase64+"\"");
+
     }
     void BImgUriBase64(Uri uri) {
 
@@ -651,6 +678,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Bbase64",Bbase64);
+        Allbase64 = new ArrayList();
+        Allbase64.add("\"" +Bbase64+"\"");
     }
     void CImgUriBase64(Uri uri) {
 
@@ -664,6 +693,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
 
 
+
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
@@ -671,6 +701,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Cbase64",Cbase64);
+        Allbase64 = new ArrayList();
+        Allbase64.add("\"" +Cbase64+"\"");
     }
     void DImgUriBase64(Uri uri) {
 
@@ -691,6 +723,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Dbase64",Dbase64);
+        Allbase64 = new ArrayList();
+        Allbase64.add("\"" +Dbase64+"\"");
     }
     void EImgUriBase64(Uri uri) {
 
@@ -711,10 +745,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Ebase64",Ebase64);
+        Allbase64 = new ArrayList();
+        Allbase64.add("\"" +Ebase64+"\"");
     }
+    //動作按鍵
     public void onActivity(View v){
         chooseActivity();
     }
+    //動作按鍵的方法 (選擇檢貨或換人檢)
     private void chooseActivity(){
         AlertDialog.Builder dialog_list = new AlertDialog.Builder(this);
         dialog_list.setTitle("動作");
@@ -732,6 +770,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     AllBase64();
                     PostInfo post = new PostInfo();
                     post.start();
+
                 }
 
             }
@@ -752,7 +791,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upList+",\"imgbase64\": "+"["+Abase64+"]"+"}";
+        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upStringList+",\"imgbase64\": "+Allbase64+"}";
         Log.e("POST",json);
         RequestBody body = RequestBody.create(JSON,json);
         Request request = new Request.Builder()
@@ -778,7 +817,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
                 Log.e("POST後的回傳值", json);
-
+                //Toast.makeText(ShipperOrderActivity.this, json, Toast.LENGTH_SHORT).show();
             }
         });
     }
