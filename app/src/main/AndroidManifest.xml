@@ -3,10 +3,10 @@
     package="com.example.user.demotide20">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
 
     <application
         android:allowBackup="true"
@@ -33,11 +33,16 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".TakePictures"
+        <activity
+            android:name=".TakePictures"
             android:configChanges="keyboard|keyboardHidden|orientation"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".PurchaseOrderActivity" />
+        <activity android:name=".StorageActivity" />
+        <activity android:name=".StorageOrderActivity" />
+        <activity android:name=".BlackSingleActivity" />
+        <activity android:name=".SeachBlackSingleActivity" />
+        <activity android:name=".PurchaseTakePictures"></activity>
     </application>
 
 </manifest>

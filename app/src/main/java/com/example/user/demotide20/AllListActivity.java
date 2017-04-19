@@ -84,14 +84,43 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 intent1.putExtras(bag1);
                 startActivity(intent1);
                 AllListActivity.this.finish();
+                break;
+            case 2:
+                Intent intent2 = new Intent(AllListActivity.this,BlackSingleActivity.class);
+                Bundle bag2 = new Bundle();
+                bag2.putString("cUserName",cUserName);
+                bag2.putString("cUserID",cUserID);
+                intent2.putExtras(bag2);
+                startActivity(intent2);
+                AllListActivity.this.finish();
+                break;
+            case 3:
+                Intent intent3 = new Intent(AllListActivity.this,SeachBlackSingleActivity.class);
+                Bundle bag3 = new Bundle();
+                bag3.putString("cUserName",cUserName);
+                bag3.putString("cUserID",cUserID);
+                intent3.putExtras(bag3);
+                startActivity(intent3);
+                AllListActivity.this.finish();
+                break;
             case 4:
-                Intent intent4 = new Intent(AllListActivity.this,SystemActivity.class);
+                Intent intent4 = new Intent(AllListActivity.this,StorageActivity.class);
                 Bundle bag4 = new Bundle();
                 bag4.putString("cUserName",cUserName);
                 bag4.putString("cUserID",cUserID);
                 intent4.putExtras(bag4);
                 startActivity(intent4);
                 AllListActivity.this.finish();
+                break;
+            case 5:
+                Intent intent5 = new Intent(AllListActivity.this,SystemActivity.class);
+                Bundle bag5 = new Bundle();
+                bag5.putString("cUserName",cUserName);
+                bag5.putString("cUserID",cUserID);
+                intent5.putExtras(bag5);
+                startActivity(intent5);
+                AllListActivity.this.finish();
+                break;
         }
 
     }
@@ -99,11 +128,11 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
 
     //String[]{} 自訂 listView
     class IconAdapter extends BaseAdapter {
-        String[] func = {"出貨單檢貨", "採購單點貨", "儲位與商品管理", "空白表單","系統管理",
-                dateUp2};
+        String[] func = {"出貨單檢貨", "採購單點貨", "空白表單","空白表單查詢","儲位與庫存管理","系統管理",dateUp2};
+
         //int陣列方式將功能儲存在icons陣列
         int[] icons = {R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp
-                , R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp};
+                , R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp};
 
         @Override
         public int getCount() {

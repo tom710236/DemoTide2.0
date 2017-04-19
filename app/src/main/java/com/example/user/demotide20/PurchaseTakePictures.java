@@ -23,34 +23,32 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Environment.DIRECTORY_PICTURES;
 
-public class TakePictures extends AppCompatActivity {
+public class PurchaseTakePictures extends AppCompatActivity {
     String cUserName, cUserID,activity,checked,order;
     private static final int REQUEST_CONTACTS = 1;
     final String[] picture = {"照片一", "照片二", "照片三","照片四","照片五"};
     Uri imgUri,AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     ArrayList AllImgUri;
     ImageView imv2;
-
-
+    ArrayList<Map<String, String>> myList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_take_pictures);
+        setContentView(R.layout.activity_purchase_take_pictures);
         toolBar();
         getPreviousPage();
-
-        if(activity.equals("Shipper")){
+        if(activity.equals("Purchase")){
             getShipperUri();
         }
 
     }
-    //設定toolBar
     private void toolBar() {
         //Toolbar 設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -58,18 +56,18 @@ public class TakePictures extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
     }
-
     //取得上一頁傳過來的資料(ShipperOrderActivity)
     private void getPreviousPage() {
         //上一頁傳過來的資料取得
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
+        myList = (ArrayList<Map<String, String>>) getIntent().getSerializableExtra("myList");
+        Log.e("MYLIST拍照", String.valueOf(myList));
         Bundle bag = intent.getExtras();
         AllImgUri = bag.getStringArrayList("AllImgUri");
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
         activity = bag.getString("activity",null);
-        checked = bag.getString("checked", null);
         order = bag.getString("order", null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
@@ -77,58 +75,6 @@ public class TakePictures extends AppCompatActivity {
     public void onTake (View v){
         takePicture();
     }
-
-    //從上一頁取得這一頁傳過去的Uri放入照片
-    private void checkShipperUri(){
-            if (AllImgUri.get(0) != null) {
-                AImgUri = (Uri) AllImgUri.get(0);
-                imv2 = (ImageView)findViewById(R.id.imageView14);
-                showImg2(imv2,AImgUri);
-
-            }
-            if (AllImgUri.get(1) != null) {
-                BImgUri = (Uri) AllImgUri.get(1);
-                imv2 = (ImageView)findViewById(R.id.imageView15);
-                showImg2(imv2,AImgUri);
-
-            }
-            if (AllImgUri.get(2) != null) {
-                CImgUri = (Uri) AllImgUri.get(2);
-                imv2 = (ImageView)findViewById(R.id.imageView16);
-                showImg2(imv2,AImgUri);
-            }
-            if (AllImgUri.get(3) != null) {
-                DImgUri = (Uri) AllImgUri.get(3);
-                imv2 = (ImageView)findViewById(R.id.imageView17);
-                showImg2(imv2,AImgUri);
-            }
-            if (AllImgUri.get(4) != null) {
-                EImgUri = (Uri) AllImgUri.get(4);
-                imv2 = (ImageView)findViewById(R.id.imageView18);
-                showImg2(imv2,AImgUri);
-            }
-    }
-    private void getShipperUri(){
-        if (AllImgUri != null && !AllImgUri.isEmpty()) {
-            checkShipperUri();
-        }
-    }
-    void showImg2(ImageView imv2,Uri uri){
-
-        BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
-        option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
-        BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
-
-
-        option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
-        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
-        Bitmap  bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
-
-
-        imv2.setImageBitmap(bmp);
-
-    }
-
     //詢問 是否有拍照和讀取寫入的權限 沒有->詢問 有->執行拍照動作
     private void takePicture() {
         int permission = ActivityCompat.checkSelfPermission(this,
@@ -148,7 +94,6 @@ public class TakePictures extends AppCompatActivity {
             makePicture();
         }
     }
-    //拍照並儲存 然後Intent的識別碼為100
     private void makePicture() {
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 DIRECTORY_PICTURES).toString();
@@ -218,7 +163,7 @@ public class TakePictures extends AppCompatActivity {
 
         option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
         option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
-        Bitmap  bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+        Bitmap bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
 
 
         imv.setImageBitmap(bmp);
@@ -250,6 +195,34 @@ public class TakePictures extends AppCompatActivity {
                 .show();
 
     }
+    //查詢Uri
+    Uri convertUri(Uri uri) {
+        if(uri.toString().substring(0, 7).equals("content")) {  //如果是以 "content" 開頭
+            String[] colName = { MediaStore.MediaColumns.DATA };    //宣告要查詢的欄位
+            Cursor cursor = getContentResolver().query(uri, colName,  //以 imgUri 進行查詢
+                    null, null, null);
+            cursor.moveToFirst();      //移到查詢結果的第一筆記錄
+            uri = Uri.parse("file://" + cursor.getString(0)); //將路徑轉為 Uri
+            cursor.close();     //關閉查詢結果
+        }
+        return uri;   //傳回 Uri 物件
+    }
+    //記住所挑選照片的Uri
+    private void saveImgUri101(Uri imgUri){
+        AImgUri = imgUri;
+    }
+    private void saveImgUri102(Uri imgUri){
+        BImgUri = imgUri;
+    }
+    private void saveImgUri103(Uri imgUri){
+        CImgUri = imgUri;
+    }
+    private void saveImgUri104(Uri imgUri){
+        DImgUri = imgUri;
+    }
+    private void saveImgUri105(Uri imgUri){
+        EImgUri = imgUri;
+    }
 
     //挑選照片的按鍵
     public void onChoose (View v){
@@ -257,14 +230,14 @@ public class TakePictures extends AppCompatActivity {
     }
     // 挑選照片的方法 並編intent識別碼
     private void choosePicture(){
-        AlertDialog.Builder dialog_list = new AlertDialog.Builder(TakePictures.this);
+        AlertDialog.Builder dialog_list = new AlertDialog.Builder(PurchaseTakePictures.this);
         dialog_list.setTitle("挑選照片");
         dialog_list.setItems(picture, new DialogInterface.OnClickListener() {
             @Override
             //只要你在onClick處理事件內，使用which參數，就可以知道按下陣列裡的哪一個了
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
-                Toast.makeText(TakePictures.this, "你選的是" + picture[which], Toast.LENGTH_SHORT).show();
+                Toast.makeText(PurchaseTakePictures.this, "你選的是" + picture[which], Toast.LENGTH_SHORT).show();
                 Log.e("選取", picture[which]);
                 Log.e("選取數字", String.valueOf(which));
                 if (which == 0) {
@@ -312,38 +285,9 @@ public class TakePictures extends AppCompatActivity {
             startActivityForResult(intent, i);
         }
     }
-    //放入多張照片的路徑 (從這邊下手)
-    Uri convertUri(Uri uri) {
-        if(uri.toString().substring(0, 7).equals("content")) {  //如果是以 "content" 開頭
-            String[] colName = { MediaStore.MediaColumns.DATA };    //宣告要查詢的欄位
-            Cursor cursor = getContentResolver().query(uri, colName,  //以 imgUri 進行查詢
-                    null, null, null);
-            cursor.moveToFirst();      //移到查詢結果的第一筆記錄
-            uri = Uri.parse("file://" + cursor.getString(0)); //將路徑轉為 Uri
-            cursor.close();     //關閉查詢結果
-        }
-        return uri;   //傳回 Uri 物件
-    }
-    private void saveImgUri101(Uri imgUri){
-        AImgUri = imgUri;
-    }
-    private void saveImgUri102(Uri imgUri){
-        BImgUri = imgUri;
-    }
-    private void saveImgUri103(Uri imgUri){
-        CImgUri = imgUri;
-    }
-    private void saveImgUri104(Uri imgUri){
-        DImgUri = imgUri;
-    }
-    private void saveImgUri105(Uri imgUri){
-        EImgUri = imgUri;
-    }
-
-
     //回到訂單按鍵
     public void onUpdate(View v){
-        if(activity.equals("Shipper")){
+        if(activity.equals("Purchase")){
             //傳遞Uri
             AllImgUri = new ArrayList();
             AllImgUri.add(AImgUri);
@@ -352,13 +296,14 @@ public class TakePictures extends AppCompatActivity {
             AllImgUri.add(DImgUri);
             AllImgUri.add(EImgUri);
             Log.e("ALLIMGURI", String.valueOf(AllImgUri));
-            Intent intent = new Intent(this,ShipperOrderActivity.class);
+            Intent intent = new Intent(this,PurchaseOrderActivity.class);
+            intent.putExtra("myList", myList);
             Bundle bag = new Bundle();
             bag.putStringArrayList("AllImgUri", AllImgUri);
             bag.putString("cUserName", cUserName);
             bag.putString("cUserID", cUserID);
-            bag.putString("checked", String.valueOf(checked));
             bag.putString("order",order);
+            bag.putString("activity2","pictures");
             intent.putExtras(bag);
             startActivity(intent);
             this.finish();
@@ -366,5 +311,54 @@ public class TakePictures extends AppCompatActivity {
 
     }
 
-}
+    //從上一頁取得這一頁傳過去的Uri放入照片
+    private void checkShipperUri(){
+        if (AllImgUri.get(0) != null) {
+            AImgUri = (Uri) AllImgUri.get(0);
+            imv2 = (ImageView)findViewById(R.id.imageView14);
+            showImg2(imv2,AImgUri);
 
+        }
+        if (AllImgUri.get(1) != null) {
+            BImgUri = (Uri) AllImgUri.get(1);
+            imv2 = (ImageView)findViewById(R.id.imageView15);
+            showImg2(imv2,AImgUri);
+
+        }
+        if (AllImgUri.get(2) != null) {
+            CImgUri = (Uri) AllImgUri.get(2);
+            imv2 = (ImageView)findViewById(R.id.imageView16);
+            showImg2(imv2,AImgUri);
+        }
+        if (AllImgUri.get(3) != null) {
+            DImgUri = (Uri) AllImgUri.get(3);
+            imv2 = (ImageView)findViewById(R.id.imageView17);
+            showImg2(imv2,AImgUri);
+        }
+        if (AllImgUri.get(4) != null) {
+            EImgUri = (Uri) AllImgUri.get(4);
+            imv2 = (ImageView)findViewById(R.id.imageView18);
+            showImg2(imv2,AImgUri);
+        }
+    }
+    private void getShipperUri(){
+        if (AllImgUri != null && !AllImgUri.isEmpty()) {
+            checkShipperUri();
+        }
+    }
+    void showImg2(ImageView imv2,Uri uri){
+
+        BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+        option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+        BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+
+        option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+        option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+        Bitmap  bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
+
+
+        imv2.setImageBitmap(bmp);
+
+    }
+}

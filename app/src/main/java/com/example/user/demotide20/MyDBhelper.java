@@ -20,6 +20,10 @@ public class MyDBhelper extends SQLiteOpenHelper {
         super(shipperOrderActivity, db_name, (SQLiteDatabase.CursorFactory) o, i);
     }
 
+    public MyDBhelper(PurchaseOrderActivity purchaseOrderActivity, String db_name, Object o2, int i) {
+        super(purchaseOrderActivity, db_name, (SQLiteDatabase.CursorFactory) o2, i);
+    }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {

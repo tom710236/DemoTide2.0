@@ -48,29 +48,30 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class ShipperOrderActivity extends AppCompatActivity {
-    String cUserName, cUserID, order, checked, cProductIDeSQL;
-    String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
-    LinearLayout linear;
+import static android.R.attr.checked;
+
+
+public class PurchaseOrderActivity extends AppCompatActivity {
+    String cUserName,cUserID,json,cProductName,cProductIDeSQL,order,upStringList,activity2;
+    SQLiteDatabase db, db4;
+    String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
+    Map<String, String> map;
+    ArrayList<Map<String, String>> myList,upList;
     ListView listView;
     int addNum = 0,iMax=0;
-    String[] stringArray;
-    String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
-    ArrayList<Map<String, String>> myList,upList;
-    ArrayList trans, trans2, Btrans;
+    SpecialAdapter adapter;
     MyDBhelper helper;
     MyDBhelper4 helper4;
-    SQLiteDatabase db, db4;
+    LinearLayout linear;
     final String DB_NAME = "tblTable";
-    final String[] activity = {"換人檢", "結案"};
-    ArrayList AllImgUri,Allbase64;
-    Map<String, String> map;
-    SpecialAdapter adapter;
-    Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
-    Map<String, String> newMap;
-    int getint;
-    String upStringList;
     final String[] newStringArray = new String[1];
+    Map<String, String> newMap;
+    ArrayList Btrans,AllImgUri,Allbase64;
+    int getint;
+    String[] stringArray;
+    Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
+    String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
+    final String[] activity = {"換人檢", "結案"};
     ProgressDialog pd;
     public class ProductIDInfo{
         private String mProductID;
@@ -113,22 +114,20 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shipper_order);
-        //取得上一頁資料
-        getPreviousPage();
-        //toolBar設定
+        setContentView(R.layout.activity_purchase_order);
+
         toolBar();
-        //Switch設定
-        setSwitch();
-        //Post後回傳放入listView
+        getPreviousPage();
+
         Post post = new Post();
         post.start();
-    }
 
+
+        setSwitch();
+    }
     //設定toolBar
     private void toolBar() {
         //Toolbar 設定
@@ -147,37 +146,154 @@ public class ShipperOrderActivity extends AppCompatActivity {
         });
     }
     private void back(){
-        Intent intent = new Intent(ShipperOrderActivity.this, ShipperActivity.class);
+        Intent intent = new Intent(PurchaseOrderActivity.this, PurchaseActivity.class);
         Bundle bag = new Bundle();
         bag.putString("cUserName", cUserName);
-        bag.putString("cUserID", cUserID);
+        bag.putString("cUserID",cUserID);
         intent.putExtras(bag);
         startActivity(intent);
-        ShipperOrderActivity.this.finish();
+        PurchaseOrderActivity.this.finish();
     }
-
     //取得上一頁傳過來的資料
     private void getPreviousPage() {
         //上一頁傳過來的資料取得
         Intent intent = getIntent();
+        myList = (ArrayList<Map<String, String>>) getIntent().getSerializableExtra("myList");
+        Log.e("myList拍照回傳至採購單", String.valueOf(myList));
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
-
         AllImgUri = bag.getStringArrayList("AllImgUri");
-        /**
-         * ShipperActivity的資料
-         */
+        activity2 = bag.getString("activity2");
         cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID", null);
-        order = bag.getString("order", null);
-        checked = bag.getString("checked", null);
-
+        cUserID = bag.getString("cUserID",null);
+        order = bag.getString("order",null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
         TextView textView1 = (TextView) findViewById(R.id.textView11);
         textView1.setText(order);
     }
+    class Post extends Thread {
+        @Override
+        public void run() {
+            //POST取得採購清單
+            PostThingListInfo();
+        }
 
+        private void PostThingListInfo() {
+            //把連接到的採購單帶入JSON並POST上去
+            OkHttpClient client = new OkHttpClient();
+            final MediaType JSON
+                    = MediaType.parse("application/json; charset=utf-8");
+            String json3 = "{\"Token\":\"\" ,\"Action\":\"dopurchase\",\"UserID\" :\""+cUserID+"\" ,\"PurchaseID\" : \""+order+"\"}";
+            Log.e("JSON", json3);
+            RequestBody body = RequestBody.create(JSON, json3);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(body)
+                    .build();
+            //使用OkHttp的newCall方法建立一個呼叫物件(尚未連線至主機)
+            Call call = client.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    //取得POST上去後所得到的JSON檔
+                    json = response.body().string();
+                    Log.e("採購單明細", json);
+                    String json2 = null;
+                    try {
+                        JSONObject j = new JSONObject(json);
+                        json2 = j.getString("PurchaseProducts");
+
+                        Log.e("取出PickUpProducts", json2);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    parseJson(json2);
+                }
+            });
+        }
+
+    }
+    private void parseJson(String json2) {
+        myList = new ArrayList<Map<String, String>>();
+        try {
+            final JSONArray array = new JSONArray(json2);
+            for (iMax = 0; iMax < array.length(); iMax++) {
+                JSONObject obj = array.getJSONObject(iMax);
+                //開啟資料庫 用ProductNo比對SQL的cProductID
+                setThingSQL();
+                Cursor c = db.query("tblTable",                            // 資料表名字
+                        null,                                              // 要取出的欄位資料
+                        "cProductID=?",                                    // 查詢條件式(WHERE)
+                        new String[]{obj.optString("ProductNo")},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                        null,                                              // Group By字串語法
+                        null,                                              // Having字串法
+                        null);                                             // Order By字串語法(排序)
+
+                while (c.moveToNext()) {
+                    cProductName = c.getString(c.getColumnIndex("cProductName"));
+                    Log.e("cProductName", cProductName);
+                }
+                //用自訂類別 把JSONArray的值取出來
+                map = new HashMap<String, String>();
+                map.put("NowQty", String.valueOf(new NowQtyInfo(obj.optString("NowQty"))));
+                map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
+                map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
+                map.put("Qty", String.valueOf(new PurchaseOrderActivity.QtyInfo(obj.getString("Qty"))));
+                myList.add(map);
+                db.close();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        listView = (ListView) findViewById(R.id.list);
+        adapter = new SpecialAdapter(
+                PurchaseOrderActivity.this,
+                myList,
+                R.layout.lview4,
+                new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
+                new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                listView.setAdapter(adapter);
+
+            }
+        });
+    }
+    //商品清單SQL
+    private void setThingSQL() {
+        helper = new MyDBhelper(this, DB_NAME, null, 1);
+        db = helper.getWritableDatabase();
+    }
+    //商品條碼SQL
+    private void setBarcodeSQL() {
+        helper4 = new MyDBhelper4(this, "tblTable4", null, 1);
+        db4 = helper4.getWritableDatabase();
+    }
+    //改變listView(SimpleAdapter) item的顏色
+    public class SpecialAdapter extends SimpleAdapter {
+        private int[] colors = new int[] { 0x30ffffff, 0x30696969 };
+
+        public SpecialAdapter(Context context, ArrayList<Map<String, String>> items, int resource, String[] from, int[] to) {
+            super(context, items, resource, from, to);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            int colorPos = position % colors.length;
+            view.setBackgroundColor(colors[colorPos]);
+            return view;
+        }
+    }
     //設定 Switch功能
     private void setSwitch() {
         //switch 設定
@@ -221,137 +337,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
     public void addAll(View v) {
         addNum = 999999;
     }
-    //改變listView(SimpleAdapter) item的顏色
-    public class SpecialAdapter extends SimpleAdapter {
-        private int[] colors = new int[] { 0x30ffffff, 0x30696969 };
-
-        public SpecialAdapter(Context context, ArrayList<Map<String, String>> items, int resource, String[] from, int[] to) {
-            super(context, items, resource, from, to);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
-            int colorPos = position % colors.length;
-            view.setBackgroundColor(colors[colorPos]);
-            return view;
-        }
-    }
-    // 執行緒 - 執行PostUserInfo()方法
-    class Post extends Thread {
-        String cProductName;
-
-        @Override
-        public void run() {
-            PostOrderThingsInfo();
-        }
-
-        private void PostOrderThingsInfo() {
-            //post
-            OkHttpClient client = new OkHttpClient();
-            final MediaType JSON
-                    = MediaType.parse("application/json; charset=utf-8");
-            String json = "{\"Token\":\"\" ,\"Action\":\"dopickups\",\"UserID\":\"" + cUserID + "\",\"PickupNumbers\":\"" + checked + "\"}";
-            Log.e("POST的JSON", json);
-            RequestBody body = RequestBody.create(JSON, json);
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .build();
-            //使用OkHttp的newCall方法建立一個呼叫物件(尚未連線至主機)
-            Call call = client.newCall(request);
-            call.enqueue(new Callback() {
-                             @Override
-                             public void onFailure(Call call, IOException e) {
-
-                             }
-
-                             @Override
-                             public void onResponse(Call call, Response response) throws IOException {
-                                 //POST後 回傳的JSON檔
-                                 String json = response.body().string();
-                                 //Log.e("回傳的JSON", json);
-                                 String json2 = null;
-                                 try {
-                                     JSONObject j = new JSONObject(json);
-                                     json2 = j.getString("PickUpProducts");
-                                     //Log.e("取出PickUpProducts", json2);
-                                 } catch (JSONException e) {
-                                     e.printStackTrace();
-                                 }
-                                 parseJson(json2);
-
-                             }
-
-                             //解析取出PickUpProducts的值
-                             private void parseJson(String json2) {
-
-                                 myList = new ArrayList<Map<String, String>>();
-                                 try {
-                                     final JSONArray array = new JSONArray(json2);
-                                     for (iMax = 0; iMax < array.length(); iMax++) {
-                                         JSONObject obj = array.getJSONObject(iMax);
-                                         //開啟資料庫 用ProductNo比對SQL的cProductID
-                                         setThingSQL();
-                                         Cursor c = db.query("tblTable",                            // 資料表名字
-                                                 null,                                              // 要取出的欄位資料
-                                                 "cProductID=?",                                    // 查詢條件式(WHERE)
-                                                 new String[]{obj.optString("ProductNo")},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
-                                                 null,                                              // Group By字串語法
-                                                 null,                                              // Having字串法
-                                                 null);                                             // Order By字串語法(排序)
-
-                                         while (c.moveToNext()) {
-                                             cProductName = c.getString(c.getColumnIndex("cProductName"));
-                                             //Log.e("cProductName", cProductName);
-                                         }
-                                         //用自訂類別 把JSONArray的值取出來
-
-                                         map = new HashMap<String, String>();
-                                         map.put("NowQty", String.valueOf(new NowQtyInfo(obj.optString("NowQty"))));
-                                         map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
-                                         map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
-                                         map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
-                                         myList.add(map);
-                                         db.close();
-                                     }
-                                 } catch (JSONException e) {
-                                     e.printStackTrace();
-                                 }
-
-                                 listView = (ListView) findViewById(R.id.list);
-                                         adapter = new SpecialAdapter(
-                                         ShipperOrderActivity.this,
-                                         myList,
-                                         R.layout.lview4,
-                                         new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
-                                         new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            listView.setAdapter(adapter);
-
-                        }
-                    });
-                }
-            });
-        }
-
-    }
-
-    //商品清單SQL
-    private void setThingSQL() {
-        helper = new MyDBhelper(this, DB_NAME, null, 1);
-        db = helper.getWritableDatabase();
-    }
-
-    //商品條碼SQL
-    private void setBarcodeSQL() {
-        helper4 = new MyDBhelper4(this, "tblTable4", null, 1);
-        db4 = helper4.getWritableDatabase();
-    }
-    //判斷條碼
     private void cBarcode() {
         Btrans = new ArrayList();
         EditText editText = (EditText) findViewById(R.id.editText);
@@ -377,15 +362,15 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //條碼找不到商品編號
         if (i == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
-        //條碼找到一筆商品編號
+            //條碼找到一筆商品編號
         } else if (i == 1) {
             //先判斷條碼內的商品號碼是否有在listView裡
             if(checkID()==true){
                 //Switch 關閉時
                 if (addNum == 0) {
                     //跳出輸入數字對話框
-                    final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
-                    new AlertDialog.Builder(ShipperOrderActivity.this)
+                    final View item = LayoutInflater.from(PurchaseOrderActivity.this).inflate(R.layout.item, null);
+                    new AlertDialog.Builder(PurchaseOrderActivity.this)
                             .setTitle("請輸入數量")
                             .setView(item)
                             .setNegativeButton("取消", null)
@@ -396,7 +381,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                     //如果有輸入數字 執行setNOWQty
                                     if(editText.length()!=0){
                                         getint = Integer.parseInt(editText.getText().toString());
-                                        //判斷有無商品代碼 並帶入數字
+                                        //判斷有無商品代碼 並帶入數字 用來增加數量的方法
                                         setNOWQty(getint);
                                     }
 
@@ -415,7 +400,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             }
-          //條碼找到一筆以上商品編號
+            //條碼找到一筆以上商品編號
         } else if (i > 1) {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
             chooseThings();
@@ -431,6 +416,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
         return false;
     }
+    //判斷條碼內的商品是否有在list裡 有就回傳true (兩個以上商品編號)
     private boolean checkID2(){
         for (int i3 = 0; i3 < iMax; i3++) {
             if(newStringArray[0].equals(myList.get(i3).get("ProductNo"))){
@@ -440,6 +426,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
         return false;
     }
+    //增加數量的方法
     private void setNOWQty(int getint2){
         for (int i3 = 0; i3 < iMax; i3++) {
             if (cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))) {
@@ -451,7 +438,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 if(getint2!=1){
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
-                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
                         if(i2==1){
                             i2=getint2;
@@ -462,49 +449,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 }else{
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
-                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-                    }else {
-                            i2 = i2 + getint2;
-                        }
-                }
-
-
-                Log.e("I2", String.valueOf(i2));
-                newMap = new HashMap<String, String>();
-                newMap.put("NowQty", String.valueOf(i2));
-                newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
-                newMap.put("cProductName", myList.get(i3).get("cProductName"));
-                newMap.put("Qty", myList.get(i3).get("Qty"));
-                myList.set(i3, newMap);
-                //myList.remove(i).get("NowQty");
-                //Log.e("myList",myList.remove(i).get("NowQty"));
-                adapter.notifyDataSetChanged();
-            }
-        }
-    }
-    private void setNOWQty2(int getint2){
-        for (int i3 = 0; i3 < iMax; i3++) {
-            if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
-                int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
-                int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
-                Log.e("I22", String.valueOf(i2));
-                Log.e("I44", String.valueOf(i4));
-                //數量
-                if(getint2!=1){
-                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
-                        i2 = i4;
-                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-                    } else {
-                        if(i2==1){
-                            i2=getint2;
-                        }else {
-                            i2 = i2 + getint2;
-                        }
-                    }
-                }else{
-                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
-                        i2 = i4;
-                        Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     }else {
                         i2 = i2 + getint2;
                     }
@@ -521,14 +466,60 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 adapter.notifyDataSetChanged();
+                Log.e("MYLISTTT", String.valueOf(myList));
             }
         }
     }
+    //增加數量的方法(兩個以上商品編號)
+    private void setNOWQty2(int getint2){
+        for (int i3 = 0; i3 < iMax; i3++) {
+            if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
+                int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
+                int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
+                Log.e("I22", String.valueOf(i2));
+                Log.e("I44", String.valueOf(i4));
+                //數量
+                if(getint2!=1){
+                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                        i2 = i4;
+                        Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if(i2==1){
+                            i2=getint2;
+                        }else {
+                            i2 = i2 + getint2;
+                        }
+                    }
+                }else{
+                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                        i2 = i4;
+                        Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+                    }else {
+                        i2 = i2 + getint2;
+                    }
+                }
+
+
+                Log.e("I2", String.valueOf(i2));
+                newMap = new HashMap<String, String>();
+                newMap.put("NowQty", String.valueOf(i2));
+                newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
+                newMap.put("cProductName", myList.get(i3).get("cProductName"));
+                newMap.put("Qty", myList.get(i3).get("Qty"));
+                myList.set(i3, newMap);
+                //myList.remove(i).get("NowQty");
+                //Log.e("myList",myList.remove(i).get("NowQty"));
+                adapter.notifyDataSetChanged();
+                Log.e("MYLISTTT", String.valueOf(myList));
+            }
+        }
+    }
+    //增加數量(兩個以上商品編號)
     private void addNOWQty(){
         if(checkID2()==true){
             if (addNum == 0) {
-                final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
-                new AlertDialog.Builder(ShipperOrderActivity.this)
+                final View item = LayoutInflater.from(PurchaseOrderActivity.this).inflate(R.layout.item, null);
+                new AlertDialog.Builder(PurchaseOrderActivity.this)
                         .setTitle("請輸入數量")
                         .setView(item)
                         .setNegativeButton("取消", null)
@@ -557,11 +548,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
 
     }
-
-    //按確定後 所執行
-    public void enter(View v) {
-        cBarcode();
-    }
     //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
     private void chooseThings() {
 
@@ -573,7 +559,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 Log.e("點擊",stringArray[i]);
                 newStringArray[0] = stringArray[i];
                 Log.e("點擊2",newStringArray[0]);
-                Log.e("PRODUCTNO",map.get("ProductNo"));
+                //Log.e("PRODUCTNO",map.get("ProductNo"));
                 addNOWQty();
             }
         });
@@ -583,23 +569,31 @@ public class ShipperOrderActivity extends AppCompatActivity {
         dialog.show();
 
     }
+    //按確定後 所執行
+    public void enter(View v) {
+        cBarcode();
+    }
     //拍照按鍵 切換到拍照頁面 並把所需的資料傳遞過去
     public void onPicture (View v){
-        String activity = "Shipper";
-        Intent intent = new Intent(ShipperOrderActivity.this,TakePictures.class);
+        String activity = "Purchase";
+
+        Intent intent = new Intent(PurchaseOrderActivity.this,PurchaseTakePictures.class);
+        intent.putExtra("myList", myList);
+
         Bundle bag = new Bundle();
         bag.putString("cUserName",cUserName);
         bag.putString("cUserID",cUserID);
         //判斷是從哪一頁傳過去的
         bag.putString("activity",activity);
-        bag.putString("checked", checked);
         bag.putString("order",order);
         //把拍照頁的Uri回傳回去(讓照片不消失)
         bag.putStringArrayList("AllImgUri",AllImgUri);
         intent.putExtras(bag);
         startActivity(intent);
-        ShipperOrderActivity.this.finish();
+        PurchaseOrderActivity.this.finish();
     }
+
+
     //從myList取出ProductNo NowQty 放入upList POST用
     private void AllBase64() {
         Log.e("AllImgUri", String.valueOf(AllImgUri));
@@ -613,14 +607,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
             upMap.put("\"ProductNo\"","\"" +myList.get(i).get("ProductNo")+ "\"" );
             upMap.put("\"NowQty\"", myList.get(i).get("NowQty"));
             upList.add(upMap);
-            }
+        }
         Log.e("upList", String.valueOf(upList));
         String upString = String.valueOf(upList).replaceAll("=", ":");
         upStringList = upString.replaceAll(", ",",");
         Log.e("upStringList", String.valueOf(upStringList));
 
     }
-    // 假如拍照頁面傳過來的AllImgUri不為空值 執行Uri轉換
+    //假如拍照頁面傳過來的AllImgUri不為空值 執行Uri轉換
     private void checkUri(){
 
         if (AllImgUri != null && !AllImgUri.isEmpty()) {
@@ -760,6 +754,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Allbase64 = new ArrayList();
         Allbase64.add("\"" +Ebase64+"\"");
     }
+
     //動作按鍵
     public void onActivity(View v){
         chooseActivity();
@@ -788,8 +783,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     AllBase64();
                     PostEndInfo post = new PostEndInfo();
                     post.start();
-                    /* 顯示ProgressDialog */
-                    pd = ProgressDialog.show(ShipperOrderActivity.this, "換人檢", "上傳中，請稍後...");
+                    pd = ProgressDialog.show(PurchaseOrderActivity.this, "結案", "上傳中，請稍後...");
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -803,6 +797,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         });
         dialog_list.show();
     }
+    /* 顯示ProgressDialog */
     private void spandTimeMethod() {
         try {
             Thread.sleep(3000);
@@ -825,15 +820,16 @@ public class ShipperOrderActivity extends AppCompatActivity {
             PostendInfo();
         }
     }
-    //結案 用OkHttp PostAPI
+    //結案方法 用OkHttp PostAPI
     private void PostendInfo() {
 
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upStringList+",\"imgbase64\": "+Allbase64+"}";
+        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PurchaseID\" :\""+ order +"\",\"PurchaseProducts\":"+upStringList+",\"imgbase64\": "+Allbase64+"}";
         Log.e("POST",json);
+        Log.e("checked", String.valueOf(checked));
         RequestBody body = RequestBody.create(JSON,json);
         Request request = new Request.Builder()
                 .url(url)
@@ -848,7 +844,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(ShipperOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PurchaseOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -869,17 +865,18 @@ public class ShipperOrderActivity extends AppCompatActivity {
             PostChangeInfo();
         }
     }
-    //換人檢 用OkHttp PostAPI
+    //換人檢方法 用OkHttp PostAPI
     private void PostChangeInfo() {
 
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"Action\":\"save\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upStringList+"}";
+        String json = "{\"Token\":\"\" ,\"Action\":\"save\",\"PurchaseID\" :\""+ order +"\",\"PurchaseProducts\":"+upStringList+"}";
         Log.e("POST",json);
+
         RequestBody body = RequestBody.create(JSON,json);
-        final Request request = new Request.Builder()
+        Request request = new Request.Builder()
                 .url(url)
                 .post(body)
                 .build();
@@ -892,7 +889,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(ShipperOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PurchaseOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -901,10 +898,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
-                Log.e("POST後的回傳值", json);
+                Log.e("換人檢POST後的回傳值", json);
                 changeEnd(json);
             }
-
             private void changeEnd(String json) {
                 int result = 0;
                 try {
@@ -918,6 +914,5 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
         });
     }
-
 
 }
