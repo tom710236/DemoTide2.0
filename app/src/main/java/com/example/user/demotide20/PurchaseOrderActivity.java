@@ -782,8 +782,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     checkUri();
                     AllBase64();
                     PostEndInfo post = new PostEndInfo();
-                    post.start();
-                    pd = ProgressDialog.show(PurchaseOrderActivity.this, "結案", "上傳中，請稍後...");
+                    post.start(); pd = ProgressDialog.show(PurchaseOrderActivity.this, "結案", "上傳中，請稍後...");
+
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -792,6 +792,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                         }
 
                     }).start();
+
                 }
             }
         });
@@ -822,6 +823,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
     //結案方法 用OkHttp PostAPI
     private void PostendInfo() {
+
 
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
