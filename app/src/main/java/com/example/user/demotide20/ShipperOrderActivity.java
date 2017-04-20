@@ -427,7 +427,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             if(cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))){
                 return true;
             }
-            Log.e("CHECK",myList.get(i3).get("ProductNo"));
+
         }
         return false;
     }
@@ -436,7 +436,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             if(newStringArray[0].equals(myList.get(i3).get("ProductNo"))){
                 return true;
             }
-            Log.e("CHECK",myList.get(i3).get("ProductNo"));
+
         }
         return false;
     }
@@ -873,7 +873,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     private void PostChangeInfo() {
 
         final OkHttpClient client = new OkHttpClient();
-        //要上傳的內容(JSON)--帳號登入
+        //要上傳的內容(JSON)
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
         String json = "{\"Token\":\"\" ,\"Action\":\"save\",\"PickupNumbers\" :\""+ checked +"\",\"PickupProducts\":"+upStringList+"}";

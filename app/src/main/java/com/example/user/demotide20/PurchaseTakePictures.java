@@ -31,7 +31,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Environment.DIRECTORY_PICTURES;
 
 public class PurchaseTakePictures extends AppCompatActivity {
-    String cUserName, cUserID,activity,checked,order;
+    String cUserName, cUserID,activity,order;
     private static final int REQUEST_CONTACTS = 1;
     final String[] picture = {"照片一", "照片二", "照片三","照片四","照片五"};
     Uri imgUri,AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;

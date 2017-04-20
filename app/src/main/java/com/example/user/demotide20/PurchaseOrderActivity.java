@@ -422,7 +422,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             if(newStringArray[0].equals(myList.get(i3).get("ProductNo"))){
                 return true;
             }
-            Log.e("CHECK",myList.get(i3).get("ProductNo"));
+
         }
         return false;
     }

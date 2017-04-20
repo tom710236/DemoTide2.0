@@ -24,6 +24,10 @@ public class MyDBhelper extends SQLiteOpenHelper {
         super(purchaseOrderActivity, db_name, (SQLiteDatabase.CursorFactory) o2, i);
     }
 
+    public MyDBhelper(StorageOrderActivity storageOrderActivity, String db_name, Object o, int i) {
+        super(storageOrderActivity, db_name, (SQLiteDatabase.CursorFactory) o, i);
+    }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {
