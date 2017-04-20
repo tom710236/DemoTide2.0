@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -41,6 +42,7 @@ public class StorageActivity extends AppCompatActivity {
     ArrayList<Map<String, String>> myList;
     int iMax = 0;
     Map<String, String> map;
+    Map<Integer, Integer> checkMap;
     ListView listView;
     SimpleAdapter adapter;
     ArrayList upList;
@@ -159,6 +161,7 @@ public class StorageActivity extends AppCompatActivity {
 
     }
     private void setLackListView(){
+
         listView = (ListView) findViewById(R.id.list);
         adapter = new SimpleAdapter(
                 StorageActivity.this,
@@ -169,24 +172,30 @@ public class StorageActivity extends AppCompatActivity {
             @Override
             public View getView(final int position, View convertView, ViewGroup parent) {
                 //获取相应的view中的checkbox对象
-                if(convertView == null)
+                if(convertView == null){
                     convertView = View.inflate(StorageActivity.this, R.layout.lview5, null);
-                CheckBox checkBox = (CheckBox)convertView.findViewById(R.id.checkBox);
+                }
+                final CheckBox checkBox = (CheckBox)convertView.findViewById(R.id.checkBox);
+                checkMap = new LinkedHashMap<>();
+                upList = new ArrayList();
 
                 checkBox.setOnClickListener(new View.OnClickListener() {
-
                     @Override
                     public void onClick(View v) {
-                        upList = new ArrayList();
+
                         if(((CheckBox)v).isChecked()){
                             upList.add(myList.get(position).get("LackNo"));
 
                         }else{
                             upList.remove(myList.get(position).get("LackNo"));
+
+
                         }
+
                         Log.e("UPLIST", String.valueOf(upList));
                     }
                 });
+
                 return super.getView(position, convertView, parent);
             }
 
