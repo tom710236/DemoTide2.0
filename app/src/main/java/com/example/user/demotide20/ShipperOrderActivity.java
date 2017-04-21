@@ -414,6 +414,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 }
             }else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+
             }
           //條碼找到一筆以上商品編號
         } else if (i > 1) {

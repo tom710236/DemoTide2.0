@@ -160,6 +160,7 @@ public class StorageActivity extends AppCompatActivity {
     }
     private void setLackListView(){
         listView = (ListView) findViewById(R.id.list);
+        upList = new ArrayList();
         adapter = new SimpleAdapter(
                 StorageActivity.this,
                 myList,
@@ -172,13 +173,13 @@ public class StorageActivity extends AppCompatActivity {
                 if(convertView == null)
                     convertView = View.inflate(StorageActivity.this, R.layout.lview5, null);
                 CheckBox checkBox = (CheckBox)convertView.findViewById(R.id.checkBox);
-
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        upList = new ArrayList();
+
                         if(((CheckBox)v).isChecked()){
+
                             upList.add(myList.get(position).get("LackNo"));
 
                         }else{

@@ -53,7 +53,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     ListView listView;
     SimpleAdapter adapter;
     final String DB_NAME = "tblTable";
-    Map<String, String> newMap;
+    Map<String, String> newMap,addMap;
     String[] stringArray;
     final String[] newStringArray = new String[1];
     @Override
@@ -210,9 +210,10 @@ public class StorageOrderActivity extends AppCompatActivity {
         helper = new MyDBhelper(this, DB_NAME, null, 1);
         db = helper.getWritableDatabase();
     }
-    //listView 顯示 點擊 (checkbox無法複選)
+    //listView 顯示 點擊
     private void setLackListView() {
         listView = (ListView) findViewById(R.id.list);
+        upList = new ArrayList();
         adapter = new SimpleAdapter(
                 StorageOrderActivity.this,
                 myList,
@@ -230,7 +231,7 @@ public class StorageOrderActivity extends AppCompatActivity {
 
                     @Override
                     public void onClick(View v) {
-                        upList = new ArrayList();
+
                         if (((CheckBox) v).isChecked()) {
                             upList.add(myList.get(position).get("ProductID"));
                             check = position;
@@ -293,7 +294,8 @@ public class StorageOrderActivity extends AppCompatActivity {
             } else if (i == 1) {
                 //先判斷條碼內的商品號碼是否有在listView裡
                 if (checkID() == true) {
-                    for (int i2 = 0; i2 < iMax; i2++) {
+                    //有在listView裡 把新增的數量加入
+                    for (int i2 = 0; i2 < myList.size(); i2++) {
                         if (cProductIDeSQL.equals(myList.get(i2).get("ProductID"))) {
 
                             newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
@@ -304,13 +306,35 @@ public class StorageOrderActivity extends AppCompatActivity {
                             newMap.put("Count", String.valueOf(newCount));
                             newMap.put("cProductName",myList.get(i2).get("cProductName"));
                             myList.set(i2, newMap);
-
                             adapter.notifyDataSetChanged();
 
                         }
                     }
                 }else {
-                        Toast.makeText(this, "請輸入正確商品條碼", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(this, "請輸入正確商品條碼", Toast.LENGTH_SHORT).show();
+                    Log.e("cProductIDeSQL!!",cProductIDeSQL);
+                    setThingSQL();
+                    c = db.query("tblTable",                            // 資料表名字
+                            null,                                              // 要取出的欄位資料
+                            "cProductID=?",                                    // 查詢條件式(WHERE)
+                            new String[]{cProductIDeSQL},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                            null,                                              // Group By字串語法
+                            null,                                              // Having字串法
+                            null);                                             // Order By字串語法(排序)
+
+                    while (c.moveToNext()) {
+                        cProductName = c.getString(c.getColumnIndex("cProductName"));
+                        Log.e("cProductName", cProductName);
+                        addMap = new HashMap<String, String>();
+                        addMap.put("cProductName",cProductName);
+                        addMap.put("ProductID",cProductIDeSQL);
+                        addMap.put("Count", String.valueOf(editCount));
+                        myList.add(addMap);
+                        adapter.notifyDataSetChanged();
+
+                        Log.e("addMap", String.valueOf(myList));
+                    }
+
                 }
 
             }else if (i>1){
@@ -318,21 +342,22 @@ public class StorageOrderActivity extends AppCompatActivity {
                 //Log.e("stringArray", String.valueOf(stringArray));
                 chooseThings();
             }
+        }else {
+            Toast.makeText(this, "請輸入數量", Toast.LENGTH_SHORT).show();
         }
     }
     //判斷輸入商品是否有在list
     private boolean checkID() {
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if(cProductIDeSQL.equals(myList.get(i3).get("ProductID"))){
                 return true;
             }
-
         }
         return false;
     }
     //判斷條碼內的商品是否有在list裡 有就回傳true (兩個以上商品編號)
     private boolean checkID2(){
-        for (int i2 = 0; i2 < iMax; i2++) {
+        for (int i2 = 0; i2 < myList.size(); i2++) {
             if(newStringArray[0].equals(myList.get(i2).get("ProductID"))){
                 return true;
             }
@@ -349,8 +374,8 @@ public class StorageOrderActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 Log.e("點擊",stringArray[i]);
                 newStringArray[0] = stringArray[i];
-                Log.e("點擊2",newStringArray[0]);
-                Log.e("PRODUCTID",map.get("ProductID"));
+                //Log.e("點擊2",newStringArray[0]);
+                //Log.e("PRODUCTID",map.get("ProductID"));
                 addNOWQty();
             }
         });
@@ -362,7 +387,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     }
     private void addNOWQty(){
         if(checkID2()==true){
-            for (int i2 = 0; i2 < iMax; i2++) {
+            for (int i2 = 0; i2 < myList.size(); i2++) {
                 if (newStringArray[0].equals(myList.get(i2).get("ProductID"))) {
                     newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
                     newMap = new HashMap<String, String>();
@@ -375,13 +400,42 @@ public class StorageOrderActivity extends AppCompatActivity {
                 }
             }
         } else{
-            Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            Log.e("cProductIDeSQL!!!",newStringArray[0]);
+            setThingSQL();
+            Cursor c = db.query("tblTable",                            // 資料表名字
+                    null,                                              // 要取出的欄位資料
+                    "cProductID=?",                                    // 查詢條件式(WHERE)
+                    new String[]{newStringArray[0]},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                    null,                                              // Group By字串語法
+                    null,                                              // Having字串法
+                    null);                                             // Order By字串語法(排序)
+
+            while (c.moveToNext()) {
+                cProductName = c.getString(c.getColumnIndex("cProductName"));
+                Log.e("cProductName", cProductName);
+                addMap = new HashMap<String, String>();
+                addMap.put("cProductName",cProductName);
+                addMap.put("ProductID",newStringArray[0]);
+                addMap.put("Count", String.valueOf(editCount));
+                myList.add(addMap);
+                adapter.notifyDataSetChanged();
+
+                Log.e("addMap", String.valueOf(myList));
+            }
         }
 
     }
     public void onDel(View v){
-        myList.remove(check);
-        Log.e("mylist", String.valueOf(myList));
+        for(int i = 0; i<upList.size();i++){
+            //myList.remove(check);
+            //boolean isIn = myList.contains(upList.get(i));
+            //Log.e("isIN", String.valueOf(isIn));
+            //Log.e("mylist", String.valueOf(myList));
+            Log.e("upList.get(i)", (String) upList.get(i));
+            myList.remove(i);
+        }
+
         setLackListView();
     }
     public void onSave (View v){
