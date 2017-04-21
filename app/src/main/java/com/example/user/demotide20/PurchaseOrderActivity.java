@@ -279,6 +279,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         db4 = helper4.getWritableDatabase();
     }
     //改變listView(SimpleAdapter) item的顏色
+    //#=0x30
     public class SpecialAdapter extends SimpleAdapter {
         private int[] colors = new int[] { 0x30ffffff, 0x30696969 };
 

@@ -53,6 +53,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     LinearLayout linear;
     ListView listView;
+    int check = 0;
     int addNum = 0,iMax=0;
     String[] stringArray;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
@@ -785,6 +786,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 }
                 //結案
                 else if(which ==1) {
+                    checkUP();
                     checkUri();
                     AllBase64();
                     PostEndInfo post = new PostEndInfo();
@@ -799,11 +801,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         }
 
                     }).start();
-                }
+
+                    }
+
             }
         });
         dialog_list.show();
     }
+
     private void spandTimeMethod() {
         try {
             Thread.sleep(3000);
@@ -825,6 +830,17 @@ public class ShipperOrderActivity extends AppCompatActivity {
         public void run() {
             PostendInfo();
         }
+    }
+    //判斷是否有檢完
+    private void checkUP(){
+        for(int i=0;i<myList.size();i++) {
+            if ( Integer.parseInt((myList.get(i).get("NowQty"))) !=Integer.parseInt( myList.get(i).get("Qty"))) {
+                check++;
+                Log.e("NOWQTY",myList.get(i).get("NowQty"));
+                Log.e("QTY",myList.get(i).get("Qty"));
+            }
+        }
+        Log.e("check", String.valueOf(check));
     }
     //結案 用OkHttp PostAPI
     private void PostendInfo() {
