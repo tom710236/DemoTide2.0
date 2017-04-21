@@ -24,7 +24,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,6 +46,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     int check = 0;
     Map<String, String> map;
     Map<String, String> upMap;
+    Map<String, String> checkMap;
     MyDBhelper helper;
     MyDBhelper4 helper4;
     SQLiteDatabase db, db4;
@@ -185,10 +185,11 @@ public class StorageOrderActivity extends AppCompatActivity {
                         Log.e("cProductName", cProductName);
                     }
 
-                    map = new HashMap<String, String>();
+                    map = new LinkedHashMap<String, String>();
+                    map.put("cProductName", cProductName);
                     map.put("ProductID", obj.optString("ProductID"));
                     map.put("Count", obj.optString("Count"));
-                    map.put("cProductName", cProductName);
+
                     myList.add(map);
                 }
                 Log.e("mylist", String.valueOf(myList));
@@ -214,6 +215,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     private void setLackListView() {
         listView = (ListView) findViewById(R.id.list);
         upList = new ArrayList();
+        checkMap = new LinkedHashMap();
         adapter = new SimpleAdapter(
                 StorageOrderActivity.this,
                 myList,
@@ -221,11 +223,11 @@ public class StorageOrderActivity extends AppCompatActivity {
                 new String[]{"cProductName", "ProductID", "Count", "checkbox"},
                 new int[]{R.id.textView34, R.id.textView33, R.id.textView32, R.id.checkBox2}) {
             @Override
-            public View getView(final int position, View convertView, ViewGroup parent) {
+            public View getView(final int position, View convertView, final ViewGroup parent) {
                 //获取相应的view中的checkbox对象
                 if (convertView == null)
                     convertView = View.inflate(StorageOrderActivity.this, R.layout.lview6, null);
-                CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox2);
+                final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox2);
 
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
@@ -233,12 +235,14 @@ public class StorageOrderActivity extends AppCompatActivity {
                     public void onClick(View v) {
 
                         if (((CheckBox) v).isChecked()) {
-                            upList.add(myList.get(position).get("ProductID"));
-                            check = position;
+                            upList.add(position);
+
                         } else {
-                            upList.remove(myList.get(position).get("ProductID"));
+                            upList.remove(position);
+
                         }
                         Log.e("UPLIST", String.valueOf(upList));
+
                     }
                 });
                 return super.getView(position, convertView, parent);
@@ -253,7 +257,13 @@ public class StorageOrderActivity extends AppCompatActivity {
             }
         });
 
-
+    }
+    public void onDel(View v){
+        for(int i=0; i<upList.size();i++){
+            int i2 = (int) upList.get(i);
+            myList.remove(i2);
+        }
+        setLackListView();
     }
     //設定 用來新增數量
     public void onAdd(View v) {
@@ -301,7 +311,7 @@ public class StorageOrderActivity extends AppCompatActivity {
                             newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
                             Log.e("count",myList.get(i2).get("Count"));
                             Log.e("editCount", String.valueOf(editCount));
-                            newMap = new HashMap<String, String>();
+                            newMap = new LinkedHashMap<String, String>();
                             newMap.put("ProductID", myList.get(i2).get("ProductID"));
                             newMap.put("Count", String.valueOf(newCount));
                             newMap.put("cProductName",myList.get(i2).get("cProductName"));
@@ -325,7 +335,7 @@ public class StorageOrderActivity extends AppCompatActivity {
                     while (c.moveToNext()) {
                         cProductName = c.getString(c.getColumnIndex("cProductName"));
                         Log.e("cProductName", cProductName);
-                        addMap = new HashMap<String, String>();
+                        addMap = new LinkedHashMap<String, String>();
                         addMap.put("cProductName",cProductName);
                         addMap.put("ProductID",cProductIDeSQL);
                         addMap.put("Count", String.valueOf(editCount));
@@ -390,7 +400,7 @@ public class StorageOrderActivity extends AppCompatActivity {
             for (int i2 = 0; i2 < myList.size(); i2++) {
                 if (newStringArray[0].equals(myList.get(i2).get("ProductID"))) {
                     newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
-                    newMap = new HashMap<String, String>();
+                    newMap = new LinkedHashMap<String, String>();
                     newMap.put("ProductID", myList.get(i2).get("ProductID"));
                     newMap.put("Count", String.valueOf(newCount));
                     newMap.put("cProductName",myList.get(i2).get("cProductName"));
@@ -414,7 +424,7 @@ public class StorageOrderActivity extends AppCompatActivity {
             while (c.moveToNext()) {
                 cProductName = c.getString(c.getColumnIndex("cProductName"));
                 Log.e("cProductName", cProductName);
-                addMap = new HashMap<String, String>();
+                addMap = new LinkedHashMap<String, String>();
                 addMap.put("cProductName",cProductName);
                 addMap.put("ProductID",newStringArray[0]);
                 addMap.put("Count", String.valueOf(editCount));
@@ -426,18 +436,7 @@ public class StorageOrderActivity extends AppCompatActivity {
         }
 
     }
-    public void onDel(View v){
-        for(int i = 0; i<upList.size();i++){
-            //myList.remove(check);
-            //boolean isIn = myList.contains(upList.get(i));
-            //Log.e("isIN", String.valueOf(isIn));
-            //Log.e("mylist", String.valueOf(myList));
-            Log.e("upList.get(i)", (String) upList.get(i));
-            myList.remove(i);
-        }
 
-        setLackListView();
-    }
     public void onSave (View v){
         saveList = new ArrayList<>();
         for(int i=0; i < myList.size(); i++){
