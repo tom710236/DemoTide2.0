@@ -119,6 +119,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shipper_order);
+
+
+
         //取得上一頁資料
         getPreviousPage();
         //toolBar設定

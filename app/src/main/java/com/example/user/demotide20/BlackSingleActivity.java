@@ -438,7 +438,25 @@ public class BlackSingleActivity extends AppCompatActivity {
 
                     Log.e("myList", String.valueOf(myList));
                 }
+                final View item = LayoutInflater.from(BlackSingleActivity.this).inflate(R.layout.item, null);
+                new AlertDialog.Builder(BlackSingleActivity.this)
+                        .setTitle("請輸入數量")
+                        .setView(item)
+                        .setNegativeButton("取消", null)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText editText = (EditText) item.findViewById(R.id.editText2);
+                                //如果有輸入數字 執行setNOWQty
+                                if (editText.length() != 0) {
+                                    getint = Integer.parseInt(editText.getText().toString());
+                                    //判斷有無商品代碼 並帶入數字 用來增加數量的方法
+                                    setNOWQty(getint);
+                                }
 
+
+                            }
+                        }).show();
             }
 
         //條碼找到一筆以上商品編號

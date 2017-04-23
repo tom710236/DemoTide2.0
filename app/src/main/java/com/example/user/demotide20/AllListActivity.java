@@ -1,6 +1,8 @@
 package com.example.user.demotide20;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -10,18 +12,23 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import static com.example.user.demotide20.R.layout.lview;
 
 
 public class AllListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
-    String cUserName, dateUp2,cUserID;
-
+    String cUserName, dateUp2,cUserID,dateUp=null;
+    SQLiteDatabase db,db2;
+    int i=0,i2=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_list);
+
+        cursor3();
+        dateUp2="產品資訊撈取"+"("+i2+")"+"\n"+dateUp+"("+i+")";
         getPreviousPage();
         toolBar();
         //啟動Delay service 每次到這畫面就會啟動一次 所以先停止再啟動
@@ -35,7 +42,61 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         list.setAdapter(gAdapter);
         list.setOnItemClickListener(this);
     }
+    private void cursor3(){
+        MyDBhelper2 MyDB2 = new MyDBhelper2(this,"tblOrder2",null,1);
+        db2=MyDB2.getWritableDatabase();
 
+        //Cursor c=db2.rawQuery("SELECT * FROM "+"tblTable2", null);   //查詢全部欄位
+        Cursor c = db2.query("tblTable2",                          // 資料表名字
+                null,                                              // 要取出的欄位資料
+                null,                                              // 查詢條件式(WHERE)
+                null,                                              // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                null,                                              // Group By字串語法
+                null,                                              // Having字串法
+                null);                                             // Order By字串語法(排序)
+        //往下一個 收尋
+        while(c.moveToNext()) {
+            dateUp = c.getString(c.getColumnIndex("cUpdateDT"));
+            //Log.e("email",dateUp);
+        }
+        i=c.getCount();
+        //Log.e("dateUp",dateUp);
+        // Log.e("i", String.valueOf(i));
+
+        /***********************************************************
+         * 另一個SQL
+         */
+        MyDBhelper MyDB = new MyDBhelper(this,"tblTable",null,1);
+        db=MyDB.getWritableDatabase();
+        Cursor c2 = db.query("tblTable",                          // 資料表名字
+                null,                                              // 要取出的欄位資料
+                null,                                              // 查詢條件式(WHERE)
+                null,                                              // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                null,                                              // Group By字串語法
+                null,                                              // Having字串法
+                null);
+        i2=c2.getCount();
+        //Log.e("I2", String.valueOf(i2));
+
+        dateUp2="產品資訊撈取"+"("+i2+")"+"\n"+dateUp+"("+i+")";
+        //Log.e("DATAUP2",dateUp2);
+
+
+
+        ListView lv = (ListView)findViewById(R.id.lv);
+        SimpleCursorAdapter adapter;
+        adapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_expandable_list_item_2,
+                //R.layout.lview2,
+                c,
+                new String[] {"_id","cUpdateDT"},
+                //new String[] {"_id", "cProductID", "cProductName", "cGoodsNo", "cUpdateDT"},
+                new int[] {android.R.id.text1,android.R.id.text2},
+                //new int[] {R.id.textView19,R.id.textView18,R.id.textView17,R.id.textView16,R.id.textView15},
+                0);
+        lv.setAdapter(adapter);
+
+    }
     private void toolBar() {
         //Toolbar 設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

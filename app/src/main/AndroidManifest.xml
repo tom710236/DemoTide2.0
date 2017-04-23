@@ -43,7 +43,8 @@
         <activity android:name=".BlackSingleActivity" />
         <activity android:name=".SeachBlackSingleActivity" />
         <activity android:name=".PurchaseTakePictures" />
-        <activity android:name=".BlackTakePictures"></activity>
+        <activity android:name=".BlackTakePictures" />
+        <activity android:name=".SearchBlackSingleListActivity"></activity>
     </application>
 
 </manifest>

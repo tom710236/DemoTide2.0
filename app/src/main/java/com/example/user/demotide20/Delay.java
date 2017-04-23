@@ -102,6 +102,7 @@ public class Delay extends Service {
                 }
                 //每分鐘執行一次
                 handler.postAtTime(this,android.os.SystemClock.uptimeMillis()+60*1000);
+
             }
         };
         //每分鐘執行一次
