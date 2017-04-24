@@ -36,6 +36,10 @@ public class MyDBhelper extends SQLiteOpenHelper {
         super(allListActivity, tblTable, (SQLiteDatabase.CursorFactory) o, i);
     }
 
+    public MyDBhelper(SearchBlackSingleListActivity searchBlackSingleListActivity, String db_name, Object o, int i) {
+        super(searchBlackSingleListActivity, db_name, (SQLiteDatabase.CursorFactory) o, i);
+    }
+
 
     @Override
     public void onCreate(SQLiteDatabase db) {

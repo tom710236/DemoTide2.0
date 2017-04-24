@@ -27,10 +27,23 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class PurchaseActivity extends AppCompatActivity {
-    String cUserName,cUserID,order;
+    String cUserName,cUserID;
+    String order;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
     ArrayList<String> json2;
     int index;
+    public class ProductIDInfo{
+        private String mPurchaseNo;
+        private String mSupplier;
+
+        ProductIDInfo(String PurchaseNo,String Supplier ){
+            this.mPurchaseNo = PurchaseNo;
+            this.mSupplier = Supplier;
+        }
+        public String toString(){
+            return mPurchaseNo+"("+mSupplier+")";
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,6 +136,7 @@ public class PurchaseActivity extends AppCompatActivity {
                             Log.e("PurchaseNo",json0);
                             json2.add(json0);
                         }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -135,7 +149,7 @@ public class PurchaseActivity extends AppCompatActivity {
                     try {
 
                         //建立一個ArrayList
-                        final ArrayList<String> trans = new ArrayList<String>();
+                        final ArrayList trans = new ArrayList();
                         //建立一個JSONArray 並把POST回傳資料json(JSOM檔)帶入
                         JSONArray array = new JSONArray(json2);
                         //ArrayList 新增"請選擇"這一單項
@@ -144,10 +158,13 @@ public class PurchaseActivity extends AppCompatActivity {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             //String id = obj.getString("cCustomerID");
-                            String listname = obj.getString("PurchaseNo");
-                            Log.e("PurchaseNo", listname);
+
+                            //String listname = obj.getString("PurchaseNo");
+                            //String Supplier = obj.getString("Supplier");
+                            //String AddString =listname + "("+Supplier+")";
+                            //Log.e("PurchaseNo", AddString);
                             //ArrayList 新增JSONObject標題為"cCustomerName"的值
-                            trans.add(listname);
+                            trans.add(new ProductIDInfo(obj.getString("PurchaseNo"),obj.getString("Supplier")));
 
                         }
 
@@ -175,9 +192,11 @@ public class PurchaseActivity extends AppCompatActivity {
                                 //所點擊的索引值
                                 index = spinner.getSelectedItemPosition();
                                 //所點擊的內容文字
+
                                 order = spinner.getSelectedItem().toString();
+
                                 Log.e("index", String.valueOf(index));
-                                Log.e("name",order);
+                                Log.e("name", String.valueOf(order));
 
                             }
                             @Override
@@ -197,9 +216,14 @@ public class PurchaseActivity extends AppCompatActivity {
         }
     }
     public void enter (View v){
+        int idx = order.indexOf("(");
+        Log.e("idx", String.valueOf(idx));
+        String order2 =order.substring(0, idx);
+        Log.e("order2", order2);
         Intent intent = new Intent(PurchaseActivity.this, PurchaseOrderActivity.class);
         Bundle bag = new Bundle();
-        bag.putString("order",order);
+        bag.putString("order", String.valueOf(order));
+        bag.putString("order2",order2);
         bag.putString("cUserName",cUserName);
         bag.putString("cUserID",cUserID);
         intent.putExtras(bag);

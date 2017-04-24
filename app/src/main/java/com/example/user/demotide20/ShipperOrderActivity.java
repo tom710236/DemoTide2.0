@@ -10,8 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -790,43 +788,23 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //結案
                 else if(which ==1) {
                     checkUP();
-                    checkUri();
-                    AllBase64();
-                    PostEndInfo post = new PostEndInfo();
-                    post.start();
-                    /* 顯示ProgressDialog */
-                    pd = ProgressDialog.show(ShipperOrderActivity.this, "換人檢", "上傳中，請稍後...");
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            spandTimeMethod();
-                            handler.sendEmptyMessage(0);
-                        }
-
-                    }).start();
+                    if(check <0){
+                        checkUri();
+                        AllBase64();
+                        PostEndInfo post = new PostEndInfo();
+                        post.start();
 
                     }
+                    Toast.makeText(ShipperOrderActivity.this, "商品未檢完", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
         dialog_list.show();
     }
 
-    private void spandTimeMethod() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    /* 顯示ProgressDialog */
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {// handler接收到消息后就会执行此方法
-            pd.dismiss();
-        }
-    };
+
+
     //結案
     class PostEndInfo extends Thread{
         @Override
@@ -941,3 +919,32 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
 
 }
+/*
+        //顯示ProgressDialog
+        pd = ProgressDialog.show(ShipperOrderActivity.this, "換人檢", "上傳中，請稍後...");
+                new Thread(new Runnable() {
+        @Override
+        public void run() {
+        spandTimeMethod();
+        handler.sendEmptyMessage(0);
+        }
+
+        }).start();
+
+        顯示ProgressDialog
+        Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {// handler接收到消息后就会执行此方法
+        pd.dismiss();
+    }
+};
+
+private void spandTimeMethod() {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+*/

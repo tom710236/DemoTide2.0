@@ -10,8 +10,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -52,7 +50,7 @@ import static android.R.attr.checked;
 
 
 public class PurchaseOrderActivity extends AppCompatActivity {
-    String cUserName,cUserID,json,cProductName,cProductIDeSQL,order,upStringList,activity2;
+    String cUserName,cUserID,json,cProductName,cProductIDeSQL,order,upStringList,activity2,order2;
     SQLiteDatabase db, db4;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
     Map<String, String> map;
@@ -67,7 +65,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     final String[] newStringArray = new String[1];
     Map<String, String> newMap;
     ArrayList Btrans,AllImgUri,Allbase64;
-    int getint;
+    int getint,check;
     String[] stringArray;
     Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
@@ -167,6 +165,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
         order = bag.getString("order",null);
+        order2 = bag.getString("order2",null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
         TextView textView1 = (TextView) findViewById(R.id.textView11);
@@ -184,7 +183,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             OkHttpClient client = new OkHttpClient();
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
-            String json3 = "{\"Token\":\"\" ,\"Action\":\"dopurchase\",\"UserID\" :\""+cUserID+"\" ,\"PurchaseID\" : \""+order+"\"}";
+            String json3 = "{\"Token\":\"\" ,\"Action\":\"dopurchase\",\"UserID\" :\""+cUserID+"\" ,\"PurchaseID\" : \""+order2+"\"}";
             Log.e("JSON", json3);
             RequestBody body = RequestBody.create(JSON, json3);
             Request request = new Request.Builder()
@@ -780,41 +779,24 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 }
                 //結案
                 else if(which ==1) {
-                    checkUri();
-                    AllBase64();
-                    PostEndInfo post = new PostEndInfo();
-                    post.start(); pd = ProgressDialog.show(PurchaseOrderActivity.this, "結案", "上傳中，請稍後...");
+                    checkUP();
+                    if(check<1){
+                        checkUri();
+                        AllBase64();
+                        PostEndInfo post = new PostEndInfo();
+                        post.start();
+                    }else{
+                        Toast.makeText(PurchaseOrderActivity.this, "商品未檢完", Toast.LENGTH_SHORT).show();
+                    }
 
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            spandTimeMethod();
-                            handler.sendEmptyMessage(0);
-                        }
 
-                    }).start();
 
                 }
             }
         });
         dialog_list.show();
     }
-    /* 顯示ProgressDialog */
-    private void spandTimeMethod() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-    /* 顯示ProgressDialog */
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {// handler接收到消息后就会执行此方法
-            pd.dismiss();
-        }
-    };
+
     //結案
     class PostEndInfo extends Thread{
         @Override
@@ -830,7 +812,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PurchaseID\" :\""+ order +"\",\"PurchaseProducts\":"+upStringList+",\"imgbase64\": "+Allbase64+"}";
+        String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PurchaseID\" :\""+ order2 +"\",\"PurchaseProducts\":"+upStringList+",\"imgbase64\": "+Allbase64+"}";
         Log.e("POST",json);
         Log.e("checked", String.valueOf(checked));
         RequestBody body = RequestBody.create(JSON,json);
@@ -861,6 +843,17 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             }
         });
     }
+    //判斷是否有檢完
+    private void checkUP(){
+        for(int i=0;i<myList.size();i++) {
+            if ( Integer.parseInt((myList.get(i).get("NowQty"))) !=Integer.parseInt( myList.get(i).get("Qty"))) {
+                check++;
+                Log.e("NOWQTY",myList.get(i).get("NowQty"));
+                Log.e("QTY",myList.get(i).get("Qty"));
+            }
+        }
+        Log.e("check", String.valueOf(check));
+    }
     //換人檢
     class PostChangeInfo extends Thread{
         @Override
@@ -875,7 +868,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"Action\":\"save\",\"PurchaseID\" :\""+ order +"\",\"PurchaseProducts\":"+upStringList+"}";
+        String json = "{\"Token\":\"\" ,\"Action\":\"save\",\"PurchaseID\" :\""+ order2 +"\",\"PurchaseProducts\":"+upStringList+"}";
         Log.e("POST",json);
 
         RequestBody body = RequestBody.create(JSON,json);

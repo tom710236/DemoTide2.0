@@ -264,7 +264,7 @@ public class TakePictures extends AppCompatActivity {
             //只要你在onClick處理事件內，使用which參數，就可以知道按下陣列裡的哪一個了
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
-                Toast.makeText(TakePictures.this, "你選的是" + picture[which], Toast.LENGTH_SHORT).show();
+                //Toast.makeText(TakePictures.this, "你選的是" + picture[which], Toast.LENGTH_SHORT).show();
                 Log.e("選取", picture[which]);
                 Log.e("選取數字", String.valueOf(which));
                 if (which == 0) {

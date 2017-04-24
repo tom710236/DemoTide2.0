@@ -199,6 +199,7 @@ public class StorageActivity extends AppCompatActivity {
                 listView.setAdapter(adapter);
             }
         });
+        //長按
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
