@@ -241,15 +241,10 @@ public class StorageOrderActivity extends AppCompatActivity {
                     public void onClick(View v) {
 
                         if (((CheckBox) v).isChecked()) {
-                            upList.add(position);
+                            upList.add(String.valueOf(position));
 
                         } else {
-                            delList.add(position);
-                            Log.e("delList", String.valueOf(delList));
-                            upList.removeAll(delList);
-
-
-
+                            upList.remove(String.valueOf(position));
                         }
                         Log.e("UPLIST", String.valueOf(upList));
 
@@ -270,7 +265,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     }
     public void onDel(View v){
         for(int i=0; i<upList.size();i++){
-            int i2 = (int) upList.get(i);
+            int i2 = Integer.valueOf((String) upList.get(i)) ;
             myList.remove(i2);
         }
         setLackListView();
