@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.user.demotide20.LoginActivity"
-    android:background="@drawable/background"
+    android:background="@drawable/bg"
     android:orientation="vertical">
 
 
@@ -29,7 +29,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:weightSum="1">
 
         <TextView
             android:id="@+id/textView6"
@@ -70,6 +73,7 @@
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="0.10"
             android:onClick="login"
             android:text="登入"
             android:textColor="@android:color/black"
