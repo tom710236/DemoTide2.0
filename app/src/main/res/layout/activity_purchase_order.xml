@@ -271,6 +271,14 @@
 
     </LinearLayout>
 
+    <EditText
+        android:id="@+id/editText10"
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:ems="10"
+        android:inputType="number"
+        android:textSize="1sp" />
+
     <TextView
         android:id="@+id/textView14"
         android:layout_width="wrap_content"

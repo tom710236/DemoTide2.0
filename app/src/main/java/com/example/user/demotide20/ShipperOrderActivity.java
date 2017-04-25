@@ -419,7 +419,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Log.e("筆數", String.valueOf(i));
         //條碼找不到商品編號
         if (i == 0) {
-            //Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             editText.setText("");
             //條碼找到一筆商品編號
         } else if (i == 1) {
@@ -457,7 +457,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     setNOWQty(addNum);
                 }
             } else {
-                //Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 editText.setText("");
             }
             //條碼找到一筆以上商品編號
@@ -612,8 +612,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 setNOWQty2(addNum);
             }
         } else {
-            //Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             EditText editText = (EditText)findViewById(R.id.editText);
+            editText.setText("");
 
         }
 

@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,13 +117,15 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchase_order);
-
+        EditText editText = (EditText)findViewById(R.id.editText);
+        editText.requestFocus();
         toolBar();
         getPreviousPage();
 
         Post post = new Post();
         post.start();
-
+        setEditText();
+        setEditText2();
 
         setSwitch();
     }
@@ -362,6 +365,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         //條碼找不到商品編號
         if (i == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            editText.setText("");
             //條碼找到一筆商品編號
         } else if (i == 1) {
             //先判斷條碼內的商品號碼是否有在listView裡
@@ -399,6 +403,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 }
             }else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                editText.setText("");
             }
             //條碼找到一筆以上商品編號
         } else if (i > 1) {
@@ -467,6 +472,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 adapter.notifyDataSetChanged();
                 Log.e("MYLISTTT", String.valueOf(myList));
+                EditText editText = (EditText)findViewById(R.id.editText);
+                editText.setText("");
             }
         }
     }
@@ -511,6 +518,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 adapter.notifyDataSetChanged();
                 Log.e("MYLISTTT", String.valueOf(myList));
+                EditText editText = (EditText)findViewById(R.id.editText);
+                editText.setText("");
             }
         }
     }
@@ -545,6 +554,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             }
         }else{
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            EditText editText = (EditText)findViewById(R.id.editText);
+            editText.setText("");
         }
 
     }
@@ -909,6 +920,39 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    //設定EditText 自動輸入
+    private void setEditText() {
+        final EditText editText = (EditText) findViewById(R.id.editText);
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(editText.getText().length()>=13){
+
+                    cBarcode();
+                }
+
+                return false;
+            }
+        });
+
+
+    }
+    private void setEditText2() {
+        final EditText editText = (EditText) findViewById(R.id.editText10);
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                EditText editText1 = (EditText) findViewById(R.id.editText);
+                editText1.getText();
+                editText1.requestFocus();
+                return false;
+            }
+
+        });
+
+
     }
 
 }

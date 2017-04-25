@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -39,7 +40,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, mLackNO, mLackName, cProductName, lackNoAdd, lackNameAdd,cProductIDeSQL,upStringList;
     String url = "http://demo.shinda.com.tw/ModernWebApi/LackAPI.aspx";
     ArrayList<Map<String, String>> myList,saveList;
-    ArrayList upList,Btrans;
+    ArrayList upList,Btrans,delList;
     int iMax = 0;
     int newCount = 0;
     int editCount = 0;
@@ -60,10 +61,14 @@ public class StorageOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_storage_order);
+        EditText editText = (EditText)findViewById(R.id.editText8);
+        editText.requestFocus();
         toolBar();
         getPreviousPage();
         Post post = new Post();
         post.start();
+        setEditText();
+        setEditText2();
     }
 
     //設定toolBar
@@ -215,6 +220,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     private void setLackListView() {
         listView = (ListView) findViewById(R.id.list);
         upList = new ArrayList();
+        delList = new ArrayList();
         checkMap = new LinkedHashMap();
         adapter = new SimpleAdapter(
                 StorageOrderActivity.this,
@@ -238,7 +244,11 @@ public class StorageOrderActivity extends AppCompatActivity {
                             upList.add(position);
 
                         } else {
-                            upList.remove(position);
+                            delList.add(position);
+                            Log.e("delList", String.valueOf(delList));
+                            upList.removeAll(delList);
+
+
 
                         }
                         Log.e("UPLIST", String.valueOf(upList));
@@ -301,6 +311,8 @@ public class StorageOrderActivity extends AppCompatActivity {
             //條碼找不到商品編號
             if (i == 0) {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                EditText editText = (EditText)findViewById(R.id.editText3);
+                editText.setText("");
             } else if (i == 1) {
                 //先判斷條碼內的商品號碼是否有在listView裡
                 if (checkID() == true) {
@@ -317,7 +329,8 @@ public class StorageOrderActivity extends AppCompatActivity {
                             newMap.put("cProductName",myList.get(i2).get("cProductName"));
                             myList.set(i2, newMap);
                             adapter.notifyDataSetChanged();
-
+                            EditText editText = (EditText)findViewById(R.id.editText3);
+                            editText.setText("");
                         }
                     }
                 }else {
@@ -341,7 +354,8 @@ public class StorageOrderActivity extends AppCompatActivity {
                         addMap.put("Count", String.valueOf(editCount));
                         myList.add(addMap);
                         adapter.notifyDataSetChanged();
-
+                        EditText editText = (EditText)findViewById(R.id.editText3);
+                        editText.setText("");
                         Log.e("addMap", String.valueOf(myList));
                     }
 
@@ -506,6 +520,39 @@ public class StorageOrderActivity extends AppCompatActivity {
                 back();
             }
         }
+
+    }
+    private void setEditText() {
+        final EditText editText = (EditText) findViewById(R.id.editText3);
+
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(editText.getText().length()>=13){
+                    listAdd();
+                    EditText editText1 = (EditText)findViewById(R.id.editText14);
+                    editText1.requestFocus();
+                }
+
+                return false;
+            }
+        });
+
+
+    }
+    private void setEditText2() {
+        final EditText editText = (EditText) findViewById(R.id.editText14);
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                EditText editText1 = (EditText) findViewById(R.id.editText3);
+                editText1.getText();
+                editText1.requestFocus();
+                return false;
+            }
+
+        });
+
 
     }
 }
