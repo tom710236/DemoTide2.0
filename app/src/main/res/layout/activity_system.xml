@@ -133,7 +133,8 @@
             android:layout_height="wrap_content"
             android:onClick="back"
             android:text="返回"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <Button
             android:id="@+id/button5"

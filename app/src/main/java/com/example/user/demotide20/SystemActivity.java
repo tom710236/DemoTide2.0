@@ -276,7 +276,7 @@ public class SystemActivity extends AppCompatActivity {
                 int index = spinner.getSelectedItemPosition();
                 Log.e("SPINNER", String.valueOf(index));
                 if (index==1){
-                    String timeUp="14:08";
+                    String timeUp="08:00";
                     setTime(timeUp);
                 }
                 else if(index==2){

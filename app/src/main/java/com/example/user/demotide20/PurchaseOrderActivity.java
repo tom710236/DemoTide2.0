@@ -795,7 +795,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 //結案
                 else if(which ==1) {
                     checkUP();
-                    if(check<1){
+                    if(check<=1){
                         checkUri();
                         AllBase64();
                         PostEndInfo post = new PostEndInfo();
@@ -854,7 +854,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
                 Log.e("結案後POST的回傳值", json);
-                //Toast.makeText(ShipperOrderActivity.this, json, Toast.LENGTH_SHORT).show();
+                changeEnd(json);
             }
         });
     }
@@ -912,18 +912,19 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 Log.e("換人檢POST後的回傳值", json);
                 changeEnd(json);
             }
-            private void changeEnd(String json) {
-                int result = 0;
-                try {
-                    result = new JSONObject(json).getInt("result");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                if(result==1){
-                    back();
-                }
-            }
+
         });
+    }
+    private void changeEnd(String json) {
+        int result = 0;
+        try {
+            result = new JSONObject(json).getInt("result");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if(result==1){
+            back();
+        }
     }
     //設定EditText 自動輸入
     private void setEditText() {

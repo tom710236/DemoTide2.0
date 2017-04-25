@@ -153,7 +153,7 @@ public class PurchaseActivity extends AppCompatActivity {
                         //建立一個JSONArray 並把POST回傳資料json(JSOM檔)帶入
                         JSONArray array = new JSONArray(json2);
                         //ArrayList 新增"請選擇"這一單項
-                        trans.add("請選擇");
+                        trans.add("請選擇採購單");
                         //用迴圈取出JSONArray內的JSONObject標題為"PurchaseNo"的值
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
