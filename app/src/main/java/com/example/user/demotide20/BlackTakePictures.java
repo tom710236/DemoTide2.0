@@ -61,7 +61,7 @@ public class BlackTakePictures extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         myList = (ArrayList<Map<String, String>>) getIntent().getSerializableExtra("myList");
-        Log.e("MYLIST拍照", String.valueOf(myList));
+        Log.e("照片接收1myList", String.valueOf(myList));
         Bundle bag = intent.getExtras();
         AllImgUri = bag.getStringArrayList("AllImgUri");
         cUserName = bag.getString("cUserName", null);
@@ -107,7 +107,6 @@ public class BlackTakePictures extends AppCompatActivity {
     }
     //回到訂單按鍵
     public void onNext(View v){
-        Log.e("NO","NO");
         if(activity.equals("Black")){
             //傳遞Uri
             AllImgUri = new ArrayList();
@@ -119,6 +118,7 @@ public class BlackTakePictures extends AppCompatActivity {
             Log.e("ALLIMGURI", String.valueOf(AllImgUri));
             Intent intent = new Intent(BlackTakePictures.this,BlackSingleActivity.class);
             intent.putExtra("myList", myList);
+            Log.e("照片傳遞myList", String.valueOf(myList));
             Bundle bag = new Bundle();
             bag.putStringArrayList("AllImgUri", AllImgUri);
             bag.putString("cUserName", cUserName);

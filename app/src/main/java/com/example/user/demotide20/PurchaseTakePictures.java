@@ -31,7 +31,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.os.Environment.DIRECTORY_PICTURES;
 
 public class PurchaseTakePictures extends AppCompatActivity {
-    String cUserName, cUserID,activity,order;
+    String cUserName, cUserID,activity,order2;
     private static final int REQUEST_CONTACTS = 1;
     final String[] picture = {"照片一", "照片二", "照片三","照片四","照片五"};
     Uri imgUri,AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
@@ -68,7 +68,7 @@ public class PurchaseTakePictures extends AppCompatActivity {
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
         activity = bag.getString("activity",null);
-        order = bag.getString("order", null);
+        order2 = bag.getString("order2", null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
@@ -302,7 +302,7 @@ public class PurchaseTakePictures extends AppCompatActivity {
             bag.putStringArrayList("AllImgUri", AllImgUri);
             bag.putString("cUserName", cUserName);
             bag.putString("cUserID", cUserID);
-            bag.putString("order",order);
+            bag.putString("order2",order2);
             bag.putString("activity2","pictures");
             intent.putExtras(bag);
             startActivity(intent);

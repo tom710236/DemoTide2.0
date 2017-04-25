@@ -597,11 +597,15 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         //判斷是從哪一頁傳過去的
         bag.putString("activity",activity);
         bag.putString("order",order);
+        bag.putString("order2",order2);
         //把拍照頁的Uri回傳回去(讓照片不消失)
         bag.putStringArrayList("AllImgUri",AllImgUri);
         intent.putExtras(bag);
         startActivity(intent);
         PurchaseOrderActivity.this.finish();
+        AllBase64();
+        PostSaveInfo postSaveInfo = new PostSaveInfo();
+        postSaveInfo.start();
     }
 
 
@@ -953,6 +957,52 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    //儲存
+    class PostSaveInfo extends Thread{
+        @Override
+        public void run() {
+            PostSaveInfo();
+        }
+    }
+    private void PostSaveInfo() {
+
+        final OkHttpClient client = new OkHttpClient();
+        //要上傳的內容(JSON)--帳號登入
+        final MediaType JSON
+                = MediaType.parse("application/json; charset=utf-8");
+        String json = "{\"Token\":\"\" ,\"Action\":\"savenotchageuser\",\"PurchaseID\" :\""+ order2 +"\",\"PurchaseProducts\":"+upStringList+"}";
+        Log.e("POST",json);
+
+        RequestBody body = RequestBody.create(JSON,json);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            //post 失敗後執行
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //非主執行緒顯示UI(Toast)
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(PurchaseOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            //post 成功後執行
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //取得回傳資料json 還是JSON檔
+                String json = response.body().string();
+                Log.e("換人檢POST後的回傳值", json);
+
+            }
+
+        });
     }
 
 }

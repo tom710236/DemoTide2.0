@@ -62,7 +62,7 @@ public class BlackSingleActivity extends AppCompatActivity {
     ArrayList<Map<String, String>> upList;HashMap<String, String> addMap;
     ListView listView;
     int addNum = 0;
-    SpecialAdapter adapter;
+    SpecialAdapter adapter,adapter2;
     MyDBhelper helper;
     MyDBhelper4 helper4;
     LinearLayout linear;
@@ -93,28 +93,48 @@ public class BlackSingleActivity extends AppCompatActivity {
 
     }
     private void setArraylist(){
-        myList = new ArrayList<>();
-        map = new HashMap<String, String>();
-        map.put("NowQty","");
-        map.put("ProductNo", "");
-        map.put("cProductName", "");
-        map.put("Qty", "");
-        myList.add(map);
+        if(activity2!=null&&activity2.equals("pictures")){
+            listView = (ListView) findViewById(R.id.list);
+            adapter = new BlackSingleActivity.SpecialAdapter(
+                    BlackSingleActivity.this,
+                    myList,
+                    R.layout.lview4,
+                    new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
+                    new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    listView.setAdapter(adapter);
 
-        listView = (ListView) findViewById(R.id.list);
-        adapter = new BlackSingleActivity.SpecialAdapter(
-                BlackSingleActivity.this,
-                myList,
-                R.layout.lview4,
-                new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
-                new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                listView.setAdapter(adapter);
+                }
+            });
+        }else{
+            myList = new ArrayList<>();
+            map = new HashMap<String, String>();
+            map.put("NowQty","");
+            map.put("ProductNo", "");
+            map.put("cProductName", "");
+            map.put("Qty", "");
+            myList.add(map);
+            Log.e("YES","YES");
+            listView = (ListView) findViewById(R.id.list);
+            adapter = new BlackSingleActivity.SpecialAdapter(
+                    BlackSingleActivity.this,
+                    myList,
+                    R.layout.lview4,
+                    new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
+                    new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    listView.setAdapter(adapter);
 
-            }
-        });
+                }
+            });
+        }
+
+
+
     }
     //設定toolBar
     private void toolBar() {
@@ -148,6 +168,9 @@ public class BlackSingleActivity extends AppCompatActivity {
         AllImgUri = bag.getStringArrayList("AllImgUri");
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
+        myList = (ArrayList<Map<String, String>>) bag.getSerializable("myList");
+        activity2 = bag.getString("activity2",null);
+        Log.e("空白接收myList", String.valueOf(myList));
         Log.e("cUserID",cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
@@ -660,6 +683,7 @@ public class BlackSingleActivity extends AppCompatActivity {
 
         Intent intent = new Intent(BlackSingleActivity.this,BlackTakePictures.class);
         intent.putExtra("myList", myList);
+        Log.e("空白傳遞myList", String.valueOf(myList));
         Bundle bag = new Bundle();
         bag.putString("cUserName",cUserName);
         bag.putString("cUserID",cUserID);

@@ -663,6 +663,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
         intent.putExtras(bag);
         startActivity(intent);
         ShipperOrderActivity.this.finish();
+        AllBase64();
+        PostSaveInfo postSaveInfo = new PostSaveInfo();
+        postSaveInfo.start();
     }
 
     //從myList取出ProductNo NowQty 放入upList POST用
@@ -939,6 +942,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
             PostChangeInfo();
         }
     }
+    class PostSaveInfo extends Thread{
+        @Override
+        public void run() {
+            PostSaveInfo();
+        }
+    }
 
     //換人檢 用OkHttp PostAPI
     private void PostChangeInfo() {
@@ -1022,7 +1031,45 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         });
 
+    }
+    // 暫時存檔
+    private void PostSaveInfo() {
 
+        final OkHttpClient client = new OkHttpClient();
+        //要上傳的內容(JSON)
+        final MediaType JSON
+                = MediaType.parse("application/json; charset=utf-8");
+        String json = "{\"Token\":\"\" ,\"Action\":\"savenotchageuser\",\"PickupNumbers\" :\"" + checked + "\",\"PickupProducts\":" + upStringList + "}";
+        Log.e("POST", json);
+        RequestBody body = RequestBody.create(JSON, json);
+        final Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        Call call = client.newCall(request);
+        call.enqueue(new Callback() {
+            //post 失敗後執行
+            @Override
+            public void onFailure(Call call, IOException e) {
+                //非主執行緒顯示UI(Toast)
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ShipperOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            //post 成功後執行
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                //取得回傳資料json 還是JSON檔
+                String json = response.body().string();
+                Log.e("POST後的回傳值", json);
+
+            }
+
+        });
     }
 }
 
