@@ -435,7 +435,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //判斷條碼
     private void cBarcode() {
-        iMatch=0;
+        iMatch=1;
         Btrans = new ArrayList();
         EditText editText = (EditText) findViewById(R.id.editText);
 
