@@ -77,6 +77,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     final String[] newStringArray = new String[1];
     ProgressDialog pd;
     ProgressBar pb;
+    int iCheck;
 
     public class ProductIDInfo {
         private String mProductID;
@@ -232,6 +233,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
         editText.requestFocus();
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
+
     }
 
     public void add5(View v) {
@@ -239,6 +246,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
         editText.requestFocus();
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
     }
 
     public void add10(View v) {
@@ -246,6 +258,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
         editText.requestFocus();
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
     }
 
     public void addAll(View v) {
@@ -253,6 +270,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
         editText.requestFocus();
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
     }
 
     //改變listView(SimpleAdapter) item的顏色
@@ -305,12 +327,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     //POST後 回傳的JSON檔
                     String json = response.body().string();
-                    //Log.e("回傳的JSON", json);
+                    Log.e("回傳的JSON", json);
                     String json2 = null;
                     try {
                         JSONObject j = new JSONObject(json);
                         json2 = j.getString("PickUpProducts");
-                        //Log.e("取出PickUpProducts", json2);
+                        Log.e("取出PickUpProducts", json2);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -338,7 +360,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                             while (c.moveToNext()) {
                                 cProductName = c.getString(c.getColumnIndex("cProductName"));
-                                //Log.e("cProductName", cProductName);
+                                Log.e("cProductName", cProductName);
                             }
                             //用自訂類別 把JSONArray的值取出來
 
@@ -372,7 +394,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Log.e("YES","YES");
+
 
                         }
                     });
@@ -417,14 +439,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
             Btrans.add(cProductIDeSQL);
 
         }
-        int i = c.getCount();
-        Log.e("筆數", String.valueOf(i));
+        iCheck = c.getCount();
+        Log.e("筆數", String.valueOf(iCheck));
         //條碼找不到商品編號
-        if (i == 0) {
+        if (iCheck == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             editText.setText("");
             //條碼找到一筆商品編號
-        } else if (i == 1) {
+        } else if (iCheck == 1) {
             //先判斷條碼內的商品號碼是否有在listView裡
             if (checkID() == true) {
                 //Switch 關閉時
@@ -450,20 +472,20 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 }
                             }).show();
                 } else if (addNum == 1) {
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 } else if (addNum == 5) {
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 } else if (addNum == 10) {
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 } else if (addNum == 999999) {
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 }
             } else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 editText.setText("");
             }
             //條碼找到一筆以上商品編號
-        } else if (i > 1) {
+        } else if (iCheck > 1) {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
             chooseThings();
             editText.setText("");
@@ -605,13 +627,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         }).show();
 
             } else if (addNum == 1) {
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             } else if (addNum == 5) {
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             } else if (addNum == 10) {
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             } else if (addNum == 999999) {
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             }
         } else {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
@@ -862,14 +884,16 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //結案
                 else if (which == 1) {
                     checkUP();
-                    if (check <= 0) {
+                    if (check == 0) {
                         checkUri();
                         AllBase64();
                         PostEndInfo post = new PostEndInfo();
                         post.start();
 
+                    }else if (check!=0) {
+                        Toast.makeText(ShipperOrderActivity.this, "商品未檢完", Toast.LENGTH_SHORT).show();
                     }
-                    Toast.makeText(ShipperOrderActivity.this, "商品未檢完", Toast.LENGTH_SHORT).show();
+
                 }
 
             }

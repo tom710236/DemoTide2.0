@@ -70,6 +70,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
     final String[] activity = {"換人檢", "結案"};
     ProgressDialog pd;
+    int iCheck;
     public class ProductIDInfo{
         private String mProductID;
 
@@ -325,18 +326,38 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     //打開Switch的按鍵
     public void add1(View v) {
         addNum = 1;
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
     }
 
     public void add5(View v) {
         addNum = 5;
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
     }
 
     public void add10(View v) {
         addNum = 10;
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
     }
 
     public void addAll(View v) {
         addNum = 999999;
+        if (iCheck==1){
+            setNOWQty(addNum);
+        }else if(iCheck>1){
+            setNOWQty2(addNum);
+        }
     }
     private void cBarcode() {
         Btrans = new ArrayList();
@@ -358,14 +379,14 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             Btrans.add(cProductIDeSQL);
 
         }
-        int i = c.getCount();
-        Log.e("筆數", String.valueOf(i));
+        iCheck = c.getCount();
+        Log.e("筆數", String.valueOf(iCheck));
         //條碼找不到商品編號
-        if (i == 0) {
+        if (iCheck == 0) {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             editText.setText("");
             //條碼找到一筆商品編號
-        } else if (i == 1) {
+        } else if (iCheck == 1) {
             //先判斷條碼內的商品號碼是否有在listView裡
             if(checkID()==true){
                 //Switch 關閉時
@@ -391,20 +412,20 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                                 }
                             }).show();
                 }else if(addNum ==1){
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 }else if(addNum ==5) {
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 }else if(addNum ==10) {
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 }else if(addNum == 999999){
-                    setNOWQty(addNum);
+                    setNOWQty(1);
                 }
             }else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 editText.setText("");
             }
             //條碼找到一筆以上商品編號
-        } else if (i > 1) {
+        } else if (iCheck > 1) {
             stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
             chooseThings();
         }
@@ -542,13 +563,13 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                         }).show();
 
             }else if(addNum==1){
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             }else if(addNum==5){
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             }else if(addNum==10) {
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             }else if(addNum==999999) {
-                setNOWQty2(addNum);
+                setNOWQty2(1);
             }
         }else{
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
