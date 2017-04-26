@@ -70,7 +70,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
     final String[] activity = {"換人檢", "結案"};
     ProgressDialog pd;
-    int iCheck;
+    int iCheck,iMatch=0;
     public class ProductIDInfo{
         private String mProductID;
 
@@ -331,35 +331,64 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         }else if(iCheck>1){
             setNOWQty2(addNum);
         }
+        iMatch=0;
     }
-
     public void add5(View v) {
         addNum = 5;
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        if (iMatch==1){
+            addNum=4;
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1){
+                setNOWQty2(addNum);
+            }
+        }else{
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch=0;
     }
-
     public void add10(View v) {
         addNum = 10;
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        if (iMatch == 1) {
+            addNum = 9;
+            if (iCheck == 1) {
+                setNOWQty(addNum);
+            } else if (iCheck > 1) {
+                setNOWQty2(addNum);
+            }
+        } else {
+            if (iCheck == 1) {
+                setNOWQty(addNum);
+            } else if (iCheck > 1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch = 0;
     }
-
     public void addAll(View v) {
-        addNum = 999999;
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        addNum = 9999;
+        if (iMatch==1){
+            addNum=9998;
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1){
+                setNOWQty2(addNum);
+            }
+        }else {
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch=0;
     }
     private void cBarcode() {
+        iMatch=1;
         Btrans = new ArrayList();
         EditText editText = (EditText) findViewById(R.id.editText);
         String barcode = editText.getText().toString();
@@ -601,6 +630,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
     //按確定後 所執行
     public void enter(View v) {
+        iMatch=1;
         cBarcode();
     }
     //拍照按鍵 切換到拍照頁面 並把所需的資料傳遞過去

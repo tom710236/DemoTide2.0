@@ -231,56 +231,67 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //打開Switch的按鍵
     public void add1(View v) {
-        iMatch=1;
         addNum = 1;
-        final EditText editText = (EditText) findViewById(R.id.editText);
-        //Android 對 EditText 取得 focus
-        editText.requestFocus();
         if (iCheck==1){
             setNOWQty(addNum);
         }else if(iCheck>1){
             setNOWQty2(addNum);
         }
-
+        iMatch=0;
     }
-
     public void add5(View v) {
-        iMatch=1;
         addNum = 5;
-        final EditText editText = (EditText) findViewById(R.id.editText);
-        //Android 對 EditText 取得 focus
-        editText.requestFocus();
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        if (iMatch==1){
+            addNum=4;
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1){
+                setNOWQty2(addNum);
+            }
+        }else{
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch=0;
     }
-
     public void add10(View v) {
-        iMatch=1;
         addNum = 10;
-        final EditText editText = (EditText) findViewById(R.id.editText);
-        //Android 對 EditText 取得 focus
-        editText.requestFocus();
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        if (iMatch == 1) {
+            addNum = 9;
+            if (iCheck == 1) {
+                setNOWQty(addNum);
+            } else if (iCheck > 1) {
+                setNOWQty2(addNum);
+            }
+        } else {
+            if (iCheck == 1) {
+                setNOWQty(addNum);
+            } else if (iCheck > 1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch = 0;
     }
-
     public void addAll(View v) {
-        iMatch=1;
-        addNum = 999999;
-        final EditText editText = (EditText) findViewById(R.id.editText);
-        //Android 對 EditText 取得 focus
-        editText.requestFocus();
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        addNum = 9999;
+        if (iMatch==1){
+            addNum=9998;
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1){
+                setNOWQty2(addNum);
+            }
+        }else {
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch=0;
     }
 
     //改變listView(SimpleAdapter) item的顏色
@@ -652,6 +663,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //按確定後 所執行
     public void enter(View v) {
+        iMatch=1;
         cBarcode();
     }
 

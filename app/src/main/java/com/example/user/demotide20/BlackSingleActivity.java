@@ -75,7 +75,7 @@ public class BlackSingleActivity extends AppCompatActivity {
     Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
     ProgressDialog pd;
-    int index,index2,iCheck;
+    int index,index2,iCheck,iMatch=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -372,36 +372,64 @@ public class BlackSingleActivity extends AppCompatActivity {
         }else if(iCheck>1){
             setNOWQty2(addNum);
         }
+        iMatch=0;
     }
-
     public void add5(View v) {
         addNum = 5;
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        if (iMatch==1){
+            addNum=4;
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1){
+                setNOWQty2(addNum);
+            }
+        }else{
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch=0;
     }
-
     public void add10(View v) {
         addNum = 10;
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        if (iMatch == 1) {
+            addNum = 9;
+            if (iCheck == 1) {
+                setNOWQty(addNum);
+            } else if (iCheck > 1) {
+                setNOWQty2(addNum);
+            }
+        } else {
+            if (iCheck == 1) {
+                setNOWQty(addNum);
+            } else if (iCheck > 1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch = 0;
     }
-
     public void addAll(View v) {
         addNum = 9999;
-        if (iCheck==1){
-            setNOWQty(addNum);
-        }else if(iCheck>1){
-            setNOWQty2(addNum);
+        if (iMatch==1){
+            addNum=9998;
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1){
+                setNOWQty2(addNum);
+            }
+        }else {
+            if (iCheck==1){
+                setNOWQty(addNum);
+            }else if(iCheck>1) {
+                setNOWQty2(addNum);
+            }
         }
+        iMatch=0;
     }
     private void cBarcode() {
-
+        iMatch=1;
         Btrans = new ArrayList();
         EditText editText = (EditText) findViewById(R.id.editText);
         String barcode = editText.getText().toString();
