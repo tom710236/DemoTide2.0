@@ -322,23 +322,23 @@ public class PurchaseTakePictures extends AppCompatActivity {
         if (AllImgUri.get(1) != null) {
             BImgUri = (Uri) AllImgUri.get(1);
             imv2 = (ImageView)findViewById(R.id.imageView15);
-            showImg2(imv2,AImgUri);
+            showImg2(imv2,BImgUri);
 
         }
         if (AllImgUri.get(2) != null) {
             CImgUri = (Uri) AllImgUri.get(2);
             imv2 = (ImageView)findViewById(R.id.imageView16);
-            showImg2(imv2,AImgUri);
+            showImg2(imv2,CImgUri);
         }
         if (AllImgUri.get(3) != null) {
             DImgUri = (Uri) AllImgUri.get(3);
             imv2 = (ImageView)findViewById(R.id.imageView17);
-            showImg2(imv2,AImgUri);
+            showImg2(imv2,DImgUri);
         }
         if (AllImgUri.get(4) != null) {
             EImgUri = (Uri) AllImgUri.get(4);
             imv2 = (ImageView)findViewById(R.id.imageView18);
-            showImg2(imv2,AImgUri);
+            showImg2(imv2,EImgUri);
         }
     }
     private void getShipperUri(){

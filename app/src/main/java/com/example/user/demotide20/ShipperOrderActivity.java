@@ -78,6 +78,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     ProgressDialog pd;
     ProgressBar pb;
     int iCheck;
+    int iMatch=0;
 
     public class ProductIDInfo {
         private String mProductID;
@@ -214,6 +215,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     //顯示
                     linear.setVisibility(View.VISIBLE);
                     addNum = 1;
+                    iMatch = 0;
                 }
                 //沒有點擊 addNum=0
                 else {
@@ -229,6 +231,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //打開Switch的按鍵
     public void add1(View v) {
+        iMatch=1;
         addNum = 1;
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
@@ -242,6 +245,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     public void add5(View v) {
+        iMatch=1;
         addNum = 5;
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
@@ -254,6 +258,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     public void add10(View v) {
+        iMatch=1;
         addNum = 10;
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
@@ -266,6 +271,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     public void addAll(View v) {
+        iMatch=1;
         addNum = 999999;
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
@@ -418,7 +424,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //判斷條碼
     private void cBarcode() {
-
+        iMatch=0;
         Btrans = new ArrayList();
         EditText editText = (EditText) findViewById(R.id.editText);
 
@@ -521,7 +527,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 Log.e("I22", String.valueOf(i2));
                 Log.e("I44", String.valueOf(i4));
                 //數量
-                if (getint2 != 1) {
+                if (iMatch == 0) {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();

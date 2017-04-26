@@ -66,6 +66,9 @@ public class TakePictures extends AppCompatActivity {
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
         AllImgUri = bag.getStringArrayList("AllImgUri");
+        if(AllImgUri!=null){
+            Log.e("ALLIMGURI取得", String.valueOf(AllImgUri));
+        }
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
         activity = bag.getString("activity",null);
@@ -89,28 +92,31 @@ public class TakePictures extends AppCompatActivity {
             if (AllImgUri.get(1) != null) {
                 BImgUri = (Uri) AllImgUri.get(1);
                 imv2 = (ImageView)findViewById(R.id.imageView15);
-                showImg2(imv2,AImgUri);
+                showImg2(imv2,BImgUri);
 
             }
             if (AllImgUri.get(2) != null) {
                 CImgUri = (Uri) AllImgUri.get(2);
                 imv2 = (ImageView)findViewById(R.id.imageView16);
-                showImg2(imv2,AImgUri);
+                showImg2(imv2,CImgUri);
             }
             if (AllImgUri.get(3) != null) {
                 DImgUri = (Uri) AllImgUri.get(3);
                 imv2 = (ImageView)findViewById(R.id.imageView17);
-                showImg2(imv2,AImgUri);
+                showImg2(imv2,DImgUri);
             }
             if (AllImgUri.get(4) != null) {
                 EImgUri = (Uri) AllImgUri.get(4);
                 imv2 = (ImageView)findViewById(R.id.imageView18);
-                showImg2(imv2,AImgUri);
+                showImg2(imv2,EImgUri);
             }
     }
     private void getShipperUri(){
         if (AllImgUri != null && !AllImgUri.isEmpty()) {
             checkShipperUri();
+            if(AllImgUri!=null){
+                Log.e("ALLIMGURI取得2", String.valueOf(AllImgUri));
+            }
         }
     }
     void showImg2(ImageView imv2,Uri uri){
