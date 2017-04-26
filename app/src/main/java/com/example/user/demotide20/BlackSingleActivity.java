@@ -737,7 +737,7 @@ public class BlackSingleActivity extends AppCompatActivity {
     }
     // 假如拍照頁面傳過來的AllImgUri不為空值 執行Uri轉換
     private void checkUri(){
-
+        Allbase64 = new ArrayList();
         if (AllImgUri != null && !AllImgUri.isEmpty()) {
             if (AllImgUri.get(0) != null) {
                 AImgUri = (Uri) AllImgUri.get(0);
@@ -783,7 +783,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Allbase64 = new ArrayList();
+
         Allbase64.add("\"" +Abase64+"\"");
 
     }
@@ -806,7 +806,6 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Bbase64",Bbase64);
-        Allbase64 = new ArrayList();
         Allbase64.add("\"" +Bbase64+"\"");
     }
     void CImgUriBase64(Uri uri) {
@@ -829,7 +828,6 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Cbase64",Cbase64);
-        Allbase64 = new ArrayList();
         Allbase64.add("\"" +Cbase64+"\"");
     }
     void DImgUriBase64(Uri uri) {
@@ -851,7 +849,6 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Dbase64",Dbase64);
-        Allbase64 = new ArrayList();
         Allbase64.add("\"" +Dbase64+"\"");
     }
     void EImgUriBase64(Uri uri) {
@@ -873,7 +870,6 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Ebase64",Ebase64);
-        Allbase64 = new ArrayList();
         Allbase64.add("\"" +Ebase64+"\"");
     }
     //執行動作按鈕
