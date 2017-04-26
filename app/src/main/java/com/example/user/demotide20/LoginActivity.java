@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -27,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     String cStatus, userName, passWord, cUserName,cUserID;
     //帳號登入的API
     String url = "http://demo.shinda.com.tw/ModernWebApi/WebApiLogin.aspx";
-
+    ProgressBar pb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

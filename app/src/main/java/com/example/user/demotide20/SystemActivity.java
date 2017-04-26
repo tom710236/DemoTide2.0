@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -194,6 +195,7 @@ public class SystemActivity extends AppCompatActivity {
         //用來紀錄更新日期和次數
         upDateTimes();
         db4.close();
+        Toast.makeText(this, "商品已更新", Toast.LENGTH_SHORT).show();
     }
     //刪除全部商品鍵
     public void delThing(View v){

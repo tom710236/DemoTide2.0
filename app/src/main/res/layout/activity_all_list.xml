@@ -74,7 +74,8 @@
         android:id="@+id/lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.96" />
+        android:layout_weight="0.96"
+        android:visibility="gone" />
 
 
 </LinearLayout>

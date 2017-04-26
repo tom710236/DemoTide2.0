@@ -47,8 +47,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.R.attr.checked;
-
 
 public class PurchaseOrderActivity extends AppCompatActivity {
     String cUserName,cUserID,json,cProductName,cProductIDeSQL,order,upStringList,activity2,order2;
@@ -673,7 +671,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -694,7 +692,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -717,7 +715,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -739,7 +737,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -761,7 +759,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -829,7 +827,6 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 = MediaType.parse("application/json; charset=utf-8");
         String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PurchaseID\" :\""+ order2 +"\",\"PurchaseProducts\":"+upStringList+",\"imgbase64\": "+Allbase64+"}";
         Log.e("POST",json);
-        Log.e("checked", String.valueOf(checked));
         RequestBody body = RequestBody.create(JSON,json);
         Request request = new Request.Builder()
                 .url(url)
