@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -75,7 +77,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int getint;
     String upStringList;
     final String[] newStringArray = new String[1];
-    ProgressDialog pd;
+    ProgressDialog d;
     ProgressBar pb;
     int iCheck;
     int iMatch=0;
@@ -496,6 +498,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     setNOWQty(1);
                 } else if (addNum == 999999) {
                     setNOWQty(1);
+                }else {
+                    setNOWQty(1);
                 }
             } else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
@@ -651,6 +655,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 setNOWQty2(1);
             } else if (addNum == 999999) {
                 setNOWQty2(1);
+            }else {
+                setNOWQty2(1);
             }
         } else {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
@@ -776,7 +782,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -797,11 +803,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Bbase64", Bbase64);
         Allbase64.add("\"" + Bbase64 + "\"");
     }
 
@@ -819,11 +824,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Cbase64", Cbase64);
         Allbase64.add("\"" + Cbase64 + "\"");
     }
 
@@ -841,11 +845,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Dbase64", Dbase64);
         Allbase64.add("\"" + Dbase64 + "\"");
     }
 
@@ -863,11 +866,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Ebase64", Ebase64);
         Allbase64.add("\"" + Ebase64 + "\"");
     }
 
@@ -898,6 +900,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 else if (which == 1) {
                     checkUP();
                     if (check == 0) {
+                        setWait();
                         checkUri();
                         AllBase64();
                         PostEndInfo post = new PostEndInfo();
@@ -913,8 +916,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         });
         dialog_list.show();
     }
-
-
     //結案
     class PostEndInfo extends Thread {
         @Override
@@ -934,7 +935,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
         Log.e("check", String.valueOf(check));
     }
-
     //結案 用OkHttp PostAPI
     private void PostendInfo() {
 
@@ -970,10 +970,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 String json = response.body().string();
                 Log.e("結案後POST的回傳值", json);
                 changeEnd(json);
+                handler.sendEmptyMessage(0);
             }
         });
     }
-
     //換人檢
     class PostChangeInfo extends Thread {
         @Override
@@ -987,7 +987,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
             PostSaveInfo();
         }
     }
-
     //換人檢 用OkHttp PostAPI
     private void PostChangeInfo() {
 
@@ -1028,6 +1027,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         });
     }
+    //POST成功後取得1跳回前一頁
     private void changeEnd(String json) {
         int result = 0;
         try {
@@ -1110,7 +1110,55 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         });
     }
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            d.dismiss();
+        }
+    };
+    private void setWait(){
+        d=new ProgressDialog(ShipperOrderActivity.this);
+        d.setMessage("上傳中..");
+        d.show();
+    }
+    //設定返回鍵
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            new AlertDialog.Builder(ShipperOrderActivity.this)
+                    .setTitle("確認視窗")
+                    .setMessage("確定要結束應用程式嗎?")
+                    .setPositiveButton("確定",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                }
+                            })
+                    .setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            }).show();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+
+
+
 }
+
 
 /*
         //顯示ProgressDialog

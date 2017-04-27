@@ -264,9 +264,15 @@ public class StorageOrderActivity extends AppCompatActivity {
 
     }
     public void onDel(View v){
+        Log.e("UPLIST2", String.valueOf(upList));
         for(int i=0; i<upList.size();i++){
             int i2 = Integer.valueOf((String) upList.get(i)) ;
-            myList.remove(i2);
+            Log.e("I2", String.valueOf(i2));
+            if(i2<myList.size()){
+                myList.remove(i2);
+            }else {
+                Log.e("UPLIST3", String.valueOf(myList));
+            }
         }
         setLackListView();
     }
@@ -549,5 +555,36 @@ public class StorageOrderActivity extends AppCompatActivity {
         });
 
 
+    }
+    //設定返回鍵
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            new AlertDialog.Builder(StorageOrderActivity.this)
+                    .setTitle("確認視窗")
+                    .setMessage("確定要結束應用程式嗎?")
+                    .setPositiveButton("確定",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                }
+                            })
+                    .setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            }).show();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

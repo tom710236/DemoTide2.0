@@ -1,11 +1,14 @@
 package com.example.user.demotide20;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -22,6 +25,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
     String cUserName, dateUp2,cUserID,dateUp=null;
     SQLiteDatabase db,db2;
     int i=0,i2=0;
+    IconAdapter gAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +42,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
 
         //自訂ListView
         ListView list = (ListView) findViewById(R.id.list);
-        IconAdapter gAdapter = new IconAdapter();
+        gAdapter = new IconAdapter();
         list.setAdapter(gAdapter);
         list.setOnItemClickListener(this);
     }
@@ -182,6 +186,9 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 startActivity(intent5);
                 AllListActivity.this.finish();
                 break;
+            case 6:
+                gAdapter.notifyDataSetChanged();
+                break;
         }
 
     }
@@ -227,5 +234,36 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
             return v;
 
         }
+    }
+    //設定返回鍵
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            new AlertDialog.Builder(AllListActivity.this)
+                    .setTitle("確認視窗")
+                    .setMessage("確定要結束應用程式嗎?")
+                    .setPositiveButton("確定",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                }
+                            })
+                    .setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            }).show();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

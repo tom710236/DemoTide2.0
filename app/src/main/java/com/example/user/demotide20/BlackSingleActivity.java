@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -74,7 +76,7 @@ public class BlackSingleActivity extends AppCompatActivity {
     String[] stringArray;
     Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
-    ProgressDialog pd;
+    ProgressDialog d;
     int index,index2,iCheck,iMatch=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,15 +151,18 @@ public class BlackSingleActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //因為cUserName從上一頁傳過來了 所以要回到上一頁 要把cUserName再傳回去
-                Intent intent = new Intent(BlackSingleActivity.this, AllListActivity.class);
-                Bundle bag = new Bundle();
-                bag.putString("cUserName", cUserName);
-                bag.putString("cUserID",cUserID);
-                intent.putExtras(bag);
-                startActivity(intent);
-                BlackSingleActivity.this.finish();
+                back();
             }
         });
+    }
+    private void back(){
+        Intent intent = new Intent(BlackSingleActivity.this, AllListActivity.class);
+        Bundle bag = new Bundle();
+        bag.putString("cUserName", cUserName);
+        bag.putString("cUserID",cUserID);
+        intent.putExtras(bag);
+        startActivity(intent);
+        BlackSingleActivity.this.finish();
     }
     //取得上一頁傳過來的資料
     private void getPreviousPage() {
@@ -165,6 +170,9 @@ public class BlackSingleActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
+        index = bag.getInt("index");
+        Log.e("index取得", String.valueOf(index));
+        index2 = bag.getInt("index2");
         AllImgUri = bag.getStringArrayList("AllImgUri");
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
@@ -259,13 +267,25 @@ public class BlackSingleActivity extends AppCompatActivity {
                     BlackSingleActivity.this,
                     android.R.layout.simple_spinner_dropdown_item,
                     mInputType);
+
             Log.e("Warehouse", String.valueOf(mWarehouse));
             Log.e("InputType", String.valueOf(BlackSingleActivity.this.mInputType));
+            Log.e("index2222", String.valueOf(index));
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    SInputType.setAdapter(list);
+
+                    if(activity2!=null&&activity2.equals("pictures")) {
+                        SInputType.setAdapter(list);
+                        SInputType.setSelection(index);
+                        list.notifyDataSetChanged();
+
+                    }else {
+                        SInputType.setAdapter(list);
+                    }
+
+
                 }
             });
 
@@ -278,7 +298,15 @@ public class BlackSingleActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    SWarehouse.setAdapter(list2);
+                    if(activity2!=null&&activity2.equals("pictures")) {
+                        SWarehouse.setAdapter(list2);
+                        SWarehouse.setSelection(index2);
+                        list2.notifyDataSetChanged();
+
+                    }else{
+                        SWarehouse.setAdapter(list2);
+                    }
+
                 }
             });
 
@@ -474,7 +502,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                                     //如果有輸入數字 執行setNOWQty
                                     if (editText.length() != 0) {
                                         getint = Integer.parseInt(editText.getText().toString());
-                                        //判斷有無商品代碼 並帶入數字 用來增加數量的方法
+                                        //判斷有無商品代碼 並帶入輸入的數字 用來增加數量的方法
                                         setNOWQty(getint);
                                     }
 
@@ -488,6 +516,8 @@ public class BlackSingleActivity extends AppCompatActivity {
                 } else if (addNum == 10) {
                     setNOWQty(1);
                 } else if (addNum == 999999) {
+                    setNOWQty(1);
+                }else {
                     setNOWQty(1);
                 }
             } else {
@@ -660,6 +690,8 @@ public class BlackSingleActivity extends AppCompatActivity {
                 setNOWQty2(1);
             }else if(addNum==999999) {
                 setNOWQty2(1);
+            }else {
+                setNOWQty2(1);
             }
         }else{
             //Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
@@ -728,7 +760,6 @@ public class BlackSingleActivity extends AppCompatActivity {
     }
     public void onPicture (View v){
         String activity = "Black";
-
         Intent intent = new Intent(BlackSingleActivity.this,BlackTakePictures.class);
         intent.putExtra("myList", myList);
         Log.e("空白傳遞myList", String.valueOf(myList));
@@ -738,6 +769,9 @@ public class BlackSingleActivity extends AppCompatActivity {
         //判斷是從哪一頁傳過去的
         bag.putString("activity",activity);
         bag.putString("order",order);
+        bag.putInt("index",index);
+        Log.e("index傳遞", String.valueOf(index));
+        bag.putInt("index2",index2);
         //把拍照頁的Uri回傳回去(讓照片不消失)
         bag.putStringArrayList("AllImgUri",AllImgUri);
         intent.putExtras(bag);
@@ -807,7 +841,7 @@ public class BlackSingleActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -829,7 +863,7 @@ public class BlackSingleActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -851,7 +885,7 @@ public class BlackSingleActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -872,7 +906,7 @@ public class BlackSingleActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -893,7 +927,7 @@ public class BlackSingleActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -905,12 +939,13 @@ public class BlackSingleActivity extends AppCompatActivity {
         AllBase64();
         Log.e("upList", String.valueOf(upList));
         Log.e("upList.size()", String.valueOf(upList.size()));
-        if(upList.size()>0){
+        if(upList.size()>0&&index>0&&index2>0){
+            setWait();
             checkUri();
             PostEndInfo post = new PostEndInfo();
             post.start();
         }else {
-            Toast.makeText(BlackSingleActivity.this, "至少需一筆商品資料", Toast.LENGTH_SHORT).show();
+            Toast.makeText(BlackSingleActivity.this, "資料填寫不完整", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -955,7 +990,8 @@ public class BlackSingleActivity extends AppCompatActivity {
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
                 Log.e("結案後POST的回傳值", json);
-                //Toast.makeText(ShipperOrderActivity.this, json, Toast.LENGTH_SHORT).show();
+                changeEnd(json);
+                handler.sendEmptyMessage(0);
             }
         });
     }
@@ -991,5 +1027,59 @@ public class BlackSingleActivity extends AppCompatActivity {
         });
 
 
+    }
+    private void changeEnd(String json) {
+        int result = 0;
+        try {
+            result = new JSONObject(json).getInt("result");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (result == 1) {
+            back();
+        }
+    }
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            d.dismiss();
+        }
+    };
+    private void setWait(){
+        d=new ProgressDialog(BlackSingleActivity.this);
+        d.setMessage("上傳中..");
+        d.show();
+    }
+    //設定返回鍵
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            new AlertDialog.Builder(BlackSingleActivity.this)
+                    .setTitle("確認視窗")
+                    .setMessage("確定要結束應用程式嗎?")
+                    .setPositiveButton("確定",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                }
+                            })
+                    .setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            }).show();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

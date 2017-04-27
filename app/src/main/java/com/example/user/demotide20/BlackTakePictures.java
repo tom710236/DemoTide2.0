@@ -16,6 +16,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ public class BlackTakePictures extends AppCompatActivity {
     ArrayList AllImgUri;
     ImageView imv2;
     ArrayList<Map<String, String>> myList;
+    int index ,index2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +57,7 @@ public class BlackTakePictures extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
     }
-    //取得上一頁傳過來的資料(ShipperOrderActivity)
+    //取得上一頁傳過來的資料
     private void getPreviousPage() {
         //上一頁傳過來的資料取得
         Intent intent = getIntent();
@@ -67,6 +69,8 @@ public class BlackTakePictures extends AppCompatActivity {
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
         activity = bag.getString("activity",null);
+        index = bag.getInt("index",index);
+        index2 = bag.getInt("index2",index2);
         order = bag.getString("order", null);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
@@ -125,6 +129,8 @@ public class BlackTakePictures extends AppCompatActivity {
             bag.putString("cUserID", cUserID);
             bag.putString("order",order);
             bag.putString("activity2","pictures");
+            bag.putInt("index",index);
+            bag.putInt("index2",index2);
             intent.putExtras(bag);
             startActivity(intent);
             this.finish();
@@ -361,5 +367,36 @@ public class BlackTakePictures extends AppCompatActivity {
 
         imv2.setImageBitmap(bmp);
 
+    }
+    //設定返回鍵
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            new AlertDialog.Builder(BlackTakePictures.this)
+                    .setTitle("確認視窗")
+                    .setMessage("確定要結束應用程式嗎?")
+                    .setPositiveButton("確定",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                }
+                            })
+                    .setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            }).show();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

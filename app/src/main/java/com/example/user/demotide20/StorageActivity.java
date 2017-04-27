@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,15 +68,18 @@ public class StorageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //因為cUserName從上一頁傳過來了 所以要回到上一頁 要把cUserName再傳回去
-                Intent intent = new Intent(StorageActivity.this, AllListActivity.class);
-                Bundle bag = new Bundle();
-                bag.putString("cUserName", cUserName);
-                bag.putString("cUserID", cUserID);
-                intent.putExtras(bag);
-                startActivity(intent);
-                StorageActivity.this.finish();
+               back();
             }
         });
+    }
+    private void back(){
+        Intent intent = new Intent(StorageActivity.this, AllListActivity.class);
+        Bundle bag = new Bundle();
+        bag.putString("cUserName", cUserName);
+        bag.putString("cUserID", cUserID);
+        intent.putExtras(bag);
+        startActivity(intent);
+        StorageActivity.this.finish();
     }
 
     //取得上一頁傳過來的資料
@@ -446,10 +450,68 @@ public class StorageActivity extends AppCompatActivity {
                     String json = response.body().string();
                     Log.e("OkHttp5", response.toString());
                     Log.e("OkHttp6", json);
+                    changeEnd(json);
 
                 }
             });
         }
+    }
+    //POST成功後取得1跳回前一頁
+    private void changeEnd(String json) {
+        int result = 0;
+        try {
+            result = new JSONObject(json).getInt("result");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (result == 1) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(StorageActivity.this, "商品已清空", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(StorageActivity.this, "商品未清空，請再試一次", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+    }
+    //設定返回鍵
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            new AlertDialog.Builder(StorageActivity.this)
+                    .setTitle("確認視窗")
+                    .setMessage("確定要結束應用程式嗎?")
+                    .setPositiveButton("確定",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                }
+                            })
+                    .setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            }).show();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }

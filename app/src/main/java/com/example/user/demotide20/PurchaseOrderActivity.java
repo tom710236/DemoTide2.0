@@ -10,6 +10,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -111,7 +113,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             return mNowQty;
         }
     }
-
+    ProgressDialog d;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -448,6 +450,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     setNOWQty(1);
                 }else if(addNum == 999999){
                     setNOWQty(1);
+                }else {
+                    setNOWQty(1);
                 }
             }else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
@@ -599,6 +603,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 setNOWQty2(1);
             }else if(addNum==999999) {
                 setNOWQty2(1);
+            }else {
+                setNOWQty2(1);
             }
         }else{
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
@@ -722,7 +728,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -743,7 +749,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -765,7 +771,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -786,7 +792,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -807,7 +813,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, stream );
+        bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream );
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
@@ -841,6 +847,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 else if(which ==1) {
                     checkUP();
                     if(check<=1){
+                        setWait();
                         checkUri();
                         AllBase64();
                         PostEndInfo post = new PostEndInfo();
@@ -899,6 +906,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 String json = response.body().string();
                 Log.e("結案後POST的回傳值", json);
                 changeEnd(json);
+                handler.sendEmptyMessage(0);
             }
         });
     }
@@ -1049,5 +1057,47 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         });
     }
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            d.dismiss();
+        }
+    };
+    private void setWait(){
+        d=new ProgressDialog(PurchaseOrderActivity.this);
+        d.setMessage("上傳中..");
+        d.show();
+    }
+    //設定返回鍵
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
 
+        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            new AlertDialog.Builder(PurchaseOrderActivity.this)
+                    .setTitle("確認視窗")
+                    .setMessage("確定要結束應用程式嗎?")
+                    .setPositiveButton("確定",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    finish();
+                                }
+                            })
+                    .setNegativeButton("取消",
+                            new DialogInterface.OnClickListener() {
+
+                                @Override
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
+                                    // TODO Auto-generated method stub
+
+                                }
+                            }).show();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }
