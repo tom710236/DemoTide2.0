@@ -7,14 +7,14 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.Adapter;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +25,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -41,7 +43,10 @@ public class ShipperActivity extends AppCompatActivity {
     int index ;
     ArrayList<String> checked;
     ArrayList<String> json2;
-
+    SimpleAdapter adapter;
+    ArrayList<Map<String, String>> myList;
+    Map<String, String> map;
+    ArrayList upList;
     //檢貨單 客戶API
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     public class ProductInfo {
@@ -166,6 +171,7 @@ public class ShipperActivity extends AppCompatActivity {
                         for(int i=0;i<j.getJSONArray("PickUpCustomers").length();i++){
                             String json0 = j.getJSONArray("PickUpCustomers").getString(i);
                             json2.add(json0);
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -177,6 +183,7 @@ public class ShipperActivity extends AppCompatActivity {
                 }
                 //POST成功後回傳的值(陣列)取出來 用spinner顯示
                 private void parseJson(final String json2) {
+
                     //取值
                     try {
                         //建立一個ArrayList
@@ -294,27 +301,54 @@ public class ShipperActivity extends AppCompatActivity {
                             }
                             //POST成功後把回傳的值(陣列)取出來 用listView顯示 把JSON2帶進來
                             private void parseJson2(String json4) {
+                                final ListView listView = (ListView)findViewById(R.id.listView);
+
                                 try {
-                                    final ArrayList trans = new ArrayList<>();
+                                    upList = new ArrayList();
+                                    myList = new ArrayList<Map<String, String>>();
                                     final JSONArray array = new JSONArray(json4);
                                     for (int i = 0; i < array.length(); i++) {
                                         JSONObject obj = array.getJSONObject(i);
-                                        trans.add(new PickNOInfo(obj.optString("PickupNo"), obj.optString("Total")));
-                                        Log.e("單號和總數量", String.valueOf(trans));
+                                        map = new LinkedHashMap<String, String>();
+                                        map.put("PickupNo",obj.optString("PickupNo"));
+                                        map.put("Total",obj.optString("Total"));
+                                        myList.add(map);
+                                        Log.e("單號和總數量", String.valueOf(myList));
+
                                     }
-                                    final ListView listView = (ListView) findViewById(R.id.listView);
-                                    // 設定 ListView 選擇的方式 :
-                                    // 單選 : ListView.CHOICE_MODE_SINGLE
-                                    // 多選 : ListView.CHOICE_MODE_MULTIPLE
-                                    listView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-                                    // 陣列接收器
-                                    // RadioButton Layout 樣式 : android.R.layout.simple_list_item_single_choice
-                                    // CheckBox Layout 樣式    : android.R.layout.simple_list_item_multiple_choice
-                                    // trans 是陣列
-                                    final ArrayAdapter<PickNOInfo> list = new ArrayAdapter<>(
+
+                                    adapter = new SimpleAdapter(
                                             ShipperActivity.this,
-                                            android.R.layout.simple_list_item_multiple_choice,
-                                            trans);
+                                            myList,
+                                            R.layout.lview8,
+                                            new String[]{"PickupNo", "Total", "checkbox"},
+                                            new int[]{R.id.textView31, R.id.textView30,R.id.checkBox3}){
+                                        @Override
+                                        public View getView(final int position, View convertView, final ViewGroup parent) {
+                                            //获取相应的view中的checkbox对象
+                                            if (convertView == null)
+                                                convertView = View.inflate(ShipperActivity.this, R.layout.lview8, null);
+                                            final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox3);
+
+                                            checkBox.setOnClickListener(new View.OnClickListener() {
+
+                                                @Override
+                                                public void onClick(View v) {
+
+                                                    if (((CheckBox) v).isChecked()) {
+                                                        upList.add(String.valueOf(position));
+
+                                                    } else {
+                                                        upList.remove(String.valueOf(position));
+                                                    }
+                                                    Log.e("UPLIST", String.valueOf(upList));
+
+                                                }
+                                            });
+                                            return super.getView(position, convertView, parent);
+                                        }
+
+                                    };
                                     //非主執行緒顯示UI
                                     runOnUiThread(new Runnable() {
 
@@ -323,7 +357,7 @@ public class ShipperActivity extends AppCompatActivity {
                                             //顯示出listView
                                             listView.setVisibility(View.VISIBLE);
                                             //設定 ListView 的接收器, 做為選項的來源
-                                            listView.setAdapter(list);
+                                            listView.setAdapter(adapter);
                                             //假如選到請選擇 list將不會出現
                                             if (index ==0){
                                                 listView.setVisibility(View.GONE);
@@ -331,29 +365,6 @@ public class ShipperActivity extends AppCompatActivity {
 
                                         }
                                     });
-                                    //ListView的點擊方法
-                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                        @Override
-                                        public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-                                            AbsListView list = (AbsListView)adapterView;
-                                            Adapter adapter = list.getAdapter();
-                                            SparseBooleanArray array = list.getCheckedItemPositions();
-                                            checked = new ArrayList<>(list.getCheckedItemCount());
-
-                                            for (int i = 0; i < array.size(); i++) {
-                                                int key = array.keyAt(i);
-                                                if (array.get(key)) {
-                                                    //超重要 只取出項目裡的cPickupNO
-                                                    PickNOInfo checkNO = (PickNOInfo)adapter.getItem(key);
-                                                    checked.add(checkNO.cPickupNo);
-                                                    Log.e("被點擊到的listView", String.valueOf(checked));
-                                                }
-
-                                            }
-
-                                        }
-                                    });
-
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -377,11 +388,17 @@ public class ShipperActivity extends AppCompatActivity {
 
     }
     public void enter (View v){
-
-        if(!(checked == null || index == 0)){
-
-            //點擊後到下一頁和所要傳的資料
-            //BUG 最後一個會有殘留值
+        ArrayList checked;
+        checked = new ArrayList();
+        Log.e("upList.size()", String.valueOf(upList.size()));
+        if(upList.size()>0){
+            for(int i=0; i<upList.size();i++){
+                Log.e("myList.get(i)", String.valueOf(upList.get(i)));
+                int icheck;
+                icheck = Integer.valueOf(String.valueOf(upList.get(i)));
+                checked.add(myList.get(icheck).get("PickupNo"));
+            }
+            Log.e("checked", String.valueOf(checked));
             //把逗號的空白處取代
             checked2 = String.valueOf(checked).replaceAll(", ", ",");
             int i = checked2.length();
