@@ -510,6 +510,8 @@ public class BlackSingleActivity extends AppCompatActivity {
                                         getint = Integer.parseInt(editText.getText().toString());
                                         //判斷有無商品代碼 並帶入數字
                                         setNOWQty(getint);
+                                        EditText editText1 = (EditText)findViewById(R.id.editText);
+                                        editText1.setText("");
                                     }else{
                                         EditText editText1 = (EditText)findViewById(R.id.editText);
                                         editText1.setText("");
@@ -547,7 +549,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                     addMap = new HashMap<String, String>();
                     addMap.put("cProductName", cProductName);
                     addMap.put("ProductNo", cProductIDeSQL);
-                    addMap.put("Qty", "1");
+                    addMap.put("Qty", "0");
                     addMap.put("NowQty","");
                     myList.add(addMap);
                     adapter.notifyDataSetChanged();
@@ -575,6 +577,8 @@ public class BlackSingleActivity extends AppCompatActivity {
                                     getint = Integer.parseInt(editText.getText().toString());
                                     //判斷有無商品代碼 並帶入數字
                                     setNOWQty(getint);
+                                    EditText editText1 = (EditText)findViewById(R.id.editText);
+                                    editText1.setText("");
                                 }else{
                                     EditText editText1 = (EditText)findViewById(R.id.editText);
                                     editText1.setText("");
@@ -621,11 +625,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                 Log.e("I22", String.valueOf(i2));
                 //數量
                 if(getint2!=1){
-                        if(i2==1){
-                            i2=getint2;
-                        }else {
-                            i2 = i2 + getint2;
-                        }
+                    i2 = i2 + getint2;
                 }else{
                         i2 = i2 + getint2;
                 }
@@ -653,14 +653,9 @@ public class BlackSingleActivity extends AppCompatActivity {
             if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
                 int i2 = Integer.parseInt(myList.get(i3).get("Qty"));
                 Log.e("I22", String.valueOf(i2));
-
                 //數量
                 if(getint2!=1){
-                    if(i2==1){
-                        i2=getint2;
-                    }else {
                         i2 = i2 + getint2;
-                    }
                 }else{
                     i2 = i2 + getint2;
                 }
@@ -707,6 +702,8 @@ public class BlackSingleActivity extends AppCompatActivity {
                                     getint = Integer.parseInt(editText.getText().toString());
                                     //判斷有無商品代碼 並帶入數字
                                     setNOWQty2(getint);
+                                    EditText editText1 = (EditText)findViewById(R.id.editText);
+                                    editText1.setText("");
                                 }else{
                                     EditText editText1 = (EditText)findViewById(R.id.editText);
                                     editText1.setText("");
@@ -773,6 +770,8 @@ public class BlackSingleActivity extends AppCompatActivity {
                                 getint = Integer.parseInt(editText.getText().toString());
                                 //判斷有無商品代碼 並帶入數字
                                 setNOWQty2(getint);
+                                EditText editText1 = (EditText)findViewById(R.id.editText);
+                                editText1.setText("");
                             }else{
                                 EditText editText1 = (EditText)findViewById(R.id.editText);
                                 editText1.setText("");

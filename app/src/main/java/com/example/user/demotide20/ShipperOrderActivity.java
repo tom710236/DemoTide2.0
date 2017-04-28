@@ -491,6 +491,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                         getint = Integer.parseInt(editText.getText().toString());
                                         //判斷有無商品代碼 並帶入數字
                                         setNOWQty(getint);
+                                        EditText editText1 = (EditText)findViewById(R.id.editText);
+                                        editText1.setText("");
                                     }else{
                                         EditText editText1 = (EditText)findViewById(R.id.editText);
                                         editText1.setText("");
@@ -556,12 +558,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
-                        if (i2 == 1) {
-                            i2 = getint2;
-                        } else {
                             i2 = i2 + getint2;
-                        }
-                    }
+                            }
                 } else {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
@@ -603,11 +601,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
-                        if (i2 == 1) {
-                            i2 = getint2;
-                        } else {
                             i2 = i2 + getint2;
-                        }
                     }
                 } else {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
@@ -658,6 +652,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 if (editText.length() != 0) {
                                     getint = Integer.parseInt(editText.getText().toString());
                                     setNOWQty2(getint);
+                                    EditText editText1 = (EditText)findViewById(R.id.editText);
+                                    editText1.setText("");
                                 }else {
                                     EditText editText1 = (EditText)findViewById(R.id.editText);
                                     editText1.setText("");
