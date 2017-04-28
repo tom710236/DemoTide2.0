@@ -295,7 +295,7 @@ public class StorageActivity extends AppCompatActivity {
     public void onDel (View v){
         PassDel passDel = new PassDel();
         passDel.start();
-
+        adapter.notifyDataSetChanged();
     }
     class PassDel extends Thread {
         @Override

@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -219,19 +220,24 @@ public class PurchaseActivity extends AppCompatActivity {
         }
     }
     public void enter (View v){
-        int idx = order.indexOf("(");
-        Log.e("idx", String.valueOf(idx));
-        String order2 =order.substring(0, idx);
-        Log.e("order2", order2);
-        Intent intent = new Intent(PurchaseActivity.this, PurchaseOrderActivity.class);
-        Bundle bag = new Bundle();
-        bag.putString("order", String.valueOf(order));
-        bag.putString("order2",order2);
-        bag.putString("cUserName",cUserName);
-        bag.putString("cUserID",cUserID);
-        intent.putExtras(bag);
-        startActivity(intent);
-        PurchaseActivity.this.finish();
+        if(index!=0){
+            int idx = order.indexOf("(");
+            Log.e("idx", String.valueOf(idx));
+            String order2 =order.substring(0, idx);
+            Log.e("order2", order2);
+            Intent intent = new Intent(PurchaseActivity.this, PurchaseOrderActivity.class);
+            Bundle bag = new Bundle();
+            bag.putString("order", String.valueOf(order));
+            bag.putString("order2",order2);
+            bag.putString("cUserName",cUserName);
+            bag.putString("cUserID",cUserID);
+            intent.putExtras(bag);
+            startActivity(intent);
+            PurchaseActivity.this.finish();
+        }else{
+            Toast.makeText(PurchaseActivity.this, "請選擇採購單", Toast.LENGTH_SHORT).show();
+        }
+
     }
     //設定返回鍵
     @Override

@@ -870,9 +870,6 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     }else{
                         Toast.makeText(PurchaseOrderActivity.this, "商品未檢完", Toast.LENGTH_SHORT).show();
                     }
-
-
-
                 }
             }
         });

@@ -129,7 +129,6 @@ public class LoginActivity extends AppCompatActivity {
                         .commit();
 
             } else if (cStatus.equals("0")) {
-                Log.e("NO","NO");
                 //非主執行緒顯示UI(Toast)
                 runOnUiThread(new Runnable() {
                     @Override

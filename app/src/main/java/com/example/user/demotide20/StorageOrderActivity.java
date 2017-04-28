@@ -265,13 +265,20 @@ public class StorageOrderActivity extends AppCompatActivity {
     }
     public void onDel(View v){
         Log.e("UPLIST2", String.valueOf(upList));
+        ArrayList dlist;
+        dlist = new ArrayList();
         for(int i=0; i<upList.size();i++){
             int i2 = Integer.valueOf((String) upList.get(i)) ;
-            Log.e("I2", String.valueOf(i2));
-            if(i2<myList.size()){
-                myList.remove(i2);
-            }else {
-                Log.e("UPLIST3", String.valueOf(myList));
+            dlist.add(myList.get(i2));
+        }
+        for(int i=0; i<dlist.size();i++){
+            for(int i2 = 0,len=myList.size();i2<len;i2++){
+                if(myList.get(i2).equals(dlist.get(i))){
+                    myList.remove(i2);
+                    i2--;
+                    len--;
+
+                }
             }
         }
         setLackListView();
