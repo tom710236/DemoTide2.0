@@ -475,7 +475,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     new AlertDialog.Builder(ShipperOrderActivity.this)
                             .setTitle("請輸入數量")
                             .setView(item)
-                            .setNegativeButton("取消", null)
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    EditText editText = (EditText)findViewById(R.id.editText);
+                                    editText.setText("");
+                                }
+                            })
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -485,6 +491,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                         getint = Integer.parseInt(editText.getText().toString());
                                         //判斷有無商品代碼 並帶入數字
                                         setNOWQty(getint);
+                                    }else{
+                                        EditText editText1 = (EditText)findViewById(R.id.editText);
+                                        editText1.setText("");
                                     }
 
 
@@ -635,7 +644,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 new AlertDialog.Builder(ShipperOrderActivity.this)
                         .setTitle("請輸入數量")
                         .setView(item)
-                        .setNegativeButton("取消", null)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText editText = (EditText)findViewById(R.id.editText);
+                                editText.setText("");
+                            }
+                        })
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -643,6 +658,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 if (editText.length() != 0) {
                                     getint = Integer.parseInt(editText.getText().toString());
                                     setNOWQty2(getint);
+                                }else {
+                                    EditText editText1 = (EditText)findViewById(R.id.editText);
+                                    editText1.setText("");
                                 }
                             }
                         }).show();

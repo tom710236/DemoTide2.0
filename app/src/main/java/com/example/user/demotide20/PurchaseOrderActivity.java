@@ -427,16 +427,25 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     new AlertDialog.Builder(PurchaseOrderActivity.this)
                             .setTitle("請輸入數量")
                             .setView(item)
-                            .setNegativeButton("取消", null)
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    EditText editText = (EditText)findViewById(R.id.editText);
+                                    editText.setText("");
+                                }
+                            })
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     EditText editText = (EditText) item.findViewById(R.id.editText2);
                                     //如果有輸入數字 執行setNOWQty
-                                    if(editText.length()!=0){
+                                    if (editText.length() != 0) {
                                         getint = Integer.parseInt(editText.getText().toString());
-                                        //判斷有無商品代碼 並帶入數字 用來增加數量的方法
+                                        //判斷有無商品代碼 並帶入數字
                                         setNOWQty(getint);
+                                    }else{
+                                        EditText editText1 = (EditText)findViewById(R.id.editText);
+                                        editText1.setText("");
                                     }
 
 
@@ -579,19 +588,33 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     private void addNOWQty(){
         if(checkID2()==true){
             if (addNum == 0) {
+                //跳出輸入數字對話框
                 final View item = LayoutInflater.from(PurchaseOrderActivity.this).inflate(R.layout.item, null);
                 new AlertDialog.Builder(PurchaseOrderActivity.this)
                         .setTitle("請輸入數量")
                         .setView(item)
-                        .setNegativeButton("取消", null)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText editText = (EditText)findViewById(R.id.editText);
+                                editText.setText("");
+                            }
+                        })
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 EditText editText = (EditText) item.findViewById(R.id.editText2);
+                                //如果有輸入數字 執行setNOWQty
                                 if (editText.length() != 0) {
                                     getint = Integer.parseInt(editText.getText().toString());
-                                    setNOWQty2(getint);
+                                    //判斷有無商品代碼 並帶入數字
+                                    setNOWQty(getint);
+                                }else{
+                                    EditText editText1 = (EditText)findViewById(R.id.editText);
+                                    editText1.setText("");
                                 }
+
+
                             }
                         }).show();
 
@@ -986,7 +1009,6 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(editText.getText().length()>=13){
-
                     cBarcode();
                 }
 

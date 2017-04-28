@@ -32,7 +32,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         setContentView(R.layout.activity_all_list);
 
         cursor3();
-        dateUp2="產品資訊撈取"+"("+i2+")"+"\n"+dateUp+"("+i+")";
+        dateUp2="產品資訊撈取"+"("+i2+"筆資訊"+")"+"\n"+dateUp+"("+i+"次更新"+")";
         getPreviousPage();
         toolBar();
         //啟動Delay service 每次到這畫面就會啟動一次 所以先停止再啟動

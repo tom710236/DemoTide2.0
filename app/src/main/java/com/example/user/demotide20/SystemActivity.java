@@ -207,6 +207,7 @@ public class SystemActivity extends AppCompatActivity {
         setBarcodeSQL();
         db4.delete("tblTable4",null,null);
         db4.close();
+        Toast.makeText(this, "商品已刪除", Toast.LENGTH_SHORT).show();
     }
     //返回鍵 暫時用來看資料庫內容
     public void back (View v){

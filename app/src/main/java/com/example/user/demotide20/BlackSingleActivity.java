@@ -494,7 +494,13 @@ public class BlackSingleActivity extends AppCompatActivity {
                     new AlertDialog.Builder(BlackSingleActivity.this)
                             .setTitle("請輸入數量")
                             .setView(item)
-                            .setNegativeButton("取消", null)
+                            .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    EditText editText = (EditText)findViewById(R.id.editText);
+                                    editText.setText("");
+                                }
+                            })
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -502,8 +508,11 @@ public class BlackSingleActivity extends AppCompatActivity {
                                     //如果有輸入數字 執行setNOWQty
                                     if (editText.length() != 0) {
                                         getint = Integer.parseInt(editText.getText().toString());
-                                        //判斷有無商品代碼 並帶入輸入的數字 用來增加數量的方法
+                                        //判斷有無商品代碼 並帶入數字
                                         setNOWQty(getint);
+                                    }else{
+                                        EditText editText1 = (EditText)findViewById(R.id.editText);
+                                        editText1.setText("");
                                     }
 
 
@@ -545,11 +554,18 @@ public class BlackSingleActivity extends AppCompatActivity {
 
                     Log.e("myList", String.valueOf(myList));
                 }
+                //跳出輸入數字對話框
                 final View item = LayoutInflater.from(BlackSingleActivity.this).inflate(R.layout.item, null);
                 new AlertDialog.Builder(BlackSingleActivity.this)
                         .setTitle("請輸入數量")
                         .setView(item)
-                        .setNegativeButton("取消", null)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText editText = (EditText)findViewById(R.id.editText);
+                                editText.setText("");
+                            }
+                        })
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -557,13 +573,17 @@ public class BlackSingleActivity extends AppCompatActivity {
                                 //如果有輸入數字 執行setNOWQty
                                 if (editText.length() != 0) {
                                     getint = Integer.parseInt(editText.getText().toString());
-                                    //判斷有無商品代碼 並帶入數字 用來增加數量的方法
+                                    //判斷有無商品代碼 並帶入數字
                                     setNOWQty(getint);
+                                }else{
+                                    EditText editText1 = (EditText)findViewById(R.id.editText);
+                                    editText1.setText("");
                                 }
 
 
                             }
                         }).show();
+
             }
 
         //條碼找到一筆以上商品編號
@@ -666,19 +686,33 @@ public class BlackSingleActivity extends AppCompatActivity {
     private void addNOWQty(){
         if(checkID2()==true){
             if (addNum == 0) {
+                //跳出輸入數字對話框
                 final View item = LayoutInflater.from(BlackSingleActivity.this).inflate(R.layout.item, null);
                 new AlertDialog.Builder(BlackSingleActivity.this)
                         .setTitle("請輸入數量")
                         .setView(item)
-                        .setNegativeButton("取消", null)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EditText editText = (EditText)findViewById(R.id.editText);
+                                editText.setText("");
+                            }
+                        })
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 EditText editText = (EditText) item.findViewById(R.id.editText2);
+                                //如果有輸入數字 執行setNOWQty
                                 if (editText.length() != 0) {
                                     getint = Integer.parseInt(editText.getText().toString());
-                                    setNOWQty2(getint);
+                                    //判斷有無商品代碼 並帶入數字
+                                    setNOWQty(getint);
+                                }else{
+                                    EditText editText1 = (EditText)findViewById(R.id.editText);
+                                    editText1.setText("");
                                 }
+
+
                             }
                         }).show();
 
@@ -718,6 +752,35 @@ public class BlackSingleActivity extends AppCompatActivity {
 
                 Log.e("myList", String.valueOf(myList));
             }
+            //跳出輸入數字對話框
+            final View item = LayoutInflater.from(BlackSingleActivity.this).inflate(R.layout.item, null);
+            new AlertDialog.Builder(BlackSingleActivity.this)
+                    .setTitle("請輸入數量")
+                    .setView(item)
+                    .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            EditText editText = (EditText)findViewById(R.id.editText);
+                            editText.setText("");
+                        }
+                    })
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            EditText editText = (EditText) item.findViewById(R.id.editText2);
+                            //如果有輸入數字 執行setNOWQty
+                            if (editText.length() != 0) {
+                                getint = Integer.parseInt(editText.getText().toString());
+                                //判斷有無商品代碼 並帶入數字
+                                setNOWQty(getint);
+                            }else{
+                                EditText editText1 = (EditText)findViewById(R.id.editText);
+                                editText1.setText("");
+                            }
+
+
+                        }
+                    }).show();
         }
 
     }

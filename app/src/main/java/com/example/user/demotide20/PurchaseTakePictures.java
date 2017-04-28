@@ -186,6 +186,7 @@ public class PurchaseTakePictures extends AppCompatActivity {
         if(i==105){
             saveImgUri105(imgUri);
         }
+        /*
         new AlertDialog.Builder(this)
                 .setTitle("圖檔資訊")
                 .setMessage("圖檔路徑:" + imgUri.getPath() +
@@ -195,7 +196,7 @@ public class PurchaseTakePictures extends AppCompatActivity {
                 )
                 .setNegativeButton("關閉", null)
                 .show();
-
+            */
     }
     //查詢Uri
     Uri convertUri(Uri uri) {
