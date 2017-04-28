@@ -915,8 +915,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     checkUP();
                     if (check == 0) {
                         setWait();
-                        checkUri();
-                        AllBase64();
                         PostEndInfo post = new PostEndInfo();
                         post.start();
 
@@ -934,6 +932,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
     class PostEndInfo extends Thread {
         @Override
         public void run() {
+            checkUri();
+            AllBase64();
             PostendInfo();
         }
     }
@@ -1168,7 +1168,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    class  upPost extends Thread{
+        @Override
+        public void run() {
 
+        }
+    }
 
 
 }

@@ -865,8 +865,6 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     checkUP();
                     if(check<=1){
                         setWait();
-                        checkUri();
-                        AllBase64();
                         PostEndInfo post = new PostEndInfo();
                         post.start();
                     }else{
@@ -885,6 +883,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     class PostEndInfo extends Thread{
         @Override
         public void run() {
+            checkUri();
+            AllBase64();
             PostendInfo();
         }
     }

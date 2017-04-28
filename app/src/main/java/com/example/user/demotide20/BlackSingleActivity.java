@@ -627,7 +627,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                 if(getint2!=1){
                     i2 = i2 + getint2;
                 }else{
-                        i2 = i2 + getint2;
+                    i2 = i2 + getint2;
                 }
 
 
@@ -1003,7 +1003,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         Log.e("upList.size()", String.valueOf(upList.size()));
         if(upList.size()>0&&index>0&&index2>0){
             setWait();
-            checkUri();
+
             PostEndInfo post = new PostEndInfo();
             post.start();
         }else {
@@ -1016,6 +1016,8 @@ public class BlackSingleActivity extends AppCompatActivity {
     class PostEndInfo extends Thread{
         @Override
         public void run() {
+            checkUri();
+            AllBase64();
             PostendInfo();
         }
     }
