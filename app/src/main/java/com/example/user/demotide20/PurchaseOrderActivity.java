@@ -474,7 +474,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
     //判斷條碼內的商品是否有在list裡 有就回傳true
     private boolean checkID() {
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if(cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))){
                 return true;
             }
@@ -484,7 +484,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
     //判斷條碼內的商品是否有在list裡 有就回傳true (兩個以上商品編號)
     private boolean checkID2(){
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if(newStringArray[0].equals(myList.get(i3).get("ProductNo"))){
                 return true;
             }
@@ -494,7 +494,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
     //增加數量的方法
     private void setNOWQty(int getint2){
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if (cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))) {
                 int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
                 int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
@@ -539,30 +539,30 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         }
     }
     //增加數量的方法(兩個以上商品編號)
-    private void setNOWQty2(int getint2){
-        for (int i3 = 0; i3 < iMax; i3++) {
+    private void setNOWQty2(int getint2) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
                 int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
                 int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
                 Log.e("I22", String.valueOf(i2));
                 Log.e("I44", String.valueOf(i4));
                 //數量
-                if(getint2!=1){
+                if (getint2 != 1) {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
-                        if(i2==1){
-                            i2=getint2;
-                        }else {
+                        if (i2 == 1) {
+                            i2 = getint2;
+                        } else {
                             i2 = i2 + getint2;
                         }
                     }
-                }else{
+                } else {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-                    }else {
+                    } else {
                         i2 = i2 + getint2;
                     }
                 }
@@ -578,17 +578,18 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 adapter.notifyDataSetChanged();
-                Log.e("MYLISTTT", String.valueOf(myList));
-                EditText editText = (EditText)findViewById(R.id.editText);
-                editText.setText("");
+                EditText editText = (EditText) findViewById(R.id.editText);
+                if (editText.getText().length() >= 13) {
+                    editText.setText("");
+                    editText.requestFocus();
+                }
             }
         }
     }
     //增加數量(兩個以上商品編號)
-    private void addNOWQty(){
-        if(checkID2()==true){
+    private void addNOWQty() {
+        if (checkID2() == true) {
             if (addNum == 0) {
-                //跳出輸入數字對話框
                 final View item = LayoutInflater.from(PurchaseOrderActivity.this).inflate(R.layout.item, null);
                 new AlertDialog.Builder(PurchaseOrderActivity.this)
                         .setTitle("請輸入數量")
@@ -604,56 +605,53 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 EditText editText = (EditText) item.findViewById(R.id.editText2);
-                                //如果有輸入數字 執行setNOWQty
                                 if (editText.length() != 0) {
                                     getint = Integer.parseInt(editText.getText().toString());
-                                    //判斷有無商品代碼 並帶入數字
-                                    setNOWQty(getint);
-                                }else{
+                                    setNOWQty2(getint);
+                                }else {
                                     EditText editText1 = (EditText)findViewById(R.id.editText);
                                     editText1.setText("");
                                 }
-
-
                             }
                         }).show();
 
-            }else if(addNum==1){
+            } else if (addNum == 1) {
                 setNOWQty2(1);
-            }else if(addNum==5){
+            } else if (addNum == 5) {
                 setNOWQty2(1);
-            }else if(addNum==10) {
+            } else if (addNum == 10) {
                 setNOWQty2(1);
-            }else if(addNum==999999) {
+            } else if (addNum == 999999) {
                 setNOWQty2(1);
             }else {
                 setNOWQty2(1);
             }
-        }else{
+        } else {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             EditText editText = (EditText)findViewById(R.id.editText);
             editText.setText("");
+
         }
 
     }
     //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
     private void chooseThings() {
 
-        AlertDialog.Builder  builder=new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("請選擇商品編號");
         builder.setItems(stringArray, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Log.e("點擊",stringArray[i]);
+                Log.e("點擊", stringArray[i]);
                 newStringArray[0] = stringArray[i];
-                Log.e("點擊2",newStringArray[0]);
-                //Log.e("PRODUCTNO",map.get("ProductNo"));
+                Log.e("點擊2", newStringArray[0]);
+                Log.e("PRODUCTNO", map.get("ProductNo"));
                 addNOWQty();
             }
         });
 
         builder.setCancelable(true);
-        AlertDialog dialog=builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
 
     }

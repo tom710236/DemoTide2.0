@@ -524,7 +524,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //判斷條碼內的商品是否有在list裡 有就回傳true
     private boolean checkID() {
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if (cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))) {
                 return true;
             }
@@ -534,7 +534,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     private boolean checkID2() {
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
                 return true;
             }
@@ -544,7 +544,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     private void setNOWQty(int getint2) {
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if (cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))) {
                 int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
                 int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
@@ -591,7 +591,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     private void setNOWQty2(int getint2) {
-        for (int i3 = 0; i3 < iMax; i3++) {
+        for (int i3 = 0; i3 < myList.size(); i3++) {
             if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
                 int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
                 int i4 = Integer.parseInt(myList.get(i3).get("Qty"));

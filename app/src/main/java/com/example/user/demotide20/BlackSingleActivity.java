@@ -706,7 +706,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                                 if (editText.length() != 0) {
                                     getint = Integer.parseInt(editText.getText().toString());
                                     //判斷有無商品代碼 並帶入數字
-                                    setNOWQty(getint);
+                                    setNOWQty2(getint);
                                 }else{
                                     EditText editText1 = (EditText)findViewById(R.id.editText);
                                     editText1.setText("");
@@ -772,7 +772,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                             if (editText.length() != 0) {
                                 getint = Integer.parseInt(editText.getText().toString());
                                 //判斷有無商品代碼 並帶入數字
-                                setNOWQty(getint);
+                                setNOWQty2(getint);
                             }else{
                                 EditText editText1 = (EditText)findViewById(R.id.editText);
                                 editText1.setText("");
