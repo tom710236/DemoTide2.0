@@ -151,7 +151,6 @@ public class PurchaseActivity extends AppCompatActivity {
                 private void parseJson(final String json2) {
                     //取值
                     try {
-
                         //建立一個ArrayList
                         final ArrayList trans = new ArrayList();
                         //建立一個JSONArray 並把POST回傳資料json(JSOM檔)帶入

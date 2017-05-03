@@ -912,7 +912,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 }
                 //結案
                 else if (which == 1) {
+                    Log.e("MYLIST結案", String.valueOf(myList));
                     checkUP();
+                    Log.e("CHECKUP", String.valueOf(check));
                     if (check == 0) {
                         setWait();
                         PostEndInfo post = new PostEndInfo();
@@ -939,15 +941,17 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     //判斷是否有檢完
-    private void checkUP() {
+    private int checkUP() {
+        check = 0;
         for (int i = 0; i < myList.size(); i++) {
             if (Integer.parseInt((myList.get(i).get("NowQty"))) != Integer.parseInt(myList.get(i).get("Qty"))) {
                 check++;
                 Log.e("NOWQTY", myList.get(i).get("NowQty"));
                 Log.e("QTY", myList.get(i).get("Qty"));
+                return check;
             }
         }
-        Log.e("check", String.valueOf(check));
+        return 1;
     }
     //結案 用OkHttp PostAPI
     private void PostendInfo() {
@@ -1166,13 +1170,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             }).show();
         }
         return super.onKeyDown(keyCode, event);
-    }
-
-    class  upPost extends Thread{
-        @Override
-        public void run() {
-
-        }
     }
 
 

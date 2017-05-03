@@ -57,7 +57,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     Map<String, String> map;
     ArrayList<Map<String, String>> myList,upList;
     ListView listView;
-    int addNum = 0,iMax=0;
+    int addNum = 0,iMax=0,check=0;
     SpecialAdapter adapter;
     MyDBhelper helper;
     MyDBhelper4 helper4;
@@ -66,13 +66,15 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     final String[] newStringArray = new String[1];
     Map<String, String> newMap;
     ArrayList Btrans,AllImgUri,Allbase64;
-    int getint,check;
+    int getint;
     String[] stringArray;
     Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
     final String[] activity = {"換人檢", "結案"};
     ProgressDialog pd;
     int iCheck,iMatch=0;
+
+
     public class ProductIDInfo{
         private String mProductID;
 
@@ -861,15 +863,20 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
                 }
                 //結案
-                else if(which ==1) {
+                else if (which == 1) {
+
+                    Log.e("MYLIST結案", String.valueOf(myList));
                     checkUP();
-                    if(check<=1){
+                    Log.e("CHECKUP", String.valueOf(check));
+                    if (check == 0) {
                         setWait();
                         PostEndInfo post = new PostEndInfo();
                         post.start();
-                    }else{
+
+                    }else if (check!=0) {
                         Toast.makeText(PurchaseOrderActivity.this, "商品未檢完", Toast.LENGTH_SHORT).show();
                     }
+
                 }
             }
         });
@@ -925,15 +932,17 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         });
     }
     //判斷是否有檢完
-    private void checkUP(){
-        for(int i=0;i<myList.size();i++) {
-            if ( Integer.parseInt((myList.get(i).get("NowQty"))) !=Integer.parseInt( myList.get(i).get("Qty"))) {
+    private int checkUP() {
+        check = 0;
+        for (int i = 0; i < myList.size(); i++) {
+            if (Integer.parseInt((myList.get(i).get("NowQty"))) != Integer.parseInt(myList.get(i).get("Qty"))) {
                 check++;
-                Log.e("NOWQTY",myList.get(i).get("NowQty"));
-                Log.e("QTY",myList.get(i).get("Qty"));
+                Log.e("NOWQTY", myList.get(i).get("NowQty"));
+                Log.e("QTY", myList.get(i).get("Qty"));
+                return check;
             }
         }
-        Log.e("check", String.valueOf(check));
+        return 1;
     }
     //換人檢
     class PostChangeInfo extends Thread{
