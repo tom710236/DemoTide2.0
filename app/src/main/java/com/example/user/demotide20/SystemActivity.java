@@ -48,6 +48,7 @@ public class SystemActivity extends AppCompatActivity {
     MyDBhelper helper;MyDBhelper2 helper2;MyDBhelper4 helper4;
     SQLiteDatabase db,db2,db3,db4;
     ContentValues addbase,addbase2;
+    int index;
 
     //String ID,name,NO,DT;
 
@@ -93,8 +94,13 @@ public class SystemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_system);
+
+        //設定toolBar
         toolBar();
+        //取得上一頁傳來的資訊
         getPreviousPage();
+        Log.e("index5", String.valueOf(index));
+        //Spinner 資料同步時間
         setUpDateTime();
     }
 
@@ -275,11 +281,14 @@ public class SystemActivity extends AppCompatActivity {
         upTime.add("18:00");
         final Spinner spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setAdapter(upTime);
+        //設定Spinner的預設index
+        spinner.setSelection(index);
+        upTime.notifyDataSetChanged();
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //所點擊的索引值
-                int index = spinner.getSelectedItemPosition();
+                index = spinner.getSelectedItemPosition();
                 Log.e("SPINNER", String.valueOf(index));
                 if (index==1){
                     String timeUp="08:00";
@@ -335,6 +344,8 @@ public class SystemActivity extends AppCompatActivity {
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
                 bag.putString("cUserID",cUserID);
+                bag.putInt("index",index);
+                Log.e("index2", String.valueOf(index));
                 intent.putExtras(bag);
                 startActivity(intent);
                 SystemActivity.this.finish();
@@ -349,6 +360,7 @@ public class SystemActivity extends AppCompatActivity {
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
+        index = bag.getInt("index",index);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }

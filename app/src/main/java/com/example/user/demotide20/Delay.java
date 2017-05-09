@@ -27,6 +27,7 @@ import okhttp3.Response;
 
 /**
  * Created by TOM on 2017/4/10.
+ * Service 背景處理
  */
 
 public class Delay extends Service {

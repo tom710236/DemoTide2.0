@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,34 +19,39 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import static com.example.user.demotide20.R.id.textView;
 import static com.example.user.demotide20.R.layout.lview;
 
 
 public class AllListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     String cUserName, dateUp2,cUserID,dateUp=null;
     SQLiteDatabase db,db2;
-    int i=0,i2=0;
+    int i=0,i2=0,index;
     IconAdapter gAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_list);
-
+        //開啟sql資料庫 用來抓取商品資訊筆數和更新次數
         cursor3();
+        //用來顯示產品資訊撈取
         dateUp2="產品資訊撈取"+"("+i2+"筆資訊"+")"+"\n"+dateUp+"("+i+"次更新"+")";
+        //取得上一頁的資訊
         getPreviousPage();
+        //toolBar設定
         toolBar();
         //啟動Delay service 每次到這畫面就會啟動一次 所以先停止再啟動
         Intent intent2 = new Intent(this,Delay.class);
         stopService(intent2);
         startService(intent2);
 
-        //自訂ListView
+        //自訂的ListView
         ListView list = (ListView) findViewById(R.id.list);
         gAdapter = new IconAdapter();
         list.setAdapter(gAdapter);
         list.setOnItemClickListener(this);
     }
+    //啟動資料庫 查詢其內容
     private void cursor3(){
         MyDBhelper2 MyDB2 = new MyDBhelper2(this,"tblOrder2",null,1);
         db2=MyDB2.getWritableDatabase();
@@ -61,11 +67,13 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         //往下一個 收尋
         while(c.moveToNext()) {
             dateUp = c.getString(c.getColumnIndex("cUpdateDT"));
-            //Log.e("email",dateUp);
+            Log.e("email",dateUp);
         }
         i=c.getCount();
-        //Log.e("dateUp",dateUp);
-        // Log.e("i", String.valueOf(i));
+        //最後更新時間
+        Log.e("dateUp",dateUp);
+        //更新次數
+        Log.e("i", String.valueOf(i));
 
         /***********************************************************
          * 另一個SQL
@@ -80,13 +88,13 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 null,                                              // Having字串法
                 null);
         i2=c2.getCount();
-        //Log.e("I2", String.valueOf(i2));
+        //產品資訊筆數
+        Log.e("I2", String.valueOf(i2));
 
-        dateUp2="產品資訊撈取"+"("+i2+")"+"\n"+dateUp+"("+i+")";
-        //Log.e("DATAUP2",dateUp2);
+        dateUp2="產品資訊撈取"+"("+i2+"筆資訊"+")"+"\n"+dateUp+"("+i+"次更新"+")";
+        Log.e("DATAUP2",dateUp2);
 
-
-
+        //查看SQL的List (正式版沒有顯示出來)
         ListView lv = (ListView)findViewById(R.id.lv);
         SimpleCursorAdapter adapter;
         adapter = new SimpleCursorAdapter(this,
@@ -118,16 +126,18 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
             }
         });
     }
-
+    //取得上一頁傳來的資訊
     private void getPreviousPage() {
         Intent intent = getIntent();
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
+        index = bag.getInt("index",0);
+        Log.e("index3", String.valueOf(index));
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
-
+    //自定的ListView的點擊方法
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
@@ -182,6 +192,8 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 Bundle bag5 = new Bundle();
                 bag5.putString("cUserName",cUserName);
                 bag5.putString("cUserID",cUserID);
+                bag5.putInt("index",index);
+                Log.e("index4", String.valueOf(index));
                 intent5.putExtras(bag5);
                 startActivity(intent5);
                 AllListActivity.this.finish();
@@ -196,7 +208,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
 
     //String[]{} 自訂 listView
     class IconAdapter extends BaseAdapter {
-        String[] func = {"出貨單檢貨", "採購單點貨", "空白表單","空白表單查詢","儲位與庫存管理","系統管理",dateUp2};
+        String[] func = {"出貨單檢貨", "採購單檢貨", "空白表單","空白表單查詢","儲位與庫存管理","系統管理",dateUp2};
 
         //int陣列方式將功能儲存在icons陣列
         int[] icons = {R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp
@@ -225,7 +237,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
             if (v == null) {
                 v = getLayoutInflater().inflate(lview, null);
                 ImageView image = (ImageView) v.findViewById(R.id.img);
-                TextView text = (TextView) v.findViewById(R.id.textView);
+                TextView text = (TextView) v.findViewById(textView);
                 //呼叫setImageResource方法設定圖示的圖檔資源
                 image.setImageResource(icons[position]);
                 //呼叫setText方法設定圖示上的文字
