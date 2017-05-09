@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:visibility="visible"
+    android:background="@drawable/bg"
     tools:context="com.example.user.demotide20.BlackTakePictures">
 
 

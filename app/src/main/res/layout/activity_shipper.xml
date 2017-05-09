@@ -8,6 +8,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
+    android:background="@drawable/bg"
     tools:context="com.example.user.demotide20.ShipperActivity"
     android:orientation="vertical">
 

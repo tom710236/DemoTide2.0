@@ -26,7 +26,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -63,7 +62,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     String[] stringArray;
     String Abase64, Bbase64, Cbase64, Dbase64, Ebase64;
     ArrayList<Map<String, String>> myList, upList;
-    ArrayList trans, trans2, Btrans;
+    ArrayList  Btrans;
     MyDBhelper helper;
     MyDBhelper4 helper4;
     SQLiteDatabase db, db4;
@@ -78,7 +77,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
     String upStringList;
     final String[] newStringArray = new String[1];
     ProgressDialog d;
-    ProgressBar pb;
     int iCheck;
     int iMatch=0;
 
@@ -782,7 +780,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     // Uri 轉成Bitmap 再轉成 base64
-    // bitmap 要轉成 jpg 然後上傳時要給提示 (未做)
+    // bitmap 要轉成 jpg
     void AImgUriBase64(Uri uri) {
 
         BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
@@ -796,6 +794,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         //轉成base64
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        //調整存檔類別和檔案大小
         bmp.compress(Bitmap.CompressFormat.JPEG, 70, stream);
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
@@ -1176,32 +1175,3 @@ public class ShipperOrderActivity extends AppCompatActivity {
 }
 
 
-/*
-        //顯示ProgressDialog
-        pd = ProgressDialog.show(ShipperOrderActivity.this, "換人檢", "上傳中，請稍後...");
-                new Thread(new Runnable() {
-        @Override
-        public void run() {
-        spandTimeMethod();
-        handler.sendEmptyMessage(0);
-        }
-
-        }).start();
-
-        顯示ProgressDialog
-        Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {// handler接收到消息后就会执行此方法
-        pd.dismiss();
-    }
-};
-
-private void spandTimeMethod() {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-*/

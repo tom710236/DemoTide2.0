@@ -12,6 +12,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
+    android:background="@drawable/bg"
     android:weightSum="1">
     <FrameLayout android:layout_height="wrap_content"
         android:layout_width="match_parent">
