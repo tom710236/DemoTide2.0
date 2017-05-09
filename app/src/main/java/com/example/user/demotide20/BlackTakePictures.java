@@ -39,7 +39,7 @@ public class BlackTakePictures extends AppCompatActivity {
     ArrayList AllImgUri;
     ImageView imv2;
     ArrayList<Map<String, String>> myList;
-    int index ,index2;
+    int index ,index2,indexSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +72,7 @@ public class BlackTakePictures extends AppCompatActivity {
         index = bag.getInt("index",index);
         index2 = bag.getInt("index2",index2);
         order = bag.getString("order", null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }

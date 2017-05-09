@@ -72,7 +72,7 @@ public class BlackSingleActivity extends AppCompatActivity {
     final String[] newStringArray = new String[1];
     Map<String, String> newMap;
     ArrayList Btrans,AllImgUri,Allbase64;
-    int getint;
+    int getint,indexSpinner;
     String[] stringArray;
     Uri AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
@@ -160,6 +160,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         Bundle bag = new Bundle();
         bag.putString("cUserName", cUserName);
         bag.putString("cUserID",cUserID);
+        bag.putInt("indexSpinner",indexSpinner);
         intent.putExtras(bag);
         startActivity(intent);
         BlackSingleActivity.this.finish();
@@ -173,6 +174,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         index = bag.getInt("index");
         Log.e("index取得", String.valueOf(index));
         index2 = bag.getInt("index2");
+        indexSpinner = bag.getInt("indexSpinner",0);
         AllImgUri = bag.getStringArrayList("AllImgUri");
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);

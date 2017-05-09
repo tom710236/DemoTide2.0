@@ -40,7 +40,7 @@ public class ShipperActivity extends AppCompatActivity {
     String cUserName,listname,listTotal,json4,door1=null,cUserID;
     String name,order ;
     String checked2,checked3;
-    int index ;
+    int index,indexSpinner;
     ArrayList<String> checked;
     ArrayList<String> json2;
     SimpleAdapter adapter;
@@ -113,6 +113,7 @@ public class ShipperActivity extends AppCompatActivity {
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
                 bag.putString("cUserID",cUserID);
+                bag.putInt("indexSpinner",indexSpinner);
                 intent.putExtras(bag);
                 startActivity(intent);
                 ShipperActivity.this.finish();
@@ -127,6 +128,7 @@ public class ShipperActivity extends AppCompatActivity {
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("cUserID",cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");

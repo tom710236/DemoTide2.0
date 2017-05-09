@@ -43,12 +43,14 @@ public class SystemActivity extends AppCompatActivity {
     //建立一個類別存JSON
     //資料庫名稱
     final String DB_NAME = "tblTable";
-
+    Spinner spinner;
+    ArrayAdapter<String> upTime;
+    String timeUp2=null;
     //商品資訊資料庫建立
-    MyDBhelper helper;MyDBhelper2 helper2;MyDBhelper4 helper4;
+    MyDBhelper helper;MyDBhelper2 helper2;MyDBhelper4 helper4;MyDBhelper3 helper3;
     SQLiteDatabase db,db2,db3,db4;
     ContentValues addbase,addbase2;
-    int index;
+
 
     //String ID,name,NO,DT;
 
@@ -99,9 +101,9 @@ public class SystemActivity extends AppCompatActivity {
         toolBar();
         //取得上一頁傳來的資訊
         getPreviousPage();
-        Log.e("index5", String.valueOf(index));
         //Spinner 資料同步時間
         setUpDateTime();
+        getTimeUp();
     }
 
     //GET 商品清單資料 並放入資料庫
@@ -217,10 +219,11 @@ public class SystemActivity extends AppCompatActivity {
     }
     //返回鍵 暫時用來看資料庫內容
     public void back (View v){
-        setThingSQL();
-        cursor3();
+        //setThingSQL();
+        //cursor3();
         //setBarcodeSQL();
-        //cursor4();
+
+        cursor4();
     }
     //登出鍵
     public void out (View v){
@@ -247,8 +250,9 @@ public class SystemActivity extends AppCompatActivity {
     }
     //查詢商品條碼資料庫 並把查詢結果放進listView
     private void cursor4(){
-
-        Cursor c=db4.rawQuery("SELECT * FROM "+"tblTable4", null);
+        MyDBhelper3 MyDB3 = new MyDBhelper3(SystemActivity.this,"tblTable3",null,1);
+        db3=MyDB3.getWritableDatabase();
+        Cursor c=db3.rawQuery("SELECT * FROM "+"tblTable3", null);
         ListView lv = (ListView)findViewById(R.id.listView);
         SimpleCursorAdapter adapter;
         adapter = new SimpleCursorAdapter(this,
@@ -256,9 +260,9 @@ public class SystemActivity extends AppCompatActivity {
                 R.layout.lview2,
                 c,
                 //new String[] {"info","amount"},
-                new String[] {"_id", "cProductID", "cBarcode"},
+                new String[] {"_id", "timeUp"},
                 //new int[] {android.R.id.text1,android.R.id.text2},
-                new int[] {R.id.textView19,R.id.textView18,R.id.textView17},
+                new int[] {R.id.textView19,R.id.textView18},
                 0);
         lv.setAdapter(adapter);
     }
@@ -266,39 +270,59 @@ public class SystemActivity extends AppCompatActivity {
     private void setTime(String timeUp){
         MyDBhelper3 myDB3 = new MyDBhelper3(SystemActivity.this,"tblTable3",null,1);
         db3=myDB3.getWritableDatabase();
+        db3.delete("tblTable3", null, null);
         ContentValues addbase = new ContentValues();
         addbase.put("timeUp",timeUp);
+        Log.e("addbase", String.valueOf(addbase));
         db3.insert("tblTable3",null,addbase);
         db3.close();
+
+
     }
     //設定更新時間
     private void setUpDateTime(){
-        ArrayAdapter<String> upTime = new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line);
+        upTime = new ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line);
         //upTime.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
         upTime.add("請選擇");
         upTime.add("08:00");
         upTime.add("12:00");
         upTime.add("18:00");
-        final Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        spinner = (Spinner) findViewById(R.id.spinner);
         spinner.setAdapter(upTime);
+        if(getTimeUp()!=null){
+                if(getTimeUp().equals("08:00")){
+                    spinner.setSelection(1);
+                    upTime.notifyDataSetChanged();
+                }else if(getTimeUp().equals("12:00")) {
+                    spinner.setSelection(2);
+                    upTime.notifyDataSetChanged();
+                }else if (getTimeUp().equals("18:00")) {
+                 spinner.setSelection(3);
+                    upTime.notifyDataSetChanged();
+                }
+            }else{
+            spinner.setSelection(0);
+            upTime.notifyDataSetChanged();
+        }
+
         //設定Spinner的預設index
-        spinner.setSelection(index);
-        upTime.notifyDataSetChanged();
+        //spinner.setSelection(indexSpinner);
+        //upTime.notifyDataSetChanged();
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //所點擊的索引值
-                index = spinner.getSelectedItemPosition();
-                Log.e("SPINNER", String.valueOf(index));
-                if (index==1){
+                int indexSpinner = spinner.getSelectedItemPosition();
+                if (indexSpinner==1){
                     String timeUp="08:00";
                     setTime(timeUp);
                 }
-                else if(index==2){
+                else if(indexSpinner==2){
                     String timeUp="12:00";
                     setTime(timeUp);
                 }
-                else if(index==3){
+                else if(indexSpinner==3){
                     String timeUp="18:00";
                     setTime(timeUp);
                 }
@@ -344,8 +368,6 @@ public class SystemActivity extends AppCompatActivity {
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
                 bag.putString("cUserID",cUserID);
-                bag.putInt("index",index);
-                Log.e("index2", String.valueOf(index));
                 intent.putExtras(bag);
                 startActivity(intent);
                 SystemActivity.this.finish();
@@ -360,7 +382,6 @@ public class SystemActivity extends AppCompatActivity {
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
-        index = bag.getInt("index",index);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
@@ -414,5 +435,26 @@ public class SystemActivity extends AppCompatActivity {
                             }).show();
         }
         return super.onKeyDown(keyCode, event);
+    }
+    //到排定更新的時間的SQL 去得到需要更新的時間
+    private String getTimeUp(){
+        helper3 = new MyDBhelper3(SystemActivity.this,"tblTable3",null,1);
+        db3 = helper3.getWritableDatabase();
+        Cursor c=db3.rawQuery("SELECT * FROM "+"tblTable3", null);   //查詢全部欄位
+        /*
+        Cursor c = db3.query("tblTable3",                          // 資料表名字
+                null,                                              // 要取出的欄位資料
+                null,                                              // 查詢條件式(WHERE)
+                null,                                              // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                null,                                              // Group By字串語法
+                null,                                              // Having字串法
+                null);                                             // Order By字串語法(排序)
+        //往下一個 收尋
+        */
+        while(c.moveToNext()) {
+            timeUp2 = c.getString(c.getColumnIndex("timeUp"));
+        }
+        //Log.e("timeUp2",timeUp2);
+        return timeUp2;
     }
 }

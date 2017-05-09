@@ -35,7 +35,7 @@ public class PurchaseActivity extends AppCompatActivity {
     String order;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
     ArrayList<String> json2;
-    int index;
+    int index,indexSpinner;
     public class ProductIDInfo{
         private String mPurchaseNo;
         private String mSupplier;
@@ -75,6 +75,7 @@ public class PurchaseActivity extends AppCompatActivity {
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
                 bag.putString("cUserID", cUserID);
+                bag.putInt("indexSpinner",indexSpinner);
                 intent.putExtras(bag);
                 startActivity(intent);
                 PurchaseActivity.this.finish();
@@ -90,6 +91,7 @@ public class PurchaseActivity extends AppCompatActivity {
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("cUserID", cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");

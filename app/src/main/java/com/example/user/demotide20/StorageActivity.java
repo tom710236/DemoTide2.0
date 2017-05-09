@@ -40,7 +40,7 @@ public class StorageActivity extends AppCompatActivity {
     String cUserName, cUserID,mLackNO,mLackName,lackNoAdd,lackNameAdd,scr;
     String url="http://demo.shinda.com.tw/ModernWebApi/LackAPI.aspx";
     ArrayList<Map<String, String>> myList;
-    int iMax = 0;
+    int iMax = 0,indexSpinner;
     Map<String, String> map;
     ListView listView;
     SimpleAdapter adapter;
@@ -77,6 +77,7 @@ public class StorageActivity extends AppCompatActivity {
         Bundle bag = new Bundle();
         bag.putString("cUserName", cUserName);
         bag.putString("cUserID", cUserID);
+        bag.putInt("indexSpinner",indexSpinner);
         intent.putExtras(bag);
         startActivity(intent);
         StorageActivity.this.finish();
@@ -90,6 +91,7 @@ public class StorageActivity extends AppCompatActivity {
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("cUserID", cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");

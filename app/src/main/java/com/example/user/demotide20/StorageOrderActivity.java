@@ -44,7 +44,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     int iMax = 0;
     int newCount = 0;
     int editCount = 0;
-    int check = 0;
+    int indexSpinner;
     Map<String, String> map;
     Map<String, String> upMap;
     Map<String, String> checkMap;
@@ -94,6 +94,7 @@ public class StorageOrderActivity extends AppCompatActivity {
         Bundle bag = new Bundle();
         bag.putString("cUserName", cUserName);
         bag.putString("cUserID", cUserID);
+        bag.putInt("indexSpinner",indexSpinner);
         intent.putExtras(bag);
         startActivity(intent);
         StorageOrderActivity.this.finish();
@@ -109,6 +110,7 @@ public class StorageOrderActivity extends AppCompatActivity {
         cUserID = bag.getString("cUserID", null);
         mLackNO = bag.getString("mLackNO", null);
         mLackName = bag.getString("mLackName", null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("cUserID", cUserID);
 
         TextView textView = (TextView) findViewById(R.id.textView3);

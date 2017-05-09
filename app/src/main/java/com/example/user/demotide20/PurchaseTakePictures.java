@@ -39,6 +39,7 @@ public class PurchaseTakePictures extends AppCompatActivity {
     ArrayList AllImgUri;
     ImageView imv2;
     ArrayList<Map<String, String>> myList;
+    int indexSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +72,7 @@ public class PurchaseTakePictures extends AppCompatActivity {
         activity = bag.getString("activity",null);
         order2 = bag.getString("order2", null);
         order = bag.getString("order",null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }

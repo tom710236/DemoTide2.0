@@ -57,7 +57,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     Map<String, String> map;
     ArrayList<Map<String, String>> myList,upList;
     ListView listView;
-    int addNum = 0,iMax=0,check=0;
+    int addNum = 0,iMax=0,check=0,indexSpinner;
     SpecialAdapter adapter;
     MyDBhelper helper;
     MyDBhelper4 helper4;
@@ -154,6 +154,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         Bundle bag = new Bundle();
         bag.putString("cUserName", cUserName);
         bag.putString("cUserID",cUserID);
+        bag.putInt("indexSpinner",indexSpinner);
         intent.putExtras(bag);
         startActivity(intent);
         PurchaseOrderActivity.this.finish();
@@ -172,6 +173,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         cUserID = bag.getString("cUserID",null);
         order = bag.getString("order",null);
         order2 = bag.getString("order2",null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
         TextView textView1 = (TextView) findViewById(R.id.textView11);

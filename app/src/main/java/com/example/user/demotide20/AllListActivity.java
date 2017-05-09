@@ -26,7 +26,7 @@ import static com.example.user.demotide20.R.layout.lview;
 public class AllListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     String cUserName, dateUp2,cUserID,dateUp=null;
     SQLiteDatabase db,db2;
-    int i=0,i2=0,index;
+    int i=0,i2=0;
     IconAdapter gAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         }
         i=c.getCount();
         //最後更新時間
-        Log.e("dateUp",dateUp);
+        //Log.e("dateUp",dateUp);
         //更新次數
         Log.e("i", String.valueOf(i));
 
@@ -132,8 +132,6 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
-        index = bag.getInt("index",0);
-        Log.e("index3", String.valueOf(index));
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
@@ -192,8 +190,6 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                 Bundle bag5 = new Bundle();
                 bag5.putString("cUserName",cUserName);
                 bag5.putString("cUserID",cUserID);
-                bag5.putInt("index",index);
-                Log.e("index4", String.valueOf(index));
                 intent5.putExtras(bag5);
                 startActivity(intent5);
                 AllListActivity.this.finish();

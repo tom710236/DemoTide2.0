@@ -45,6 +45,7 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
     final String DB_NAME = "tblTable";
     SpecialAdapter adapter;
     Object BlankNo, BlankTypeName, WHTypeName, UserName, FinishDate;
+    int indexSpinner;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +65,7 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID", null);
         mBlackNo = bag.getString("mBlackNo", null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("mBlackNo", mBlackNo);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
@@ -91,6 +93,7 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
         Bundle bag = new Bundle();
         bag.putString("cUserName", cUserName);
         bag.putString("cUserID", cUserID);
+        bag.putInt("indexSpinner",indexSpinner);
         intent.putExtras(bag);
         startActivity(intent);
         SearchBlackSingleListActivity.this.finish();

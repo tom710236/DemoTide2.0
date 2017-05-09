@@ -90,6 +90,7 @@ public class Delay extends Service {
             @Override
             public void run() {
                 getTimeUp();
+                Log.e("timeUp222",timeUp2);
                 timeUp();
                 if(today.equals(timeUp2)){
                     //建立商品清單SQL
@@ -133,7 +134,7 @@ public class Delay extends Service {
         today = df.format(mCal.getTime());
     }
     //到排定更新的時間的SQL 去得到需要更新的時間
-    private void getTimeUp(){
+    private String getTimeUp(){
         MyDBhelper3 MyDB3 = new MyDBhelper3(Delay.this,"tblTable3",null,1);
         db3=MyDB3.getWritableDatabase();
         //Cursor c=db2.rawQuery("SELECT * FROM "+"tblTable2", null);   //查詢全部欄位
@@ -148,7 +149,8 @@ public class Delay extends Service {
         while(c.moveToNext()) {
             timeUp2 = c.getString(c.getColumnIndex("timeUp"));
         }
-
+        Log.e("timeUp22",timeUp2);
+        return timeUp2;
     }
     //商品清單SQL
     private void setThingSQL(){

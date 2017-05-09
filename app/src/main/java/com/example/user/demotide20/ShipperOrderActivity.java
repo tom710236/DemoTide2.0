@@ -59,6 +59,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     ListView listView;
     int check = 0;
     int addNum = 0, iMax = 0;
+    int indexSpinner;
     String[] stringArray;
     String Abase64, Bbase64, Cbase64, Dbase64, Ebase64;
     ArrayList<Map<String, String>> myList, upList;
@@ -174,6 +175,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Bundle bag = new Bundle();
         bag.putString("cUserName", cUserName);
         bag.putString("cUserID", cUserID);
+        bag.putInt("indexSpinner",indexSpinner);
         intent.putExtras(bag);
         startActivity(intent);
         ShipperOrderActivity.this.finish();
@@ -194,7 +196,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         cUserID = bag.getString("cUserID", null);
         order = bag.getString("order", null);
         checked = bag.getString("checked", null);
-
+        indexSpinner = bag.getInt("indexSpinner",0);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
         TextView textView1 = (TextView) findViewById(R.id.textView11);

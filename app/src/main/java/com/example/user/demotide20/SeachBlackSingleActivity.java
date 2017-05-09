@@ -45,7 +45,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
     String cUserName,cUserID,Sname,scrData,mBlackNo;
     Object Warehouse,BlankNo,WHTypeName;
     Object InputType;
-    int index;
+    int index,indexSpinner;
     SpecialAdapter adapter;
     ArrayList<Map<String, String>> myList;
     Map<String, String> map;
@@ -76,6 +76,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
                 bag.putString("cUserID",cUserID);
+                bag.putInt("indexSpinner",indexSpinner);
                 intent.putExtras(bag);
                 startActivity(intent);
                 SeachBlackSingleActivity.this.finish();
@@ -90,6 +91,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
         cUserID = bag.getString("cUserID",null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("cUserID",cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");

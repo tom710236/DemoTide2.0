@@ -37,6 +37,7 @@ public class TakePictures extends AppCompatActivity {
     Uri imgUri,AImgUri,BImgUri,CImgUri,DImgUri,EImgUri;
     ArrayList AllImgUri;
     ImageView imv2;
+    int indexSpinner;
 
 
     @Override
@@ -75,6 +76,7 @@ public class TakePictures extends AppCompatActivity {
         activity = bag.getString("activity",null);
         checked = bag.getString("checked", null);
         order = bag.getString("order", null);
+        indexSpinner = bag.getInt("indexSpinner",0);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
