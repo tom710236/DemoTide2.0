@@ -303,6 +303,7 @@ public class ShipperActivity extends AppCompatActivity {
                             }
                             //POST成功後把回傳的值(陣列)取出來 用listView顯示 把JSON2帶進來
                             private void parseJson2(String json4) {
+                                //ListView 設定
                                 final ListView listView = (ListView)findViewById(R.id.listView);
 
                                 try {

@@ -103,7 +103,6 @@ public class SystemActivity extends AppCompatActivity {
         getPreviousPage();
         //Spinner 資料同步時間
         setUpDateTime();
-        getTimeUp();
     }
 
     //GET 商品清單資料 並放入資料庫
@@ -194,13 +193,15 @@ public class SystemActivity extends AppCompatActivity {
     }
     //立即同步商品鍵
     public void upthing (View v){
-        //建立SQL
+        //建立商品資訊SQL
         setThingSQL();
         //先刪除舊有資料表格
         db.delete(DB_NAME, null, null);
+        //建立條碼比對商品資訊SQL
         setBarcodeSQL();
+        //先刪除舊有資料表格
         db4.delete("tblTable4",null,null);
-        //放入新增表格
+        //放入新增表格(商品清單)
         Get get = new Get();
         get.start();
         //用來紀錄更新日期和次數
@@ -212,6 +213,7 @@ public class SystemActivity extends AppCompatActivity {
     public void delThing(View v){
         setThingSQL();
         db.delete(DB_NAME,null,null);
+        db.close();
         setBarcodeSQL();
         db4.delete("tblTable4",null,null);
         db4.close();
@@ -300,10 +302,10 @@ public class SystemActivity extends AppCompatActivity {
                  spinner.setSelection(3);
                     upTime.notifyDataSetChanged();
                 }
-            }else{
+        }else{
             spinner.setSelection(0);
             upTime.notifyDataSetChanged();
-        }
+             }
 
         //設定Spinner的預設index
         //spinner.setSelection(indexSpinner);
@@ -436,7 +438,7 @@ public class SystemActivity extends AppCompatActivity {
         }
         return super.onKeyDown(keyCode, event);
     }
-    //到排定更新的時間的SQL 去得到需要更新的時間
+    //到排定更新的時間的SQL 去得到更新的時間
     private String getTimeUp(){
         helper3 = new MyDBhelper3(SystemActivity.this,"tblTable3",null,1);
         db3 = helper3.getWritableDatabase();
