@@ -395,6 +395,7 @@ public class ShipperActivity extends AppCompatActivity {
         checked = new ArrayList();
         Log.e("upList.size()", String.valueOf(upList.size()));
         if(upList.size()>0){
+
             for(int i=0; i<upList.size();i++){
                 Log.e("myList.get(i)", String.valueOf(upList.get(i)));
                 int icheck;

@@ -427,36 +427,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 //Switch 關閉時
                 if (addNum == 0) {
                     //跳出輸入數字對話框
-                    final View item = LayoutInflater.from(PurchaseOrderActivity.this).inflate(R.layout.item, null);
-                    new AlertDialog.Builder(PurchaseOrderActivity.this)
-                            .setTitle("請輸入數量")
-                            .setView(item)
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener(){
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    EditText editText = (EditText)findViewById(R.id.editText);
-                                    editText.setText("");
-                                }
-                            })
-                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    EditText editText = (EditText) item.findViewById(R.id.editText2);
-                                    //如果有輸入數字 執行setNOWQty
-                                    if (editText.length() != 0) {
-                                        getint = Integer.parseInt(editText.getText().toString());
-                                        //判斷有無商品代碼 並帶入數字
-                                        setNOWQty(getint);
-                                        EditText editText1 = (EditText)findViewById(R.id.editText);
-                                        editText1.setText("");
-                                    }else{
-                                        EditText editText1 = (EditText)findViewById(R.id.editText);
-                                        editText1.setText("");
-                                    }
-
-
-                                }
-                            }).show();
+                    setAlertDialog();
                 }else if(addNum ==1){
                     setNOWQty(1);
                 }else if(addNum ==5) {
@@ -1123,5 +1094,43 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                             }).show();
         }
         return super.onKeyDown(keyCode, event);
+    }
+    //設定輸入數量框
+    private void setAlertDialog(){
+        final View item = LayoutInflater.from(PurchaseOrderActivity.this).inflate(R.layout.item, null);
+        new AlertDialog.Builder(PurchaseOrderActivity.this)
+                .setTitle("請輸入數量")
+                .setView(item)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //editText歸零
+                        EditText editText = (EditText)findViewById(R.id.editText);
+                        editText.setText("");
+                    }
+                })
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        EditText editText = (EditText) item.findViewById(R.id.editText2);
+                        //如果有輸入數字 執行setNOWQty
+                        if (editText.length() != 0) {
+                            getint = Integer.parseInt(editText.getText().toString());
+                            //判斷有無商品代碼 並帶入數字
+                            setNOWQty(getint);
+                            //editText歸零
+                            EditText editText1 = (EditText)findViewById(R.id.editText);
+                            editText1.setText("");
+                        }else{
+                            EditText editText1 = (EditText)findViewById(R.id.editText);
+                            editText1.setText("");
+                        }
+
+
+                    }
+                }).show();
+        //editText歸零
+        EditText editText1 = (EditText)findViewById(R.id.editText);
+        editText1.setText("");
     }
 }
