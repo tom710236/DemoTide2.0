@@ -74,33 +74,45 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/button5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
+            android:background="@drawable/blue_button"
             android:onClick="onActivity"
             android:text="動作" />
+
 
         <Button
             android:id="@+id/button4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
+            android:background="@drawable/pick_button"
             android:onClick="onPicture"
             android:text="照片" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="5dp"
+            android:paddingRight="-13dp">
 
             <TextView
                 android:id="@+id/textView10"
@@ -113,13 +125,14 @@
             <Switch
                 android:id="@+id/switch2"
                 android:layout_width="98dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="5dp"
                 android:switchTextAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textOff="關閉"
                 android:textOn="開啟" />
         </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -127,8 +140,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:orientation="horizontal"
         android:paddingBottom="2dp"
         android:paddingTop="2dp"
@@ -170,7 +183,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="addAll"
-            android:text="+9999" />
+            android:text="全部" />
     </LinearLayout>
 
     <LinearLayout
@@ -190,7 +203,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
@@ -210,15 +223,15 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:background="#000000" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:orientation="horizontal">
 

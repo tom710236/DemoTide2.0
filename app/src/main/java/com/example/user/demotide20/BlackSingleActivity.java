@@ -831,7 +831,7 @@ public class BlackSingleActivity extends AppCompatActivity {
 
     }
     // Uri 轉成Bitmap 再轉成 base64
-    // bitmap 要轉成 jpg 然後上傳時要給提示 (未做)
+    // bitmap 要轉成 jpg 然後上傳時要給提示
     void AImgUriBase64(Uri uri) {
 
         BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件

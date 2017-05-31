@@ -9,7 +9,7 @@
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
-    tools:context="com.example.user.demotide20.PurchaseOrderActivity"
+    tools:context="com.example.user.demotide20.ShipperOrderActivity"
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
@@ -74,33 +74,45 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginLeft="30dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/button5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
+            android:background="@drawable/blue_button"
             android:onClick="onActivity"
             android:text="動作" />
+
 
         <Button
             android:id="@+id/button4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
+            android:background="@drawable/pick_button"
             android:onClick="onPicture"
             android:text="照片" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="5dp"
+            android:paddingRight="-13dp">
 
             <TextView
                 android:id="@+id/textView10"
@@ -113,7 +125,7 @@
             <Switch
                 android:id="@+id/switch2"
                 android:layout_width="98dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginBottom="5dp"
                 android:layout_marginLeft="5dp"
                 android:switchTextAppearance="@style/TextAppearance.AppCompat.Body1"
@@ -127,8 +139,8 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginBottom="10dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
         android:orientation="horizontal"
         android:paddingBottom="2dp"
         android:paddingTop="2dp"
@@ -190,44 +202,50 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="10dp"
             android:layout_weight="1"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/textView12"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
-                android:text="採購單"
+                android:text="客戶"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView11"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:layout_weight="1"
+                android:layout_weight="2.4"
                 android:text="TextView"
                 android:textSize="14sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/textView48"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
 
         </LinearLayout>
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_weight="1"
             android:background="#000000" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:orientation="horizontal">
 
@@ -246,8 +264,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2.4"
                 android:ems="10"
-                android:inputType="textPersonName"
-                android:singleLine="true"
+                android:inputType="number"
+
+                android:selectAllOnFocus="false"
+                android:singleLine="false"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -288,7 +308,7 @@
         android:layout_marginTop="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="採購項目"
+        android:text="出貨項目"
         android:textStyle="bold" />
 
     <LinearLayout
