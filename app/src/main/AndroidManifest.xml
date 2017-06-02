@@ -29,9 +29,9 @@
         <activity android:name=".SystemActivity" />
 
         <service
-            android:name=".Delay"
-            android:enabled="true"
-            android:exported="true" />
+        android:name=".Delay"
+        android:enabled="true"
+        android:exported="true" />
 
         <activity
             android:name=".TakePictures"

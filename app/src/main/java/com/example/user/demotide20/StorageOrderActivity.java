@@ -540,8 +540,8 @@ public class StorageOrderActivity extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(editText.getText().length()>=13){
                     listAdd();
-                    EditText editText1 = (EditText)findViewById(R.id.editText14);
-                    editText1.requestFocus();
+                    //EditText editText1 = (EditText)findViewById(R.id.editText14);
+                    //editText1.requestFocus();
                 }
 
                 return false;
@@ -550,6 +550,7 @@ public class StorageOrderActivity extends AppCompatActivity {
 
 
     }
+
     private void setEditText2() {
         final EditText editText = (EditText) findViewById(R.id.editText14);
         editText.setOnKeyListener(new View.OnKeyListener() {

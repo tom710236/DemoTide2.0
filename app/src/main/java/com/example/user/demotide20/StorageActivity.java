@@ -466,7 +466,7 @@ public class StorageActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (result == 1) {
+        if (result == 1 && upList.size()!=0) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -478,7 +478,7 @@ public class StorageActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(StorageActivity.this, "商品未清空，請再試一次", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(StorageActivity.this, "商品未清空或未選擇儲位", Toast.LENGTH_SHORT).show();
                 }
             });
 

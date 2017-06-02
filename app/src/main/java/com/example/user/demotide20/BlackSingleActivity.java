@@ -498,7 +498,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                     setNOWQty(1);
                 } else if (addNum == 10) {
                     setNOWQty(1);
-                } else if (addNum == 999999) {
+                } else if (addNum == 9999) {
                     setNOWQty(1);
                 }else {
                     setNOWQty(1);

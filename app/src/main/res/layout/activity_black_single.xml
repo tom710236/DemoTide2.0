@@ -183,7 +183,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="addAll"
-            android:text="全部" />
+            android:text="+9999" />
     </LinearLayout>
 
     <LinearLayout
