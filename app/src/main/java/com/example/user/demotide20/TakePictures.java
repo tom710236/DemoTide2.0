@@ -181,6 +181,7 @@ public class TakePictures extends AppCompatActivity {
             }
             else if(requestCode==101){
                 imgUri = convertUri(data.getData());  //取得選取相片的 Uri 並做 Uri 格式轉換
+                Log.e("imgUri", String.valueOf(imgUri));
                 ImageView imv = (ImageView)findViewById(R.id.imageView14);
                 showImg(imv,requestCode);
             }
