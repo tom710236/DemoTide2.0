@@ -136,7 +136,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shipper_order);
         final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
-        editText.requestFocus();
+        //editText.requestFocus();
 
 
         //取得上一頁資料
@@ -150,6 +150,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         post.start();
         setEditText();
         setEditText2();
+
     }
 
     //設定toolBar
@@ -462,8 +463,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Log.e("筆數", String.valueOf(iCheck));
         //條碼找不到商品編號
         if (iCheck == 0) {
+
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             editText.setText("");
+
             //條碼找到一筆商品編號
         } else if (iCheck == 1) {
             //先判斷條碼內的商品號碼是否有在listView裡

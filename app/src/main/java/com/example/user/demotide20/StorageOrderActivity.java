@@ -62,7 +62,7 @@ public class StorageOrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_storage_order);
         EditText editText = (EditText)findViewById(R.id.editText8);
-        editText.requestFocus();
+        //editText.requestFocus();
         toolBar();
         getPreviousPage();
         Post post = new Post();

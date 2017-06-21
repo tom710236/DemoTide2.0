@@ -121,7 +121,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchase_order);
         EditText editText = (EditText)findViewById(R.id.editText);
-        editText.requestFocus();
+        //editText.requestFocus();
         toolBar();
         getPreviousPage();
 

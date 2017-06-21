@@ -83,7 +83,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_black_single);
         EditText editText = (EditText)findViewById(R.id.editText);
-        editText.requestFocus();
+        //editText.requestFocus();
         toolBar();
         getPreviousPage();
         PostGetType post = new PostGetType();
