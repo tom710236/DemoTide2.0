@@ -1,11 +1,14 @@
 package com.example.user.demotide20;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -50,7 +53,7 @@ public class SystemActivity extends AppCompatActivity {
     MyDBhelper helper;MyDBhelper2 helper2;MyDBhelper4 helper4;MyDBhelper3 helper3;
     SQLiteDatabase db,db2,db3,db4;
     ContentValues addbase,addbase2;
-
+    ProgressDialog d;
 
     //String ID,name,NO,DT;
 
@@ -131,6 +134,7 @@ public class SystemActivity extends AppCompatActivity {
                     String json = response.body().string();
                     Log.e("商品清單回傳",json);
                     parseJson(json);
+
                 }
                 //解析JSON 放入SQL
                 private void parseJson(String json) {
@@ -180,7 +184,13 @@ public class SystemActivity extends AppCompatActivity {
                             db4.close();
 
                         }
-
+                        handler.sendEmptyMessage(0);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SystemActivity.this, "已同步完畢", Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -202,12 +212,13 @@ public class SystemActivity extends AppCompatActivity {
         //先刪除舊有資料表格
         db4.delete("tblTable4",null,null);
         //放入新增表格(商品清單)
+        setWait();
         Get get = new Get();
         get.start();
         //用來紀錄更新日期和次數
         upDateTimes();
         db4.close();
-        Toast.makeText(this, "商品已更新", Toast.LENGTH_SHORT).show();
+
     }
     //刪除全部商品鍵
     public void delThing(View v){
@@ -458,5 +469,17 @@ public class SystemActivity extends AppCompatActivity {
         }
         //Log.e("timeUp2",timeUp2);
         return timeUp2;
+    }
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            d.dismiss();
+        }
+    };
+    private void setWait(){
+        d=new ProgressDialog(SystemActivity.this);
+        d.setMessage("同步中..");
+        d.show();
     }
 }

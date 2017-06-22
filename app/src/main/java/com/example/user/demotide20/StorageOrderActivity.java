@@ -303,8 +303,8 @@ public class StorageOrderActivity extends AppCompatActivity {
             setBarcodeSQL();
             Cursor c = db4.query("tblTable4",                            // 資料表名字
                     null,                                              // 要取出的欄位資料
-                    "cBarcode=?",                                    // 查詢條件式(WHERE)
-                    new String[]{editList},                           // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                    "cBarcode = ? OR cProductID = ?",                                    // 查詢條件式(WHERE)
+                    new String[]{editList,editList},                           // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
                     null,                                              // Group By字串語法
                     null,                                              // Having字串法
                     null);                                             // Order By字串語法(排序)
@@ -320,6 +320,8 @@ public class StorageOrderActivity extends AppCompatActivity {
             Log.e("筆數", String.valueOf(i));
             //條碼找不到商品編號
             if (i == 0) {
+
+
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 EditText editText = (EditText)findViewById(R.id.editText3);
                 editText.setText("");
