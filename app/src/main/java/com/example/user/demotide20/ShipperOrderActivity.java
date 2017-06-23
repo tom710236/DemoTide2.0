@@ -1,5 +1,6 @@
 package com.example.user.demotide20;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,8 +11,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +27,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -80,6 +85,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
     ProgressDialog d;
     int iCheck;
     int iMatch=0;
+    //
+    Uri imgUri;    //用來參照拍照存檔的 Uri 物件
+    Bitmap bmp,bmp2,bmp3,bmp4,bmp5;
 
     public class ProductIDInfo {
         private String mProductID;
@@ -150,7 +158,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         post.start();
         setEditText();
         setEditText2();
-
+        Allbase64 = new ArrayList();
     }
 
     //設定toolBar
@@ -686,7 +694,25 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //拍照按鍵 切換到拍照頁面 並把所需的資料傳遞過去
     public void onPicture(View v) {
+        LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
+        LinearLayout linear = (LinearLayout)findViewById(R.id.linear);
+        LinearLayout linMid = (LinearLayout)findViewById(R.id.linMid);
+        LinearLayout linDown = (LinearLayout)findViewById(R.id.linDown);
+        EditText editText7 = (EditText)findViewById(R.id.editText7);
+        ListView list = (ListView)findViewById(R.id.list);
+        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.FrameLayout);
+        frameLayout.setVisibility(View.GONE);
 
+        LinTop.setVisibility(View.GONE);
+        linear.setVisibility(View.GONE);
+        linMid.setVisibility(View.GONE);
+        linDown.setVisibility(View.GONE);
+        editText7.setVisibility(View.GONE);
+        list.setVisibility(View.GONE);
+
+        //第二層
+
+        /*
         String activity = "Shipper";
         Intent intent = new Intent(ShipperOrderActivity.this, TakePictures.class);
         Bundle bag = new Bundle();
@@ -704,12 +730,32 @@ public class ShipperOrderActivity extends AppCompatActivity {
         AllBase64();
         PostSaveInfo postSaveInfo = new PostSaveInfo();
         postSaveInfo.start();
+        */
+    }
+    public void onBack (View v){
+        LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
+        LinearLayout linear = (LinearLayout)findViewById(R.id.linear);
+        LinearLayout linMid = (LinearLayout)findViewById(R.id.linMid);
+        LinearLayout linDown = (LinearLayout)findViewById(R.id.linDown);
+        EditText editText7 = (EditText)findViewById(R.id.editText7);
+        ListView list = (ListView)findViewById(R.id.list);
+        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.FrameLayout);
+
+        frameLayout.setVisibility(View.VISIBLE);
+        LinTop.setVisibility(View.VISIBLE);
+        linear.setVisibility(View.VISIBLE);
+        linMid.setVisibility(View.VISIBLE);
+        linDown.setVisibility(View.VISIBLE);
+        editText7.setVisibility(View.VISIBLE);
+        list.setVisibility(View.VISIBLE);
+
+        //第二層
+
     }
 
     //從myList取出ProductNo NowQty 放入upList POST用
     private void AllBase64() {
         Log.e("AllImgUri", String.valueOf(AllImgUri));
-
         Map<String, String> upMap;
 
         upList = new ArrayList<Map<String, String>>();
@@ -724,36 +770,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         String upString = String.valueOf(upList).replaceAll("=", ":");
         upStringList = upString.replaceAll(", ", ",");
         Log.e("upStringList", String.valueOf(upStringList));
-
-    }
-
-    // 假如拍照頁面傳過來的AllImgUri不為空值 執行Uri轉換
-    private void checkUri() {
-        Allbase64 = new ArrayList();
-        if (AllImgUri != null && !AllImgUri.isEmpty()) {
-            if (AllImgUri.get(0) != null) {
-                AImgUri = (Uri) AllImgUri.get(0);
-                AImgUriBase64(AImgUri);
-
-            }
-            if (AllImgUri.get(1) != null) {
-                BImgUri = (Uri) AllImgUri.get(1);
-                BImgUriBase64(BImgUri);
-            }
-            if (AllImgUri.get(2) != null) {
-                CImgUri = (Uri) AllImgUri.get(2);
-                CImgUriBase64(CImgUri);
-            }
-            if (AllImgUri.get(3) != null) {
-                DImgUri = (Uri) AllImgUri.get(3);
-                DImgUriBase64(DImgUri);
-            }
-            if (AllImgUri.get(4) != null) {
-                EImgUri = (Uri) AllImgUri.get(4);
-                EImgUriBase64(EImgUri);
-            }
-
-        }
 
     }
 
@@ -777,6 +793,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+        Log.e("Abase64",Abase64);
         Allbase64.add("\"" + Abase64 + "\"");
     }
 
@@ -798,6 +815,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
+        Log.e("Bbase64",Bbase64);
         Allbase64.add("\"" + Bbase64 + "\"");
     }
 
@@ -880,6 +898,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 Log.e("選取", activity[which]);
                 Log.e("選取數字", String.valueOf(which));
+                AllBase64();
                 //換人檢
                 if (which == 0) {
                     AllBase64();
@@ -891,7 +910,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 else if (which == 1) {
                     Log.e("MYLIST結案", String.valueOf(myList));
                     checkUP();
-                    Log.e("CHECKUP", String.valueOf(check));
+                    Log.e("Allbase64", String.valueOf(Allbase64));
+
                     if (check == 0) {
                         setWait();
                         PostEndInfo post = new PostEndInfo();
@@ -911,7 +931,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     class PostEndInfo extends Thread {
         @Override
         public void run() {
-            checkUri();
+            Log.e("Allbase642", String.valueOf(Allbase64));
             AllBase64();
             PostendInfo();
         }
@@ -932,7 +952,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
     //結案 用OkHttp PostAPI
     private void PostendInfo() {
-
+        Log.e("Allbase643", String.valueOf(Allbase64));
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
@@ -976,6 +996,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             PostChangeInfo();
         }
     }
+    //暫存
     class PostSaveInfo extends Thread{
         @Override
         public void run() {
@@ -1185,6 +1206,138 @@ public class ShipperOrderActivity extends AppCompatActivity {
         editText1.setText("");
     }
 
+    public void onPic1 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 100);
+        Log.e("imgUri", String.valueOf(imgUri));
+    }
+    public void onPic2 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 101);
+        Log.e("imgUri", String.valueOf(imgUri));
+    }
+    public void onPic3 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 102);
+        Log.e("imgUri", String.valueOf(imgUri));
+    }
+    public void onPic4 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 103);
+        Log.e("imgUri", String.valueOf(imgUri));
+    }
+    public void onPic5 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 104);
+        Log.e("imgUri", String.valueOf(imgUri));
+    }
+    //拍照後的預覽畫面設定
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == Activity.RESULT_OK && requestCode==100) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==101) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==102) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==103) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==104) {
+            showImg(requestCode);
+        }
+        else {
+            Toast.makeText(this, "沒有拍到照片1", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+
+    void showImg(int requestCode) {
+
+        Log.e("showing", String.valueOf(imgUri));
+        if(imgUri!=null){
+            BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+            option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+            BitmapFactory.decodeFile(imgUri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+            if(requestCode == 100){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView14);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
+                AImgUriBase64(imgUri);
+            }else if(requestCode == 101){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView15);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp2 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp2);
+                BImgUriBase64(imgUri);
+            }else if(requestCode == 102){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView16);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp3 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp3);
+                CImgUriBase64(imgUri);
+            }else if(requestCode == 103){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView17);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp4 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp4);
+                DImgUriBase64(imgUri);
+            }else if(requestCode == 104){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView18);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp5 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp5);
+                EImgUriBase64(imgUri);
+            }
+        }else{
+            Toast.makeText(this, "沒有拍到照片2", Toast.LENGTH_LONG).show();
+
+        }
+
+    }
 }
 
 
