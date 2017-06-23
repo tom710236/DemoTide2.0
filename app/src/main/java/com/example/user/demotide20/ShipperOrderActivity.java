@@ -74,7 +74,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     SQLiteDatabase db, db4;
     final String DB_NAME = "tblTable";
     final String[] activity = {"換人檢", "結案"};
-    ArrayList AllImgUri, Allbase64;
+    ArrayList  Allbase64;
     Map<String, String> map;
     SpecialAdapter adapter;
     Uri AImgUri, BImgUri, CImgUri, DImgUri, EImgUri;
@@ -86,7 +86,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int iCheck;
     int iMatch=0;
     //
-    Uri imgUri;    //用來參照拍照存檔的 Uri 物件
+    Uri imgUri,imgUri2,imgUri3,imgUri4,imgUri5;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp,bmp2,bmp3,bmp4,bmp5;
 
     public class ProductIDInfo {
@@ -197,7 +197,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
 
-        AllImgUri = bag.getStringArrayList("AllImgUri");
+        //AllImgUri = bag.getStringArrayList("AllImgUri");
         /**
          * ShipperActivity的資料
          */
@@ -710,27 +710,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         editText7.setVisibility(View.GONE);
         list.setVisibility(View.GONE);
 
-        //第二層
-
-        /*
-        String activity = "Shipper";
-        Intent intent = new Intent(ShipperOrderActivity.this, TakePictures.class);
-        Bundle bag = new Bundle();
-        bag.putString("cUserName", cUserName);
-        bag.putString("cUserID", cUserID);
-        //判斷是從哪一頁傳過去的
-        bag.putString("activity", activity);
-        bag.putString("checked", checked);
-        bag.putString("order", order);
-        //把拍照頁的Uri回傳回去(讓照片不消失)
-        bag.putStringArrayList("AllImgUri", AllImgUri);
-        intent.putExtras(bag);
-        startActivity(intent);
-        ShipperOrderActivity.this.finish();
-        AllBase64();
-        PostSaveInfo postSaveInfo = new PostSaveInfo();
-        postSaveInfo.start();
-        */
     }
     public void onBack (View v){
         LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
@@ -755,9 +734,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //從myList取出ProductNo NowQty 放入upList POST用
     private void AllBase64() {
-        Log.e("AllImgUri", String.valueOf(AllImgUri));
         Map<String, String> upMap;
-
         upList = new ArrayList<Map<String, String>>();
         for (int i = 0; i < myList.size(); i++) {
             //LinkedHashMap<String, String>() 會依照put的順序
@@ -793,7 +770,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Abase64",Abase64);
         Allbase64.add("\"" + Abase64 + "\"");
     }
 
@@ -815,7 +791,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Log.e("Bbase64",Bbase64);
         Allbase64.add("\"" + Bbase64 + "\"");
     }
 
@@ -996,13 +971,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             PostChangeInfo();
         }
     }
-    //暫存
-    class PostSaveInfo extends Thread{
-        @Override
-        public void run() {
-            PostSaveInfo();
-        }
-    }
+
     //換人檢 用OkHttp PostAPI
     private void PostChangeInfo() {
 
@@ -1085,45 +1054,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         });
 
     }
-    // 暫時存檔
-    private void PostSaveInfo() {
 
-        final OkHttpClient client = new OkHttpClient();
-        //要上傳的內容(JSON)
-        final MediaType JSON
-                = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"Action\":\"savenotchageuser\",\"PickupNumbers\" :\"" + checked + "\",\"PickupProducts\":" + upStringList + "}";
-        Log.e("POST", json);
-        RequestBody body = RequestBody.create(JSON, json);
-        final Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            //post 失敗後執行
-            @Override
-            public void onFailure(Call call, IOException e) {
-                //非主執行緒顯示UI(Toast)
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(ShipperOrderActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            //post 成功後執行
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                //取得回傳資料json 還是JSON檔
-                String json = response.body().string();
-                Log.e("POST後的回傳值", json);
-
-            }
-
-        });
-    }
     private Handler handler = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -1221,45 +1152,45 @@ public class ShipperOrderActivity extends AppCompatActivity {
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri2 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri2);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 101);
-        Log.e("imgUri", String.valueOf(imgUri));
+        Log.e("imgUri2", String.valueOf(imgUri2));
     }
     public void onPic3 (View v){
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri3 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri3);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 102);
-        Log.e("imgUri", String.valueOf(imgUri));
+        Log.e("imgUri3", String.valueOf(imgUri3));
     }
     public void onPic4 (View v){
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri4 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri4);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 103);
-        Log.e("imgUri", String.valueOf(imgUri));
+        Log.e("imgUri", String.valueOf(imgUri4));
     }
     public void onPic5 (View v){
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri5 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri5);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 104);
-        Log.e("imgUri", String.valueOf(imgUri));
+        Log.e("imgUri", String.valueOf(imgUri5));
     }
     //拍照後的預覽畫面設定
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
@@ -1336,6 +1267,51 @@ public class ShipperOrderActivity extends AppCompatActivity {
             Toast.makeText(this, "沒有拍到照片2", Toast.LENGTH_LONG).show();
 
         }
+
+    }
+    public void onDelAll (View v){
+        ImageView imv,imv2,imv3,imv4,imv5;
+        imv = (ImageView) findViewById(R.id.imageView14);
+        imv.setImageBitmap(null);
+        imv2 = (ImageView) findViewById(R.id.imageView15);
+        imv2.setImageBitmap(null);
+        imv3 = (ImageView) findViewById(R.id.imageView16);
+        imv3.setImageBitmap(null);
+        imv4 = (ImageView) findViewById(R.id.imageView17);
+        imv4.setImageBitmap(null);
+        imv5 = (ImageView) findViewById(R.id.imageView18);
+        imv5.setImageBitmap(null);
+        Allbase64 = null;
+    }
+    public void onDel1 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView14);
+        imv.setImageBitmap(null);
+
+
+    }
+    public void onDel2 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView15);
+        imv.setImageBitmap(null);
+
+    }
+    public void onDel3 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView16);
+        imv.setImageBitmap(null);
+
+    }
+    public void onDel4 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView17);
+        imv.setImageBitmap(null);
+
+    }
+    public void onDel5 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView18);
+        imv.setImageBitmap(null);
 
     }
 }

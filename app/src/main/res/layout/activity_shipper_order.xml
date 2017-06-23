@@ -379,7 +379,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Button" />
+            android:onClick="onDelAll"
+            android:text="全部清楚" />
     </LinearLayout>
 
     <ScrollView
@@ -429,14 +430,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onPic1"
-                    android:text="Button" />
+                    android:text="拍照" />
 
                 <Button
                     android:id="@+id/button28"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:onClick="onDel1"
+                    android:text="清除" />
             </LinearLayout>
 
             <View
@@ -468,14 +470,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onPic2"
-                    android:text="Button" />
+                    android:text="拍照" />
 
                 <Button
                     android:id="@+id/button32"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:onClick="onDel2"
+                    android:text="清楚" />
             </LinearLayout>
 
             <View
@@ -507,14 +510,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onPic3"
-                    android:text="Button" />
+                    android:text="拍照" />
 
                 <Button
                     android:id="@+id/button34"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:onClick="onDel3"
+                    android:text="清楚" />
             </LinearLayout>
 
             <View
@@ -546,14 +550,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onPic4"
-                    android:text="Button" />
+                    android:text="拍照" />
 
                 <Button
                     android:id="@+id/button36"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:onClick="onDel4"
+                    android:text="清楚" />
             </LinearLayout>
 
             <View
@@ -585,14 +590,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onPic5"
-                    android:text="Button" />
+                    android:text="拍照" />
 
                 <Button
                     android:id="@+id/button30"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Button" />
+                    android:onClick="onDel5"
+                    android:text="清楚" />
             </LinearLayout>
 
             <View
