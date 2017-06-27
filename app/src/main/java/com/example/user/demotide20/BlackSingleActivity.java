@@ -1,5 +1,6 @@
 package com.example.user.demotide20;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,8 +11,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +28,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -78,6 +83,8 @@ public class BlackSingleActivity extends AppCompatActivity {
     String Abase64,Bbase64,Cbase64,Dbase64,Ebase64;
     ProgressDialog d;
     int index,index2,iCheck,iMatch=0;
+    Uri imgUri;    //用來參照拍照存檔的 Uri 物件
+    Bitmap bmp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -764,24 +771,59 @@ public class BlackSingleActivity extends AppCompatActivity {
         }
     }
     public void onPicture (View v){
-        String activity = "Black";
-        Intent intent = new Intent(BlackSingleActivity.this,BlackTakePictures.class);
-        intent.putExtra("myList", myList);
-        Log.e("空白傳遞myList", String.valueOf(myList));
-        Bundle bag = new Bundle();
-        bag.putString("cUserName",cUserName);
-        bag.putString("cUserID",cUserID);
-        //判斷是從哪一頁傳過去的
-        bag.putString("activity",activity);
-        bag.putString("order",order);
-        bag.putInt("index",index);
-        Log.e("index傳遞", String.valueOf(index));
-        bag.putInt("index2",index2);
-        //把拍照頁的Uri回傳回去(讓照片不消失)
-        bag.putStringArrayList("AllImgUri",AllImgUri);
-        intent.putExtras(bag);
-        startActivity(intent);
-        BlackSingleActivity.this.finish();
+        LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
+        LinearLayout linear = (LinearLayout)findViewById(R.id.linear);
+        LinearLayout linMid = (LinearLayout)findViewById(R.id.linMid);
+        LinearLayout linDown = (LinearLayout)findViewById(R.id.linDown);
+
+        ListView list = (ListView)findViewById(R.id.list);
+        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.FrameLayout);
+        frameLayout.setVisibility(View.GONE);
+
+        LinTop.setVisibility(View.GONE);
+        linear.setVisibility(View.GONE);
+        linMid.setVisibility(View.GONE);
+        linDown.setVisibility(View.GONE);
+
+        list.setVisibility(View.GONE);
+    }
+
+    public void onBack (View v){
+        LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
+        LinearLayout linear = (LinearLayout)findViewById(R.id.linear);
+        LinearLayout linMid = (LinearLayout)findViewById(R.id.linMid);
+        LinearLayout linDown = (LinearLayout)findViewById(R.id.linDown);
+        EditText editText10 = (EditText)findViewById(R.id.editText10);
+        ListView list = (ListView)findViewById(R.id.list);
+        FrameLayout frameLayout = (FrameLayout)findViewById(R.id.FrameLayout);
+
+        frameLayout.setVisibility(View.VISIBLE);
+        LinTop.setVisibility(View.VISIBLE);
+        linMid.setVisibility(View.VISIBLE);
+        linear.setVisibility(View.INVISIBLE);
+        linDown.setVisibility(View.VISIBLE);
+
+        list.setVisibility(View.VISIBLE);
+
+
+        Allbase64 = new ArrayList();
+        if(Abase64 != null){
+            Allbase64.add("\"" + Abase64 + "\"");
+        }
+        if(Bbase64 != null){
+            Allbase64.add("\"" + Bbase64 + "\"");
+        }
+        if(Cbase64 != null){
+            Allbase64.add("\"" + Cbase64 + "\"");
+        }
+        if(Dbase64 != null){
+            Allbase64.add("\"" + Dbase64 + "\"");
+        }
+        if(Ebase64 != null){
+            Allbase64.add("\"" + Ebase64 + "\"");
+        }
+
+
     }
     private void AllBase64() {
         Log.e("AllImgUri", String.valueOf(AllImgUri));
@@ -802,35 +844,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         Log.e("upStringList", String.valueOf(upStringList));
 
     }
-    // 假如拍照頁面傳過來的AllImgUri不為空值 執行Uri轉換
-    private void checkUri(){
-        Allbase64 = new ArrayList();
-        if (AllImgUri != null && !AllImgUri.isEmpty()) {
-            if (AllImgUri.get(0) != null) {
-                AImgUri = (Uri) AllImgUri.get(0);
-                AImgUriBase64(AImgUri);
 
-            }
-            if (AllImgUri.get(1) != null) {
-                BImgUri = (Uri) AllImgUri.get(1);
-                BImgUriBase64(BImgUri);
-            }
-            if (AllImgUri.get(2) != null) {
-                CImgUri = (Uri) AllImgUri.get(2);
-                CImgUriBase64(CImgUri);
-            }
-            if (AllImgUri.get(3) != null) {
-                DImgUri = (Uri) AllImgUri.get(3);
-                DImgUriBase64(DImgUri);
-            }
-            if (AllImgUri.get(4) != null) {
-                EImgUri = (Uri) AllImgUri.get(4);
-                EImgUriBase64(EImgUri);
-            }
-
-        }
-
-    }
     // Uri 轉成Bitmap 再轉成 base64
     // bitmap 要轉成 jpg 然後上傳時要給提示
     void AImgUriBase64(Uri uri) {
@@ -851,7 +865,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
 
-        Allbase64.add("\"" +Abase64+"\"");
+        //Allbase64.add("\"" +Abase64+"\"");
 
     }
     void BImgUriBase64(Uri uri) {
@@ -873,7 +887,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Bbase64",Bbase64);
-        Allbase64.add("\"" +Bbase64+"\"");
+        //Allbase64.add("\"" +Bbase64+"\"");
     }
     void CImgUriBase64(Uri uri) {
 
@@ -895,7 +909,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Cbase64",Cbase64);
-        Allbase64.add("\"" +Cbase64+"\"");
+        //Allbase64.add("\"" +Cbase64+"\"");
     }
     void DImgUriBase64(Uri uri) {
 
@@ -916,7 +930,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Dbase64",Dbase64);
-        Allbase64.add("\"" +Dbase64+"\"");
+        //Allbase64.add("\"" +Dbase64+"\"");
     }
     void EImgUriBase64(Uri uri) {
 
@@ -937,7 +951,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
         Log.e("Ebase64",Ebase64);
-        Allbase64.add("\"" +Ebase64+"\"");
+        //Allbase64.add("\"" +Ebase64+"\"");
     }
     //執行動作按鈕
     public void onActivity(View v){
@@ -959,7 +973,6 @@ public class BlackSingleActivity extends AppCompatActivity {
     class PostEndInfo extends Thread{
         @Override
         public void run() {
-            checkUri();
             AllBase64();
             PostendInfo();
         }
@@ -1126,5 +1139,183 @@ public class BlackSingleActivity extends AppCompatActivity {
         //editText歸零
         EditText editText1 = (EditText)findViewById(R.id.editText);
         editText1.setText("");
+    }
+    public void onPic1 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 100);
+        Log.e("imgUri", String.valueOf(imgUri));
+    }
+    public void onPic2 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 101);
+        Log.e("imgUri2", String.valueOf(imgUri));
+    }
+    public void onPic3 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 102);
+        Log.e("imgUri3", String.valueOf(imgUri));
+    }
+    public void onPic4 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 103);
+        Log.e("imgUri4", String.valueOf(imgUri));
+    }
+    public void onPic5 (View v){
+        String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
+                Environment.DIRECTORY_PICTURES).toString();
+        String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+
+        Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
+        startActivityForResult(it, 104);
+        Log.e("imgUri5", String.valueOf(imgUri));
+    }
+    //拍照後的預覽畫面設定
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == Activity.RESULT_OK && requestCode==100) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==101) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==102) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==103) {
+            showImg(requestCode);
+        }else if(resultCode == Activity.RESULT_OK && requestCode==104) {
+            showImg(requestCode);
+        }
+        else {
+            Toast.makeText(this, "沒有拍到照片1", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+
+    void showImg(int requestCode) {
+
+        Log.e("showing", String.valueOf(imgUri));
+        if(imgUri!=null){
+            BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
+            option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
+            BitmapFactory.decodeFile(imgUri.getPath(), option);  //讀取圖檔資訊存入 Option 中
+
+            if(requestCode == 100){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView14);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
+                AImgUriBase64(imgUri);
+            }else if(requestCode == 101){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView15);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
+                BImgUriBase64(imgUri);
+            }else if(requestCode == 102){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView16);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
+                CImgUriBase64(imgUri);
+            }else if(requestCode == 103){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView17);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
+                DImgUriBase64(imgUri);
+            }else if(requestCode == 104){
+                ImageView imv;
+                imv = (ImageView) findViewById(R.id.imageView18);
+                option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
+                option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
+                EImgUriBase64(imgUri);
+            }
+        }else{
+            Toast.makeText(this, "沒有拍到照片2", Toast.LENGTH_LONG).show();
+
+        }
+
+    }
+    public void onDelAll (View v){
+        ImageView imv,imv2,imv3,imv4,imv5;
+        imv = (ImageView) findViewById(R.id.imageView14);
+        imv.setImageBitmap(null);
+        imv2 = (ImageView) findViewById(R.id.imageView15);
+        imv2.setImageBitmap(null);
+        imv3 = (ImageView) findViewById(R.id.imageView16);
+        imv3.setImageBitmap(null);
+        imv4 = (ImageView) findViewById(R.id.imageView17);
+        imv4.setImageBitmap(null);
+        imv5 = (ImageView) findViewById(R.id.imageView18);
+        imv5.setImageBitmap(null);
+        Allbase64 = null;
+    }
+    public void onDel1 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView14);
+        imv.setImageBitmap(null);
+        Abase64 = null ;
+
+
+    }
+    public void onDel2 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView15);
+        imv.setImageBitmap(null);
+        Bbase64 = null ;
+    }
+    public void onDel3 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView16);
+        imv.setImageBitmap(null);
+        Cbase64 = null ;
+    }
+    public void onDel4 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView17);
+        imv.setImageBitmap(null);
+        Dbase64 = null ;
+    }
+    public void onDel5 (View v){
+        ImageView imv;
+        imv = (ImageView) findViewById(R.id.imageView18);
+        imv.setImageBitmap(null);
+        Ebase64 = null ;
     }
 }

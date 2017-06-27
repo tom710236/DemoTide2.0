@@ -375,7 +375,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onDelAll"
-            android:text="全部清楚" />
+            android:text="全部清除" />
     </LinearLayout>
 
     <ScrollView
@@ -473,7 +473,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onDel2"
-                    android:text="清楚" />
+                    android:text="清除" />
             </LinearLayout>
 
             <View
@@ -513,7 +513,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onDel3"
-                    android:text="清楚" />
+                    android:text="清除" />
             </LinearLayout>
 
             <View
@@ -553,7 +553,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onDel4"
-                    android:text="清楚" />
+                    android:text="清除" />
             </LinearLayout>
 
             <View
@@ -593,7 +593,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:onClick="onDel5"
-                    android:text="清楚" />
+                    android:text="清除" />
             </LinearLayout>
 
             <View
