@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -56,6 +57,8 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.example.user.demotide20.R.id.editText7;
+import static com.example.user.demotide20.R.id.textView23;
+import static com.example.user.demotide20.R.layout.lview4;
 
 public class ShipperOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, order, checked, cProductIDeSQL;
@@ -142,7 +145,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shipper_order);
-        final EditText editText = (EditText) findViewById(R.id.editText);
+        //final EditText editText = (EditText) findViewById(R.id.editText);
         //Android 對 EditText 取得 focus
         //editText.requestFocus();
 
@@ -158,6 +161,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         post.start();
         setEditText();
         setEditText2();
+
 
     }
 
@@ -308,6 +312,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     //改變listView(SimpleAdapter) item的顏色
     public class SpecialAdapter extends SimpleAdapter {
         private int[] colors = new int[]{0x30ffffff, 0x30696969};
+        private int colors2 = Color.RED;
 
         public SpecialAdapter(Context context, ArrayList<Map<String, String>> items, int resource, String[] from, int[] to) {
             super(context, items, resource, from, to);
@@ -318,6 +323,17 @@ public class ShipperOrderActivity extends AppCompatActivity {
             View view = super.getView(position, convertView, parent);
             int colorPos = position % colors.length;
             view.setBackgroundColor(colors[colorPos]);
+            //數量=總量時便item變顏色
+            for (int i = 0; i < myList.size(); i++) {
+                if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                    if(position == i){
+                        view.setBackgroundColor(colors2);
+                        return view;
+                    }
+                }
+
+            }
+
             return view;
         }
     }
@@ -329,6 +345,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         @Override
         public void run() {
             PostOrderThingsInfo();
+
         }
 
         private void PostOrderThingsInfo() {
@@ -399,6 +416,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
                             myList.add(map);
                             db.close();
+
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -408,9 +427,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     adapter = new SpecialAdapter(
                             ShipperOrderActivity.this,
                             myList,
-                            R.layout.lview4,
+                            lview4,
                             new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
-                            new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
+                            new int[]{R.id.textView21, R.id.textView22, textView23, R.id.textView24});
+
+
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -419,6 +440,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                         }
                     });
+
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -540,6 +562,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+
                     } else {
                             i2 = i2 + getint2;
                             }
@@ -547,6 +570,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+
                     } else {
                         i2 = i2 + getint2;
                     }
@@ -583,6 +607,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+
                     } else {
                             i2 = i2 + getint2;
                     }
@@ -590,6 +615,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+
                     } else {
                         i2 = i2 + getint2;
                     }
@@ -668,6 +694,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     public void enter(View v) {
         iMatch=1;
         cBarcode();
+
     }
 
     //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
@@ -1330,6 +1357,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
         imv.setImageBitmap(null);
         Ebase64 = null ;
     }
+
+
+
 }
 
 
