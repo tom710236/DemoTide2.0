@@ -86,8 +86,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int iCheck;
     int iMatch=0;
     //
-    Uri imgUri,imgUri2,imgUri3,imgUri4,imgUri5;    //用來參照拍照存檔的 Uri 物件
-    Bitmap bmp,bmp2,bmp3,bmp4,bmp5;
+    Uri imgUri;    //用來參照拍照存檔的 Uri 物件
+    Bitmap bmp;
 
     public class ProductIDInfo {
         private String mProductID;
@@ -158,7 +158,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         post.start();
         setEditText();
         setEditText2();
-        Allbase64 = new ArrayList();
+
     }
 
     //設定toolBar
@@ -722,13 +722,30 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         frameLayout.setVisibility(View.VISIBLE);
         LinTop.setVisibility(View.VISIBLE);
-        linear.setVisibility(View.VISIBLE);
         linMid.setVisibility(View.VISIBLE);
+        linear.setVisibility(View.INVISIBLE);
         linDown.setVisibility(View.VISIBLE);
         editText7.setVisibility(View.VISIBLE);
         list.setVisibility(View.VISIBLE);
 
-        //第二層
+
+        Allbase64 = new ArrayList();
+        if(Abase64 != null){
+            Allbase64.add("\"" + Abase64 + "\"");
+        }
+        if(Bbase64 != null){
+            Allbase64.add("\"" + Bbase64 + "\"");
+        }
+        if(Cbase64 != null){
+            Allbase64.add("\"" + Cbase64 + "\"");
+        }
+        if(Dbase64 != null){
+            Allbase64.add("\"" + Dbase64 + "\"");
+        }
+        if(Ebase64 != null){
+            Allbase64.add("\"" + Ebase64 + "\"");
+        }
+
 
     }
 
@@ -757,8 +774,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
         BitmapFactory.Options option = new BitmapFactory.Options(); //建立選項物件
         option.inJustDecodeBounds = true;      //設定選項：只讀取圖檔資訊而不載入圖檔
         BitmapFactory.decodeFile(uri.getPath(), option);  //讀取圖檔資訊存入 Option 中
-
-
         option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
         option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
         Bitmap bmp = BitmapFactory.decodeFile(uri.getPath(), option); //載入圖檔
@@ -770,7 +785,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Abase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Allbase64.add("\"" + Abase64 + "\"");
+        //Allbase64.add("\"" + Abase64 + "\"");
     }
 
     void BImgUriBase64(Uri uri) {
@@ -791,7 +806,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Bbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Allbase64.add("\"" + Bbase64 + "\"");
+        //Allbase64.add("\"" + Bbase64 + "\"");
     }
 
     void CImgUriBase64(Uri uri) {
@@ -812,7 +827,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Cbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Allbase64.add("\"" + Cbase64 + "\"");
+        //Allbase64.add("\"" + Cbase64 + "\"");
     }
 
     void DImgUriBase64(Uri uri) {
@@ -833,7 +848,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Dbase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Allbase64.add("\"" + Dbase64 + "\"");
+        //Allbase64.add("\"" + Dbase64 + "\"");
     }
 
     void EImgUriBase64(Uri uri) {
@@ -854,7 +869,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         byte bytes[] = stream.toByteArray();
         // Android 2.2以上才有內建Base64，其他要自已找Libary或是用Blob存入SQLite
         Ebase64 = Base64.encodeToString(bytes, Base64.DEFAULT); // 把byte變成base64
-        Allbase64.add("\"" + Ebase64 + "\"");
+        //Allbase64.add("\"" + Ebase64 + "\"");
     }
 
     //動作按鍵
@@ -1152,45 +1167,45 @@ public class ShipperOrderActivity extends AppCompatActivity {
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri2 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri2);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 101);
-        Log.e("imgUri2", String.valueOf(imgUri2));
+        Log.e("imgUri2", String.valueOf(imgUri));
     }
     public void onPic3 (View v){
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri3 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri3);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 102);
-        Log.e("imgUri3", String.valueOf(imgUri3));
+        Log.e("imgUri3", String.valueOf(imgUri));
     }
     public void onPic4 (View v){
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri4 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri4);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 103);
-        Log.e("imgUri", String.valueOf(imgUri4));
+        Log.e("imgUri4", String.valueOf(imgUri));
     }
     public void onPic5 (View v){
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑
                 Environment.DIRECTORY_PICTURES).toString();
         String fname = "p" + System.currentTimeMillis() + ".jpg";  //利用目前時間組合出一個不會重複的檔名
-        imgUri5 = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
+        imgUri = Uri.parse("file://" + dir + "/" + fname);    //依前面的路徑及檔名建立 Uri 物件
 
         Intent it = new Intent("android.media.action.IMAGE_CAPTURE");
-        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri5);    //將 uri 加到拍照 Intent 的額外資料中
+        it.putExtra(MediaStore.EXTRA_OUTPUT, imgUri);    //將 uri 加到拍照 Intent 的額外資料中
         startActivityForResult(it, 104);
-        Log.e("imgUri", String.valueOf(imgUri5));
+        Log.e("imgUri5", String.valueOf(imgUri));
     }
     //拍照後的預覽畫面設定
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
@@ -1235,32 +1250,32 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 imv = (ImageView) findViewById(R.id.imageView15);
                 option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
                 option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
-                bmp2 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
-                imv.setImageBitmap(bmp2);
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
                 BImgUriBase64(imgUri);
             }else if(requestCode == 102){
                 ImageView imv;
                 imv = (ImageView) findViewById(R.id.imageView16);
                 option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
                 option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
-                bmp3 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
-                imv.setImageBitmap(bmp3);
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
                 CImgUriBase64(imgUri);
             }else if(requestCode == 103){
                 ImageView imv;
                 imv = (ImageView) findViewById(R.id.imageView17);
                 option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
                 option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
-                bmp4 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
-                imv.setImageBitmap(bmp4);
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
                 DImgUriBase64(imgUri);
             }else if(requestCode == 104){
                 ImageView imv;
                 imv = (ImageView) findViewById(R.id.imageView18);
                 option.inJustDecodeBounds = false;  //關閉只載入圖檔資訊的選項
                 option.inSampleSize = 2;  //設定縮小比例, 例如 2 則長寬都將縮小為原來的 1/2
-                bmp5 = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
-                imv.setImageBitmap(bmp5);
+                bmp = BitmapFactory.decodeFile(imgUri.getPath(), option); //載入圖檔
+                imv.setImageBitmap(bmp);
                 EImgUriBase64(imgUri);
             }
         }else{
@@ -1287,6 +1302,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         ImageView imv;
         imv = (ImageView) findViewById(R.id.imageView14);
         imv.setImageBitmap(null);
+        Abase64 = null ;
 
 
     }
@@ -1294,25 +1310,25 @@ public class ShipperOrderActivity extends AppCompatActivity {
         ImageView imv;
         imv = (ImageView) findViewById(R.id.imageView15);
         imv.setImageBitmap(null);
-
+        Bbase64 = null ;
     }
     public void onDel3 (View v){
         ImageView imv;
         imv = (ImageView) findViewById(R.id.imageView16);
         imv.setImageBitmap(null);
-
+        Cbase64 = null ;
     }
     public void onDel4 (View v){
         ImageView imv;
         imv = (ImageView) findViewById(R.id.imageView17);
         imv.setImageBitmap(null);
-
+        Dbase64 = null ;
     }
     public void onDel5 (View v){
         ImageView imv;
         imv = (ImageView) findViewById(R.id.imageView18);
         imv.setImageBitmap(null);
-
+        Ebase64 = null ;
     }
 }
 
