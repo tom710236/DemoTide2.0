@@ -44,7 +44,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -57,6 +56,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 import static com.example.user.demotide20.R.id.editText7;
+import static com.example.user.demotide20.R.id.textView21;
 import static com.example.user.demotide20.R.id.textView23;
 import static com.example.user.demotide20.R.id.textView24;
 import static com.example.user.demotide20.R.layout.lview4;
@@ -71,7 +71,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int indexSpinner;
     String[] stringArray;
     String Abase64, Bbase64, Cbase64, Dbase64, Ebase64;
-    ArrayList<Map<String, String>> myList, upList;
+    ArrayList<LinkedHashMap<String, String>> myList, upList;
     ArrayList  Btrans;
     MyDBhelper helper;
     MyDBhelper4 helper4;
@@ -79,10 +79,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
     final String DB_NAME = "tblTable";
     final String[] activity = {"換人檢", "結案"};
     ArrayList  Allbase64;
-    Map<String, String> map;
+    LinkedHashMap<String, String> map;
     SpecialAdapter adapter;
     Uri AImgUri, BImgUri, CImgUri, DImgUri, EImgUri;
-    Map<String, String> newMap;
+    LinkedHashMap<String, String> newMap;
     int getint;
     String upStringList;
     final String[] newStringArray = new String[1];
@@ -315,7 +315,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         private int[] colors = new int[]{0x30ffffff, 0x30696969};
         private int colors2 = Color.RED;
 
-        public SpecialAdapter(Context context, ArrayList<Map<String, String>> items, int resource, String[] from, int[] to) {
+        public SpecialAdapter(Context context, ArrayList<LinkedHashMap<String, String>> items, int resource, String[] from, int[] to) {
             super(context, items, resource, from, to);
         }
 
@@ -324,30 +324,36 @@ public class ShipperOrderActivity extends AppCompatActivity {
             View view = super.getView(position, convertView, parent);
             int colorPos = position % colors.length;
             view.setBackgroundColor(colors[colorPos]);
+
+            convertView = null ;
             //要先初始化顏色 不然往下拉時 item會被吃掉
-            TextView textView21 = (TextView) view.findViewById(R.id.textView21);
-            textView21.setTextColor(Color.BLACK);
-            TextView textView22 = (TextView) view.findViewById(R.id.textView22);
-            textView22.setTextColor(Color.BLACK);
-            TextView textView23 = (TextView) view.findViewById(R.id.textView23);
-            textView23.setTextColor(Color.BLACK);
-            TextView textView24 = (TextView) view.findViewById(R.id.textView24);
-            textView24.setTextColor(Color.BLACK);
-            //數量=總量時便item變顏色
-            for (int i = 0; i < myList.size(); i++) {
-                if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
-                    if(position == i){
-                        //view.setBackgroundColor(colors2);
-                        //return view;
+            if (convertView == null){
+                TextView textView21 = (TextView) view.findViewById(R.id.textView21);
+                textView21.setTextColor(Color.BLACK);
+                TextView textView22 = (TextView) view.findViewById(R.id.textView22);
+                textView22.setTextColor(Color.BLACK);
+                TextView textView23 = (TextView) view.findViewById(R.id.textView23);
+                textView23.setTextColor(Color.BLACK);
+                TextView textView24 = (TextView) view.findViewById(R.id.textView24);
+                textView24.setTextColor(Color.BLACK);
+                //數量=總量時便item變顏色
+                for (int i = 0; i < myList.size(); i++) {
+                    if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                        if(position == i){
+                            //view.setBackgroundColor(colors2);
+                            //return view;
+                            textView21.setTextColor(colors2);
+                            textView22.setTextColor(colors2);
+                            textView23.setTextColor(colors2);
+                            textView24.setTextColor(colors2);
 
-                        textView21.setTextColor(colors2);
-                        textView22.setTextColor(colors2);
-                        textView23.setTextColor(colors2);
-                        textView24.setTextColor(colors2);
+                        }
+
                     }
-                }
 
+                }
             }
+
 
             return view;
         }
@@ -403,7 +409,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //解析取出PickUpProducts的值
                 private void parseJson(String json2) {
 
-                    myList = new ArrayList<Map<String, String>>();
+                    myList = new ArrayList<LinkedHashMap<String, String>>();
                     try {
                         final JSONArray array = new JSONArray(json2);
                         for (iMax = 0; iMax < array.length(); iMax++) {
@@ -424,27 +430,27 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             }
                             //用自訂類別 把JSONArray的值取出來
 
-                            map = new HashMap<String, String>();
+                            map = new LinkedHashMap<String, String>();
                             map.put("NowQty", String.valueOf(new NowQtyInfo(obj.optString("NowQty"))));
                             map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
                             map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
                             map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
                             myList.add(map);
                             db.close();
-
-
                         }
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
                     listView = (ListView) findViewById(R.id.list);
+
                     adapter = new SpecialAdapter(
                             ShipperOrderActivity.this,
                             myList,
                             lview4,
                             new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
-                            new int[]{R.id.textView21, R.id.textView22, textView23, textView24});
+                            new int[]{textView21, R.id.textView22, textView23, textView24});
 
 
 
@@ -463,8 +469,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                         }
                     });
+
                 }
             });
+
         }
 
     }
@@ -593,7 +601,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
 
                 Log.e("I2", String.valueOf(i2));
-                newMap = new HashMap<String, String>();
+                newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", String.valueOf(i2));
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
@@ -638,7 +646,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
 
                 Log.e("I2", String.valueOf(i2));
-                newMap = new HashMap<String, String>();
+                newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", String.valueOf(i2));
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
@@ -709,7 +717,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     public void enter(View v) {
         iMatch=1;
         cBarcode();
-
+        checkListArray();
     }
 
     //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
@@ -794,13 +802,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
     //從myList取出ProductNo NowQty 放入upList POST用
     private void AllBase64() {
         Map<String, String> upMap;
-        upList = new ArrayList<Map<String, String>>();
+        upList = new ArrayList<LinkedHashMap<String, String>>();
         for (int i = 0; i < myList.size(); i++) {
             //LinkedHashMap<String, String>() 會依照put的順序
             upMap = new LinkedHashMap<String, String>();
             upMap.put("\"ProductNo\"", "\"" + myList.get(i).get("ProductNo") + "\"");
             upMap.put("\"NowQty\"", myList.get(i).get("NowQty"));
-            upList.add(upMap);
+            upList.add((LinkedHashMap<String, String>) upMap);
         }
         Log.e("upList", String.valueOf(upList));
         String upString = String.valueOf(upList).replaceAll("=", ":");
@@ -1374,6 +1382,27 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     //判斷是否有檢完
+    private void checkListArray() {
+
+        for (int i = 0; i < myList.size(); i++) {
+            LinkedHashMap<String, String> item = myList.get(i);
+            int size = myList.size()-1;
+            //Log.e("myList", String.valueOf(myList.get(i)));
+            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                Log.e("list", String.valueOf(myList.get(i)));
+                //Log.e("item", String.valueOf(item));
+                myList.remove(i);
+                myList.add(size,item);
+                adapter.notifyDataSetChanged();
+                //Collections.swap(myList,i,myList.size());
+                //myList.set(myList.size(),myList.get(i));
+                //Collections.rotate(myList.subList(0,i), myList.size());
+                //Log.e("last", String.valueOf(size));
+                //Log.e("I", String.valueOf(i));
+
+            }
+        }
+    }
 
 }
 
