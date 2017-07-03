@@ -87,7 +87,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     String upStringList;
     final String[] newStringArray = new String[1];
     ProgressDialog d;
-    int iCheck;
+    int iCheck,iCheck2;
     int iMatch=0;
     //
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
@@ -518,9 +518,55 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Log.e("筆數", String.valueOf(iCheck));
         //條碼找不到商品編號
         if (iCheck == 0) {
+            setThingSQL();
+            Cursor c2 = db.query("tblTable",                            // 資料表名字
+                    null,                                              // 要取出的欄位資料
+                    "cProductID=?",                                    // 查詢條件式(WHERE)
+                    new String[]{barcode},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                    null,                                              // Group By字串語法
+                    null,                                              // Having字串法
+                    null);                                             // Order By字串語法(排序)
 
-            Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
-            editText.setText("");
+            while (c2.moveToNext()) {
+                cProductIDeSQL = c2.getString(c2.getColumnIndex("cProductID"));
+                Log.e("cBarcode2", cProductIDeSQL);
+                Btrans.add(cProductIDeSQL);
+            }
+            iCheck = c2.getCount();
+            Log.e("筆數2", String.valueOf(iCheck));
+            if(iCheck ==0 ){
+                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                editText.setText("");
+            }else if (iCheck == 1) {
+                //先判斷條碼內的商品號碼是否有在listView裡
+                if (checkID() == true) {
+                    //Switch 關閉時
+                    if (addNum == 0) {
+                        //跳出輸入數字對話框
+                        setAlertDialog();
+                        Log.e("setAlertDialog","1");
+                    } else if (addNum == 1) {
+                        setNOWQty(1);
+                    } else if (addNum == 5) {
+                        setNOWQty(1);
+                    } else if (addNum == 10) {
+                        setNOWQty(1);
+                    } else if (addNum == 999999) {
+                        setNOWQty(1);
+                    }else {
+                        setNOWQty(1);
+                    }
+                } else {
+                    Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                    editText.setText("");
+                }
+                //條碼找到一筆以上商品編號
+            } else if (iCheck > 1) {
+                stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
+                chooseThings();
+                editText.setText("");
+            }
+
 
             //條碼找到一筆商品編號
         } else if (iCheck == 1) {
