@@ -337,8 +337,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 TextView textView24 = (TextView) view.findViewById(R.id.textView24);
                 textView24.setTextColor(Color.BLACK);
                 //數量=總量時便item變顏色
+
                 for (int i = 0; i < myList.size(); i++) {
                     if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+
                         if(position == i){
                             //view.setBackgroundColor(colors2);
                             //return view;
@@ -444,7 +446,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }
 
                     listView = (ListView) findViewById(R.id.list);
-
+                    checkListArray();
                     adapter = new SpecialAdapter(
                             ShipperOrderActivity.this,
                             myList,
@@ -609,6 +611,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 myList.set(i3, newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
+                checkListArray();
                 adapter.notifyDataSetChanged();
                 EditText editText = (EditText)findViewById(R.id.editText);
                 editText.setText("");
@@ -654,6 +657,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 myList.set(i3, newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
+                checkListArray();
                 adapter.notifyDataSetChanged();
                 EditText editText = (EditText) findViewById(R.id.editText);
                 if (editText.getText().length() >= 13) {
@@ -718,6 +722,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         iMatch=1;
         cBarcode();
         checkListArray();
+        adapter.notifyDataSetChanged();
     }
 
     //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
@@ -1097,6 +1102,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if(editText.getText().length()>=13){
                     cBarcode();
+                    EditText editText1 = (EditText) findViewById(R.id.editText7);
+                    editText1.getText();
+                    editText1.requestFocus();
                 }
 
                 return false;
@@ -1382,28 +1390,24 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
 
     //判斷是否有檢完
+    //要修改
     private void checkListArray() {
-
-        for (int i = 0; i < myList.size(); i++) {
-            LinkedHashMap<String, String> item = myList.get(i);
-            int size = myList.size()-1;
-            //Log.e("myList", String.valueOf(myList.get(i)));
-            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
-                Log.e("list", String.valueOf(myList.get(i)));
-                //Log.e("item", String.valueOf(item));
-                myList.remove(i);
-                myList.add(size,item);
-                adapter.notifyDataSetChanged();
-                //Collections.swap(myList,i,myList.size());
-                //myList.set(myList.size(),myList.get(i));
-                //Collections.rotate(myList.subList(0,i), myList.size());
-                //Log.e("last", String.valueOf(size));
-                //Log.e("I", String.valueOf(i));
-
+        for(int i2 = 0; i2 < myList.size(); i2++){
+            for (int i = 0; i < myList.size(); i++) {
+                LinkedHashMap<String, String> item = myList.get(i);
+                int size = myList.size() - 1;
+                Log.e("myList", String.valueOf(myList.get(i)));
+                if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                    //Log.e("list", String.valueOf(myList.get(i)));
+                    Log.e("item", String.valueOf(item));
+                    myList.remove(i);
+                    myList.add(size, item);
+                    //adapter.notifyDataSetChanged();
+                }
             }
         }
-    }
 
+    }
 }
 
 
