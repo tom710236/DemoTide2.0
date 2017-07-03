@@ -124,7 +124,12 @@ public class PurchaseActivity extends AppCompatActivity {
                 //post 失敗後
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(PurchaseActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 //POST 成功後

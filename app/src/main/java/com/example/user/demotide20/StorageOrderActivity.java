@@ -321,10 +321,82 @@ public class StorageOrderActivity extends AppCompatActivity {
             //條碼找不到商品編號
             if (i == 0) {
 
+                setThingSQL();
+                Cursor c2 = db.query("tblTable",                            // 資料表名字
+                        null,                                              // 要取出的欄位資料
+                        "cProductID=?",                                    // 查詢條件式(WHERE)
+                        new String[]{editList},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                        null,                                              // Group By字串語法
+                        null,                                              // Having字串法
+                        null);                                             // Order By字串語法(排序)
 
-                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
-                EditText editText = (EditText)findViewById(R.id.editText3);
-                editText.setText("");
+                while (c2.moveToNext()) {
+                    cProductIDeSQL = c2.getString(c2.getColumnIndex("cProductID"));
+                    Log.e("cBarcode2", cProductIDeSQL);
+                    Btrans.add(cProductIDeSQL);
+                }
+                i = c2.getCount();
+                Log.e("筆數2", String.valueOf(i));
+                if( i == 0){
+                    Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                    EditText editText = (EditText)findViewById(R.id.editText3);
+                    editText.setText("");
+                }else if (i == 1) {
+                    //先判斷條碼內的商品號碼是否有在listView裡
+                    if (checkID() == true) {
+                        //有在listView裡 把新增的數量加入
+                        for (int i2 = 0; i2 < myList.size(); i2++) {
+                            if (cProductIDeSQL.equals(myList.get(i2).get("ProductID"))) {
+
+                                newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
+                                Log.e("count",myList.get(i2).get("Count"));
+                                Log.e("editCount", String.valueOf(editCount));
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("ProductID", myList.get(i2).get("ProductID"));
+                                newMap.put("Count", String.valueOf(newCount));
+                                newMap.put("cProductName",myList.get(i2).get("cProductName"));
+                                myList.set(i2, newMap);
+                                adapter.notifyDataSetChanged();
+                                EditText editText = (EditText)findViewById(R.id.editText3);
+                                editText.setText("");
+                            }
+                        }
+                    }else {
+                        //Toast.makeText(this, "請輸入正確商品條碼", Toast.LENGTH_SHORT).show();
+                        Log.e("cProductIDeSQL!!",cProductIDeSQL);
+                        setThingSQL();
+                        c = db.query("tblTable",                            // 資料表名字
+                                null,                                              // 要取出的欄位資料
+                                "cProductID=?",                                    // 查詢條件式(WHERE)
+                                new String[]{cProductIDeSQL},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                                null,                                              // Group By字串語法
+                                null,                                              // Having字串法
+                                null);                                             // Order By字串語法(排序)
+
+                        while (c.moveToNext()) {
+                            cProductName = c.getString(c.getColumnIndex("cProductName"));
+                            Log.e("cProductName", cProductName);
+                            addMap = new LinkedHashMap<String, String>();
+                            addMap.put("cProductName",cProductName);
+                            addMap.put("ProductID",cProductIDeSQL);
+                            addMap.put("Count", String.valueOf(editCount));
+                            myList.add(addMap);
+                            adapter.notifyDataSetChanged();
+                            EditText editText = (EditText)findViewById(R.id.editText3);
+                            editText.setText("");
+                            Log.e("addMap", String.valueOf(myList));
+                        }
+
+                    }
+
+                }else if (i>1){
+                    stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
+                    //Log.e("stringArray", String.valueOf(stringArray));
+                    chooseThings();
+                }else {
+                    Toast.makeText(this, "請輸入數量", Toast.LENGTH_SHORT).show();
+                }
+
             } else if (i == 1) {
                 //先判斷條碼內的商品號碼是否有在listView裡
                 if (checkID() == true) {

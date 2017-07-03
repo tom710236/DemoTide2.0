@@ -158,7 +158,13 @@ public class ShipperActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    //非主執行緒顯示UI(Toast)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(ShipperActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
@@ -278,7 +284,13 @@ public class ShipperActivity extends AppCompatActivity {
                                 call.enqueue(new Callback() {
                                     @Override
                                     public void onFailure(Call call, IOException e) {
-
+                                        //非主執行緒顯示UI(Toast)
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(ShipperActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                                     }
 
                                     @Override
