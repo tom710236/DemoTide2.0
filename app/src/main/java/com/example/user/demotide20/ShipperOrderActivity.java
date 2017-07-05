@@ -313,7 +313,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     //改變listView(SimpleAdapter) item的顏色
     public class SpecialAdapter extends SimpleAdapter {
         private int[] colors = new int[]{0x30ffffff, 0x30696969};
-        private int colors2 = Color.RED;
+        private int colors2 = Color.BLUE;
 
         public SpecialAdapter(Context context, ArrayList<LinkedHashMap<String, String>> items, int resource, String[] from, int[] to) {
             super(context, items, resource, from, to);
@@ -1192,36 +1192,16 @@ public class ShipperOrderActivity extends AppCompatActivity {
         d.setMessage("上傳中..");
         d.show();
     }
-    //設定返回鍵設定輸入數量框
+    //設定返回鍵
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
 
         if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
-            new AlertDialog.Builder(ShipperOrderActivity.this)
-                    .setTitle("確認視窗")
-                    .setMessage("確定要結束應用程式嗎?")
-                    .setPositiveButton("確定",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    finish();
-                                }
-                            })
-                    .setNegativeButton("取消",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            }).show();
+            return true;
         }
-        return super.onKeyDown(keyCode, event);
+        //return super.onKeyDown(keyCode, event);
+        return false;
     }
     //設定輸入數量框
     private void setAlertDialog(){

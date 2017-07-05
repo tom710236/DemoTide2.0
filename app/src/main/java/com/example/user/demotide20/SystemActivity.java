@@ -2,14 +2,12 @@ package com.example.user.demotide20;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -212,7 +210,8 @@ public class SystemActivity extends AppCompatActivity {
         //先刪除舊有資料表格
         db4.delete("tblTable4",null,null);
         //放入新增表格(商品清單)
-        setWait();
+        //setWait();
+        d = ProgressDialog.show(SystemActivity.this, "更新中...", "資訊寫入中，請稍後！", false);
         Get get = new Get();
         get.start();
         //用來紀錄更新日期和次數
@@ -424,30 +423,10 @@ public class SystemActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
 
         if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
-            new AlertDialog.Builder(SystemActivity.this)
-                    .setTitle("確認視窗")
-                    .setMessage("確定要結束應用程式嗎?")
-                    .setPositiveButton("確定",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    finish();
-                                }
-                            })
-                    .setNegativeButton("取消",
-                            new DialogInterface.OnClickListener() {
-
-                                @Override
-                                public void onClick(DialogInterface dialog,
-                                                    int which) {
-                                    // TODO Auto-generated method stub
-
-                                }
-                            }).show();
+            return true;
         }
-        return super.onKeyDown(keyCode, event);
+        //return super.onKeyDown(keyCode, event);
+        return false;
     }
     //到排定更新的時間的SQL 去得到更新的時間
     private String getTimeUp(){
