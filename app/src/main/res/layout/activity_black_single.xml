@@ -253,7 +253,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2.4"
                 android:ems="10"
-                android:inputType="text"
+                android:inputType="text|textCapCharacters"
                 android:singleLine="true"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -318,15 +318,15 @@
             android:id="@+id/textView9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="總量"
+            android:layout_weight="1.5"
+            android:text="訂單數量"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textView25"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="1.5"
             android:textStyle="bold" />
 
     </LinearLayout>

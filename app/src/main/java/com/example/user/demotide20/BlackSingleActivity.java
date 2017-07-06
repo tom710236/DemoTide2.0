@@ -642,9 +642,17 @@ public class BlackSingleActivity extends AppCompatActivity {
                 Log.e("I22", String.valueOf(i2));
                 //數量
                 if(getint2!=1){
-                    i2 = i2 + getint2;
+                    if(i2 + getint2 <0){
+                        i2=0;
+                    }else{
+                        i2 = i2 + getint2;
+                    }
                 }else{
-                    i2 = i2 + getint2;
+                    if(i2 + getint2 <0){
+                        i2=0;
+                    }else{
+                        i2 = i2 + getint2;
+                    }
                 }
 
 
@@ -672,9 +680,17 @@ public class BlackSingleActivity extends AppCompatActivity {
                 Log.e("I22", String.valueOf(i2));
                 //數量
                 if(getint2!=1){
+                    if(i2 + getint2 <0){
+                        i2=0;
+                    }else{
                         i2 = i2 + getint2;
+                    }
                 }else{
-                    i2 = i2 + getint2;
+                    if(i2 + getint2 <0){
+                        i2=0;
+                    }else{
+                        i2 = i2 + getint2;
+                    }
                 }
 
 

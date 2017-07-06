@@ -641,16 +641,26 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
 
                     } else {
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
                             i2 = i2 + getint2;
+                        }
                             }
-                } else {
+                } else  {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
 
-                    } else {
-                        i2 = i2 + getint2;
+                    } else  {
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
+                            i2 = i2 + getint2;
+                        }
+
                     }
+
                 }
 
 
@@ -687,7 +697,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
 
                     } else {
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
                             i2 = i2 + getint2;
+                        }
                     }
                 } else {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
@@ -695,7 +709,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
 
                     } else {
-                        i2 = i2 + getint2;
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
+                            i2 = i2 + getint2;
+                        }
                     }
                 }
 

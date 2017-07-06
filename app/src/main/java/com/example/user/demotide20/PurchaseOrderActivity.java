@@ -601,14 +601,22 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
-                        i2 = i2 + getint2;
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
+                            i2 = i2 + getint2;
+                        }
                     }
                 } else {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
-                        i2 = i2 + getint2;
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
+                            i2 = i2 + getint2;
+                        }
                     }
                 }
 
@@ -645,14 +653,22 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
-                        i2 = i2 + getint2;
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
+                            i2 = i2 + getint2;
+                        }
                     }
                 } else {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                     } else {
-                        i2 = i2 + getint2;
+                        if(i2 + getint2 <0){
+                            i2=0;
+                        }else{
+                            i2 = i2 + getint2;
+                        }
                     }
                 }
 

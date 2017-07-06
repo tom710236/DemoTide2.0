@@ -349,6 +349,9 @@ public class StorageOrderActivity extends AppCompatActivity {
                             if (cProductIDeSQL.equals(myList.get(i2).get("ProductID"))) {
 
                                 newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
+                                if(newCount<0){
+                                    newCount=0;
+                                }
                                 Log.e("count",myList.get(i2).get("Count"));
                                 Log.e("editCount", String.valueOf(editCount));
                                 newMap = new LinkedHashMap<String, String>();
@@ -405,6 +408,9 @@ public class StorageOrderActivity extends AppCompatActivity {
                         if (cProductIDeSQL.equals(myList.get(i2).get("ProductID"))) {
 
                             newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
+                            if(newCount<0){
+                                newCount=0;
+                            }
                             Log.e("count",myList.get(i2).get("Count"));
                             Log.e("editCount", String.valueOf(editCount));
                             newMap = new LinkedHashMap<String, String>();
@@ -498,6 +504,9 @@ public class StorageOrderActivity extends AppCompatActivity {
             for (int i2 = 0; i2 < myList.size(); i2++) {
                 if (newStringArray[0].equals(myList.get(i2).get("ProductID"))) {
                     newCount = editCount+Integer.parseInt(myList.get(i2).get("Count"));
+                    if(newCount<0){
+                        newCount=0;
+                    }
                     newMap = new LinkedHashMap<String, String>();
                     newMap.put("ProductID", myList.get(i2).get("ProductID"));
                     newMap.put("Count", String.valueOf(newCount));

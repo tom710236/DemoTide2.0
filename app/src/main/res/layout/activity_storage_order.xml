@@ -156,7 +156,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:ems="10"
-            android:inputType="number" />
+            android:inputType="text|number" />
 
         <Button
             android:id="@+id/button15"
@@ -195,7 +195,7 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:ems="10"
-            android:inputType="text" />
+            android:inputType="text|textCapCharacters" />
 
     </LinearLayout>
 
