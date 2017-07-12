@@ -147,7 +147,7 @@ public class ShipperActivity extends AppCompatActivity {
                     = MediaType.parse("application/json; charset=utf-8");
             String json = "{\"Token\":\"\" ,\"Action\":\"customer\",\"UserID\":\""+cUserID+"\"}";
             Log.e("JSON",json);
-            RequestBody body = RequestBody.create(JSON,json);
+            final RequestBody body = RequestBody.create(JSON,json);
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
@@ -169,6 +169,7 @@ public class ShipperActivity extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     String json = response.body().string();
                     Log.e("客戶API回傳JSON",json);
+
                     //解析 回傳JSON
                     //{"result":"1","PickUpCustomers":[{"CustomerID":"C000000003","CustomerName":"磯法資訊","Total":19500.00},{"CustomerID":"C000000002","CustomerName":"新達科技","Total":13100.00},{"CustomerID":"C000000001","CustomerName":"大島屋企業","Total":9400.00}]}
                     json2 = new ArrayList<>();

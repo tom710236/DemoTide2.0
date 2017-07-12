@@ -63,8 +63,17 @@
                 android:layout_weight="1"
                 android:gravity="right|center"
                 android:textColor="#000000"
-                android:textSize="14sp" />
-
+                android:textSize="14sp"
+                android:visibility="gone" />
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="?attr/colorPrimary"
+                android:onClick="onClickPic"
+                app:srcCompat="@android:drawable/ic_menu_manage" />
         </LinearLayout>
 
     </FrameLayout>
@@ -84,7 +93,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <Button
             android:id="@+id/button5"
@@ -150,7 +159,7 @@
         android:orientation="horizontal"
         android:paddingBottom="2dp"
         android:paddingTop="2dp"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <Button
             android:id="@+id/button10"

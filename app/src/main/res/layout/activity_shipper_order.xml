@@ -64,7 +64,18 @@
                 android:layout_weight="1"
                 android:gravity="right|center"
                 android:textColor="#000000"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/imageButton"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:background="?attr/colorPrimary"
+                android:onClick="onClickPic"
+                app:srcCompat="@android:drawable/ic_menu_manage" />
 
         </LinearLayout>
 
@@ -85,7 +96,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <Button
             android:id="@+id/button5"
@@ -151,7 +162,7 @@
         android:orientation="horizontal"
         android:paddingBottom="2dp"
         android:paddingTop="2dp"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <Button
             android:id="@+id/button10"
@@ -333,7 +344,7 @@
             android:id="@+id/textView9"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5"
+            android:layout_weight="1.6"
             android:text="訂單數量"
             android:textStyle="bold" />
 
@@ -341,9 +352,16 @@
             android:id="@+id/textView25"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5"
+            android:layout_weight="1.6"
             android:text="檢貨數量"
             android:textStyle="bold" />
+
+        <CheckBox
+            android:id="@+id/checkBox5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:visibility="invisible" />
 
     </LinearLayout>
 

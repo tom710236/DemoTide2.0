@@ -73,7 +73,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         //最後更新時間
         //Log.e("dateUp",dateUp);
         //更新次數
-        Log.e("i", String.valueOf(i));
+        Log.e("更新次數", String.valueOf(i));
 
         /***********************************************************
          * 另一個SQL

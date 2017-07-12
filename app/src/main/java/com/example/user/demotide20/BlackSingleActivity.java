@@ -107,7 +107,7 @@ public class BlackSingleActivity extends AppCompatActivity {
             adapter = new BlackSingleActivity.SpecialAdapter(
                     BlackSingleActivity.this,
                     myList,
-                    R.layout.lview4,
+                    R.layout.lview9,
                     new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
                     new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
             runOnUiThread(new Runnable() {
@@ -130,7 +130,7 @@ public class BlackSingleActivity extends AppCompatActivity {
             adapter = new BlackSingleActivity.SpecialAdapter(
                     BlackSingleActivity.this,
                     myList,
-                    R.layout.lview4,
+                    R.layout.lview9,
                     new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
                     new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
             runOnUiThread(new Runnable() {

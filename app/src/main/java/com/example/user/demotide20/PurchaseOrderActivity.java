@@ -81,7 +81,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     int iCheck, iMatch = 0;
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp;
-
+    int PicInt = 0,PicADD = 0;
     public class ProductIDInfo {
         private String mProductID;
 
@@ -379,12 +379,15 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     //顯示
                     linear.setVisibility(View.VISIBLE);
                     addNum = 1;
+                    iMatch = 0;
+                    PicADD = 1;
                 }
                 //沒有點擊 addNum=0
                 else {
                     //關閉
                     linear.setVisibility(View.INVISIBLE);
                     addNum = 0;
+                    PicADD = 0;
                 }
 
             }
@@ -804,11 +807,17 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         frameLayout.setVisibility(View.VISIBLE);
         LinTop.setVisibility(View.VISIBLE);
         linMid.setVisibility(View.VISIBLE);
-        linear.setVisibility(View.INVISIBLE);
+        //linear.setVisibility(View.INVISIBLE);
         linDown.setVisibility(View.VISIBLE);
         editText10.setVisibility(View.VISIBLE);
         list.setVisibility(View.VISIBLE);
-
+        if(PicADD ==1){
+            LinearLayout Linear = (LinearLayout)findViewById(R.id.linear);
+            Linear.setVisibility(View.VISIBLE);
+        }else {
+            LinearLayout Linear = (LinearLayout)findViewById(R.id.linear);
+            Linear.setVisibility(View.GONE);
+        }
 
         Allbase64 = new ArrayList();
         if (Abase64 != null) {
@@ -1509,5 +1518,32 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             Btrans.add(cProductIDeSQL);
 
         }
+    }
+    public void onClickPic (View v){
+        if(PicInt==0){
+            LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
+            LinTop.setVisibility(View.VISIBLE);
+            if(PicADD ==1){
+                LinearLayout Linear = (LinearLayout)findViewById(R.id.linear);
+                Linear.setVisibility(View.VISIBLE);
+            }else {
+                LinearLayout Linear = (LinearLayout)findViewById(R.id.linear);
+                Linear.setVisibility(View.GONE);
+            }
+            PicInt = 1;
+        }else {
+            LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
+            LinTop.setVisibility(View.GONE);
+            if(PicADD ==1){
+                LinearLayout Linear = (LinearLayout)findViewById(R.id.linear);
+                Linear.setVisibility(View.VISIBLE);
+            }else {
+                LinearLayout Linear = (LinearLayout)findViewById(R.id.linear);
+                Linear.setVisibility(View.GONE);
+            }
+            PicInt = 0;
+        }
+
+
     }
 }

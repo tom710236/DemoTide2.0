@@ -36,6 +36,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.R.attr.name;
+import static android.icu.text.Normalizer.NO;
+import static android.os.Build.ID;
+
 
 public class SystemActivity extends AppCompatActivity {
     String cUserName,today,tblTable4,cUserID;
@@ -52,6 +56,8 @@ public class SystemActivity extends AppCompatActivity {
     SQLiteDatabase db,db2,db3,db4;
     ContentValues addbase,addbase2;
     ProgressDialog d;
+    int upDateNumI ;
+    int upDateNumL ;
 
     //String ID,name,NO,DT;
 
@@ -113,7 +119,7 @@ public class SystemActivity extends AppCompatActivity {
             okHttpGet();
         }
 
-        // Get
+        // Get 更新資訊的方法
         private void okHttpGet(){
             final OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
@@ -140,9 +146,15 @@ public class SystemActivity extends AppCompatActivity {
                     ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
                     ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
                     try {
+
+
                         String json2 = new JSONObject(json).getString("Products");
                         Log.e("JSON2",json2);
-                        JSONArray array = new JSONArray(json2);
+                        final JSONArray array = new JSONArray(json2);
+
+
+                        //setThingSQL();
+
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT")));
@@ -150,8 +162,11 @@ public class SystemActivity extends AppCompatActivity {
                             String name = obj.optString("cProductName");
                             String NO = obj.optString("cGoodsNo");
                             String DT = obj.optString("cUpdateDT");
+                            Log.e("ID", trans.get(i).cProductID);
                             //建立SQL
+                            /*
                             setThingSQL();
+
                             //放入SQL
                             addbase = new ContentValues();
                             addbase.put("cProductID", ID);
@@ -159,12 +174,33 @@ public class SystemActivity extends AppCompatActivity {
                             addbase.put("cGoodsNo", NO);
                             addbase.put("cUpdateDT", DT);
                             db.insert(DB_NAME, null, addbase);
+
                             db.close();
+                                */
 
                         }
+                        // 把資料放入資料庫(之前一個一個放太慢,整個抓下來後再一口氣放入)
+                        setThingSQL();
+                        db.beginTransaction();
+                        try {
+                            addbase = new ContentValues();
+                            for(int i =0;i<trans.size();i++ ){
+
+                                addbase.put("cProductID", trans.get(i).cProductID);
+                                addbase.put("cProductName", trans.get(i).cProductName);
+                                addbase.put("cGoodsNo", trans.get(i).cGoodsNo);
+                                addbase.put("cUpdateDT", trans.get(i).cUpdateDT);
+                                db.insert(DB_NAME, null, addbase);
+                            }
+                            db.setTransactionSuccessful();
+                        }finally {
+                            db.endTransaction();
+                        }
+
                         String json3 = new JSONObject(json).getString("ProductBarcodes");
                         Log.e("JSON3",json3);
-                        JSONArray array1 = new JSONArray(json3);
+                        final JSONArray array1 = new JSONArray(json3);
+
                         for (int i = 0; i < array1.length(); i++) {
                             JSONObject obj = array1.getJSONObject(i);
                             trans2.add(new BarcodesInfo(obj.optString("cProductID"), obj.optString("cBarcode")));
@@ -173,15 +209,37 @@ public class SystemActivity extends AppCompatActivity {
                             String Bcode = obj.optString("cBarcode");
                             Log.e("Bcode",Bcode);
                             //建立SQL
+                            /*
                             setBarcodeSQL();
+
                             //放入SQL
                             addbase2 = new ContentValues();
                             addbase2.put("cProductID", BID);
                             addbase2.put("cBarcode", Bcode);
                             db4.insert("tblTable4", null, addbase2);
+
                             db4.close();
+                                */
 
                         }
+                        setBarcodeSQL();
+                        db4.beginTransaction();
+
+                        try {
+                            addbase2 = new ContentValues();
+                            for(int i = 0; i<trans2.size();i++){
+
+                                addbase2.put("cProductID", trans2.get(i).cProductID);
+                                addbase2.put("cBarcode", trans2.get(i).cBarcode);
+                                db4.insert("tblTable4", null, addbase2);
+                            }
+                            db4.setTransactionSuccessful();
+                        }finally {
+                            db4.endTransaction();
+                        }
+
+
+
                         handler.sendEmptyMessage(0);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -211,7 +269,7 @@ public class SystemActivity extends AppCompatActivity {
         db4.delete("tblTable4",null,null);
         //放入新增表格(商品清單)
         //setWait();
-        d = ProgressDialog.show(SystemActivity.this, "更新中...", "資訊寫入中，請稍後！", false);
+        d = ProgressDialog.show(SystemActivity.this, "更新中...", "", false);
         Get get = new Get();
         get.start();
         //用來紀錄更新日期和次數
@@ -461,4 +519,5 @@ public class SystemActivity extends AppCompatActivity {
         d.setMessage("同步中..");
         d.show();
     }
+
 }

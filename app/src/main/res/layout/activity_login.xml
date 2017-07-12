@@ -88,7 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:text=" V1.01" />
+            android:text=" V1.02" />
 
     </LinearLayout>
 </LinearLayout>
