@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -57,11 +58,12 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.example.user.demotide20.R.id.LinTop;
+import static com.example.user.demotide20.R.id.checkBox4;
 import static com.example.user.demotide20.R.id.editText7;
 import static com.example.user.demotide20.R.id.textView21;
 import static com.example.user.demotide20.R.id.textView23;
 import static com.example.user.demotide20.R.id.textView24;
+import static com.example.user.demotide20.R.id.view;
 import static com.example.user.demotide20.R.layout.lview4;
 
 public class ShipperOrderActivity extends AppCompatActivity {
@@ -359,14 +361,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, final ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
             int colorPos = position % colors.length;
             view.setBackgroundColor(colors[colorPos]);
-
-            convertView = null ;
+            convertView = null;
             //要先初始化顏色 不然往下拉時 item會被吃掉
-            if (convertView == null){
+            if (convertView == null) {
                 TextView textView21 = (TextView) view.findViewById(R.id.textView21);
                 textView21.setTextColor(Color.BLACK);
                 TextView textView22 = (TextView) view.findViewById(R.id.textView22);
@@ -375,12 +376,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 textView23.setTextColor(Color.BLACK);
                 TextView textView24 = (TextView) view.findViewById(R.id.textView24);
                 textView24.setTextColor(Color.BLACK);
-                //數量=總量時便item變顏色
+                final CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox4);
 
+
+                //數量=總量時便item變顏色
                 for (int i = 0; i < myList.size(); i++) {
                     if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
 
-                        if(position == i){
+                        if (position == i) {
                             //view.setBackgroundColor(colors2);
                             //return view;
                             textView21.setTextColor(colors2);
@@ -393,11 +396,55 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }
 
                 }
-            }
+                //checkBox若勾選 則檢貨數量=訂單數量
+                checkBox.setOnClickListener(new View.OnClickListener() {
 
+                    @Override
+                    public void onClick(View v) {
+                        if (((CheckBox) v).isChecked()) {
+                            if(myList.get(position).get("NowQty")==myList.get(position).get("Qty")){
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", "0");
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, newMap);
+
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+
+                            }else {
+                                Log.e("CHECK", String.valueOf(position));
+                                Log.e("CHECK2", String.valueOf(myList.get(position)));
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", String.valueOf(myList.get(position).get("Qty")));
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, newMap);
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+                            }
+
+
+                        } else {
+
+                        }
+
+
+                    }
+
+                });
+
+            }
 
             return view;
         }
+
     }
 
     // 執行緒 - 執行PostUserInfo()方法
@@ -496,8 +543,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             ShipperOrderActivity.this,
                             myList,
                             lview4,
-                            new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
-                            new int[]{textView21, R.id.textView22, textView23, textView24});
+                            new String[]{"cProductName", "ProductNo", "Qty", "NowQty", "checkbox"},
+                            new int[]{textView21, R.id.textView22, textView23, textView24, checkBox4});
 
 
 
@@ -757,7 +804,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 }
 
 
-                Log.e("I2", String.valueOf(i2));
+
                 newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", String.valueOf(i2));
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
@@ -1498,6 +1545,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     myList.remove(i);
                     myList.add(size, item);
                     //adapter.notifyDataSetChanged();
+                }else{
+
                 }
             }
         }

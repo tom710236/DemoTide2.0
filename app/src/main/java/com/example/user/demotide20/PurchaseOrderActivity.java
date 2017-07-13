@@ -25,6 +25,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -291,8 +292,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 PurchaseOrderActivity.this,
                 myList,
                 R.layout.lview4,
-                new String[]{"cProductName", "ProductNo", "Qty", "NowQty"},
-                new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24});
+                new String[]{"cProductName", "ProductNo", "Qty", "NowQty","checkBox"},
+                new int[]{R.id.textView21, R.id.textView22, R.id.textView23, R.id.textView24,R.id.checkBox4});
 
         runOnUiThread(new Runnable() {
             @Override
@@ -326,7 +327,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             View view = super.getView(position, convertView, parent);
             int colorPos = position % colors.length;
             view.setBackgroundColor(colors[colorPos]);
@@ -341,6 +342,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 textView23.setTextColor(Color.BLACK);
                 TextView textView24 = (TextView) view.findViewById(R.id.textView24);
                 textView24.setTextColor(Color.BLACK);
+                final CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox4);
                 //數量=總量時便item變顏色
 
                 for (int i = 0; i < myList.size(); i++) {
@@ -359,6 +361,49 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     }
 
                 }
+                //checkBox若勾選 則檢貨數量=訂單數量
+                checkBox.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if (((CheckBox) v).isChecked()) {
+                            if(myList.get(position).get("NowQty")==myList.get(position).get("Qty")){
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", "0");
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, newMap);
+
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+
+                            }else {
+                                Log.e("CHECK", String.valueOf(position));
+                                Log.e("CHECK2", String.valueOf(myList.get(position)));
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", String.valueOf(myList.get(position).get("Qty")));
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, newMap);
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+                            }
+
+
+                        } else {
+
+                        }
+
+
+                    }
+
+                });
             }
 
             return view;

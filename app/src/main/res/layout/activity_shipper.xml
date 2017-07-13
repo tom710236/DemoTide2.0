@@ -64,7 +64,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="4.10"
         android:orientation="vertical"
         android:paddingBottom="16dp"
@@ -120,11 +120,23 @@
             android:layout_height="wrap_content"
             android:text="請選擇出貨單" />
 
-        <ListView
-            android:id="@+id/listView"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ListView
+                    android:id="@+id/listView"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </ScrollView>
 
         <Button
             android:id="@+id/button3"
