@@ -300,7 +300,7 @@
                 android:layout_weight="1"
                 android:onClick="onTest"
                 android:text="Button"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
 
         </LinearLayout>

@@ -1,7 +1,6 @@
 package com.example.user.demotide20;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -465,13 +464,6 @@ public class ShipperActivity extends AppCompatActivity {
         myDialog = new ProgressDialog(ShipperActivity.this);
         myDialog.setTitle("載入中");
         myDialog.setMessage("載入資訊中，請稍後！");
-        myDialog.setButton("關閉", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                myDialog.dismiss();
-            }
-
-        });
         myDialog.setCancelable(false);
         myDialog.show();
     }
@@ -491,7 +483,7 @@ public class ShipperActivity extends AppCompatActivity {
         } else if (Build.VERSION.SDK_INT >= 19) {
             View decorView = getWindow().getDecorView();
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE;
             decorView.setSystemUiVisibility(uiOptions);
         }
     }

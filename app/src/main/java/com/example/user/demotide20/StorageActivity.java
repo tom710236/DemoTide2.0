@@ -57,6 +57,7 @@ public class StorageActivity extends AppCompatActivity {
         Post post = new Post();
         post.start();
         setDialog();
+
     }
 
     //設定toolBar
@@ -169,6 +170,7 @@ public class StorageActivity extends AppCompatActivity {
                 }
                 Log.e("mylist", String.valueOf(myList));
                 setLackListView();
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -177,6 +179,8 @@ public class StorageActivity extends AppCompatActivity {
 
     }
     private void setLackListView(){
+
+
         listView = (ListView) findViewById(R.id.list);
         upList = new ArrayList();
         adapter = new SimpleAdapter(
@@ -215,6 +219,7 @@ public class StorageActivity extends AppCompatActivity {
             @Override
             public void run() {
                 listView.setAdapter(adapter);
+                hideSystemNavigationBar();
             }
         });
         //長按
@@ -245,7 +250,7 @@ public class StorageActivity extends AppCompatActivity {
     }
     //新增儲位
     public void onAdd (View v){
-        hideSystemNavigationBar();
+
         //對話框
         final View item = LayoutInflater.from(StorageActivity.this).inflate(R.layout.item2, null);
         new AlertDialog.Builder(StorageActivity.this)
@@ -264,6 +269,8 @@ public class StorageActivity extends AppCompatActivity {
                             Pass pass = new Pass();
                             pass.start();
                             setDialog();
+
+
                         }else {
                             Toast.makeText(StorageActivity.this, "請輸入儲位名稱或編號", Toast.LENGTH_SHORT).show();
                         }
@@ -322,7 +329,7 @@ public class StorageActivity extends AppCompatActivity {
         passDel.start();
         setDialog();
         adapter.notifyDataSetChanged();
-        hideSystemNavigationBar();
+
     }
     class PassDel extends Thread {
         @Override
@@ -368,7 +375,7 @@ public class StorageActivity extends AppCompatActivity {
                     Log.e("OkHttp6", json);
                     Post post = new Post();
                     post.start();
-                    setDialog();
+
 
                 }
             });
@@ -381,6 +388,22 @@ public class StorageActivity extends AppCompatActivity {
         postonScr.start();
         setDialog();
         hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
     }
     class PostonScr extends Thread {
         @Override
@@ -450,6 +473,7 @@ public class StorageActivity extends AppCompatActivity {
                 }
                 Log.e("mylist", String.valueOf(myList));
                 setLackListView();
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -461,7 +485,7 @@ public class StorageActivity extends AppCompatActivity {
         PassClear passClear = new PassClear();
         passClear.start();
         setDialog();
-        hideSystemNavigationBar();
+
     }
     class PassClear extends Thread {
         @Override
@@ -558,7 +582,7 @@ public class StorageActivity extends AppCompatActivity {
         } else if (Build.VERSION.SDK_INT >= 19) {
             View decorView = getWindow().getDecorView();
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE;
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
@@ -586,10 +610,12 @@ public class StorageActivity extends AppCompatActivity {
         super.onResume();
     }
     private void setDialog(){
+
         myDialog = new ProgressDialog(this);
         myDialog.setTitle("載入中");
         myDialog.setMessage("載入資訊中，請稍後！");
         myDialog.setCancelable(false);
         myDialog.show();
+
     }
 }

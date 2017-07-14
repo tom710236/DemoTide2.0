@@ -1349,6 +1349,23 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             //editText歸零
                             EditText editText1 = (EditText)findViewById(R.id.editText);
                             editText1.setText("");
+                            hideSystemNavigationBar();
+                            View decorView = getWindow().getDecorView();
+                            decorView.setOnSystemUiVisibilityChangeListener
+                                    (new View.OnSystemUiVisibilityChangeListener() {
+                                        @Override
+                                        public void onSystemUiVisibilityChange(int visibility) {
+
+                                            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                                                hideSystemNavigationBar();
+                                            } else {
+                                                // TODO: The system bars are NOT visible. Make any desired
+                                                // adjustments to your UI, such as hiding the action bar or
+                                                // other navigational controls.
+                                                hideSystemNavigationBar();
+                                            }
+                                        }
+                                    });
                         }else{
                             EditText editText1 = (EditText)findViewById(R.id.editText);
                             editText1.setText("");
@@ -1614,7 +1631,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         } else if (Build.VERSION.SDK_INT >= 19) {
             View decorView = getWindow().getDecorView();
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE;
             decorView.setSystemUiVisibility(uiOptions);
         }
     }

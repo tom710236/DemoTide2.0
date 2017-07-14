@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
     android:focusableInTouchMode="false">
 
     <TextView
@@ -9,6 +10,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
+        android:paddingBottom="10dp"
         android:text="TextView" />
 
     <TextView
@@ -16,6 +18,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
+        android:paddingBottom="10dp"
         android:text="TextView" />
 
     <TextView
