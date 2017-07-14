@@ -277,7 +277,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //沒有點擊 addNum=0
                 else {
                     //關閉
-                    linear.setVisibility(View.INVISIBLE);
+                    linear.setVisibility(View.GONE);
                     addNum = 0;
                     PicADD = 0;
                 }
