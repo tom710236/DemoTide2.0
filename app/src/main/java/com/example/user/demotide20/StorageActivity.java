@@ -1,7 +1,9 @@
 package com.example.user.demotide20;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -45,6 +47,7 @@ public class StorageActivity extends AppCompatActivity {
     ListView listView;
     SimpleAdapter adapter;
     ArrayList upList;
+    ProgressDialog myDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,7 @@ public class StorageActivity extends AppCompatActivity {
         getPreviousPage();
         Post post = new Post();
         post.start();
+        setDialog();
     }
 
     //設定toolBar
@@ -121,11 +125,19 @@ public class StorageActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    myDialog.dismiss();
+                    //非主執行緒顯示UI(Toast)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(StorageActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("取得list清單的網址", response.toString());
                     Log.e("取得的list清單", json);
@@ -233,6 +245,7 @@ public class StorageActivity extends AppCompatActivity {
     }
     //新增儲位
     public void onAdd (View v){
+        hideSystemNavigationBar();
         //對話框
         final View item = LayoutInflater.from(StorageActivity.this).inflate(R.layout.item2, null);
         new AlertDialog.Builder(StorageActivity.this)
@@ -250,6 +263,7 @@ public class StorageActivity extends AppCompatActivity {
                         if(lackNoAdd.length()!=0||lackNameAdd.length()!=0){
                             Pass pass = new Pass();
                             pass.start();
+                            setDialog();
                         }else {
                             Toast.makeText(StorageActivity.this, "請輸入儲位名稱或編號", Toast.LENGTH_SHORT).show();
                         }
@@ -278,16 +292,25 @@ public class StorageActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    myDialog.dismiss();
+                    //非主執行緒顯示UI(Toast)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(StorageActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 //
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("OkHttp", response.toString());
                     Log.e("OkHttp2", json);
                     Post post = new Post();
                     post.start();
+                    //setDialog();
                 }
             });
         }
@@ -297,7 +320,9 @@ public class StorageActivity extends AppCompatActivity {
     public void onDel (View v){
         PassDel passDel = new PassDel();
         passDel.start();
+        setDialog();
         adapter.notifyDataSetChanged();
+        hideSystemNavigationBar();
     }
     class PassDel extends Thread {
         @Override
@@ -325,16 +350,25 @@ public class StorageActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    myDialog.dismiss();
+                    //非主執行緒顯示UI(Toast)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(StorageActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("OkHttp5", response.toString());
                     Log.e("OkHttp6", json);
                     Post post = new Post();
                     post.start();
+                    setDialog();
 
                 }
             });
@@ -345,6 +379,8 @@ public class StorageActivity extends AppCompatActivity {
         scr = editText.getText().toString();
         PostonScr postonScr = new PostonScr();
         postonScr.start();
+        setDialog();
+        hideSystemNavigationBar();
     }
     class PostonScr extends Thread {
         @Override
@@ -370,11 +406,19 @@ public class StorageActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    myDialog.dismiss();
+                    //非主執行緒顯示UI(Toast)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(StorageActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("取得list清單的網址", response.toString());
                     Log.e("取得的list清單", json);
@@ -416,6 +460,8 @@ public class StorageActivity extends AppCompatActivity {
     public void onClear (View v){
         PassClear passClear = new PassClear();
         passClear.start();
+        setDialog();
+        hideSystemNavigationBar();
     }
     class PassClear extends Thread {
         @Override
@@ -444,11 +490,19 @@ public class StorageActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    myDialog.dismiss();
+                    //非主執行緒顯示UI(Toast)
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(StorageActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("OkHttp5", response.toString());
                     Log.e("OkHttp6", json);
@@ -495,5 +549,47 @@ public class StorageActivity extends AppCompatActivity {
         //return super.onKeyDown(keyCode, event);
         return false;
     }
+    private void hideSystemNavigationBar() {
 
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
+    }
+    private void setDialog(){
+        myDialog = new ProgressDialog(this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setCancelable(false);
+        myDialog.show();
+    }
 }

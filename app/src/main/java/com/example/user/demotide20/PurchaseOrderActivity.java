@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -83,6 +84,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp;
     int PicInt = 0,PicADD = 0;
+    ProgressDialog myDialog;
     public class ProductIDInfo {
         private String mProductID;
 
@@ -144,6 +146,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         Post post = new Post();
         post.start();
+        setDialog();
         setEditText();
         setEditText2();
 
@@ -224,6 +227,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    myDialog.dismiss();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -234,6 +238,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    myDialog.dismiss();
                     //取得POST上去後所得到的JSON檔
                     json = response.body().string();
                     Log.e("採購單明細", json);
@@ -1037,7 +1042,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     AllBase64();
                     PostChangeInfo post = new PostChangeInfo();
                     post.start();
-
+                    setDialog();
                 }
                 //結案
                 else if (which == 1) {
@@ -1046,7 +1051,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     checkUP();
                     Log.e("CHECKUP", String.valueOf(check));
                     if (check == 0) {
-                        setWait();
+                        setDialog();
                         PostEndInfo post = new PostEndInfo();
                         post.start();
 
@@ -1067,6 +1072,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
             AllBase64();
             PostendInfo();
+
         }
     }
 
@@ -1091,6 +1097,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 //非主執行緒顯示UI(Toast)
+                myDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1102,6 +1109,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             //post 成功後執行
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                myDialog.dismiss();
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
                 Log.e("結案後POST的回傳值", json);
@@ -1153,6 +1161,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             //post 失敗後執行
             @Override
             public void onFailure(Call call, IOException e) {
+                myDialog.dismiss();
                 //非主執行緒顯示UI(Toast)
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1165,6 +1174,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             //post 成功後執行
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                myDialog.dismiss();
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
                 Log.e("換人檢POST後的回傳值", json);
@@ -1231,7 +1241,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     private void PostSaveInfo() {
 
         final OkHttpClient client = new OkHttpClient();
-        //要上傳的內容(JSON)--帳號登入
+        //要上傳的內容(JSON)--
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
         String json = "{\"Token\":\"\" ,\"Action\":\"savenotchageuser\",\"PurchaseID\" :\"" + order2 + "\",\"PurchaseProducts\":" + upStringList + "}";
@@ -1247,6 +1257,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             //post 失敗後執行
             @Override
             public void onFailure(Call call, IOException e) {
+                myDialog.dismiss();
                 //非主執行緒顯示UI(Toast)
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1259,6 +1270,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             //post 成功後執行
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                myDialog.dismiss();
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
                 Log.e("換人檢POST後的回傳值", json);
@@ -1272,7 +1284,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            d.dismiss();
+           myDialog.dismiss();
         }
     };
 
@@ -1589,6 +1601,48 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             PicInt = 0;
         }
 
+    }
+    private void hideSystemNavigationBar() {
 
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
+    }
+    private void setDialog(){
+        myDialog = new ProgressDialog(PurchaseOrderActivity.this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setCancelable(false);
+        myDialog.show();
     }
 }

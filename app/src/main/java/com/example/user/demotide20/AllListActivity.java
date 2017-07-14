@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -50,6 +51,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         gAdapter = new IconAdapter();
         list.setAdapter(gAdapter);
         list.setOnItemClickListener(this);
+
     }
     //啟動資料庫 查詢其內容
     private void cursor3(){
@@ -273,5 +275,42 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
                             }).show();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void hideSystemNavigationBar() {
+
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
     }
 }

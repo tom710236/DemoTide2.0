@@ -1,6 +1,9 @@
 package com.example.user.demotide20;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +48,7 @@ public class ShipperActivity extends AppCompatActivity {
     ArrayList<Map<String, String>> myList;
     Map<String, String> map;
     ArrayList upList;
+    ProgressDialog myDialog,myDialog2;
     //檢貨單 客戶API
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     public class ProductInfo {
@@ -92,6 +96,7 @@ public class ShipperActivity extends AppCompatActivity {
         toolBar();
         Post post = new Post();
         post.start();
+        setDialog();
 
     }
     //設定toolBar
@@ -157,6 +162,7 @@ public class ShipperActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     //非主執行緒顯示UI(Toast)
+                    myDialog.dismiss();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -169,7 +175,7 @@ public class ShipperActivity extends AppCompatActivity {
                 public void onResponse(Call call, Response response) throws IOException {
                     String json = response.body().string();
                     Log.e("客戶API回傳JSON",json);
-
+                    myDialog.dismiss();
                     //解析 回傳JSON
                     //{"result":"1","PickUpCustomers":[{"CustomerID":"C000000003","CustomerName":"磯法資訊","Total":19500.00},{"CustomerID":"C000000002","CustomerName":"新達科技","Total":13100.00},{"CustomerID":"C000000001","CustomerName":"大島屋企業","Total":9400.00}]}
                     json2 = new ArrayList<>();
@@ -252,7 +258,7 @@ public class ShipperActivity extends AppCompatActivity {
                                 Log.e("客戶清單點擊 內容", name);
                                 //點擊後所要執行的方法 並把所回傳的json和索引值帶入
                                 postjson2(String.valueOf(json2), index);
-
+                                setDialog2();
                             }
 
                             //點擊 spinner項目後 所要執行的方法
@@ -283,6 +289,7 @@ public class ShipperActivity extends AppCompatActivity {
                                 call.enqueue(new Callback() {
                                     @Override
                                     public void onFailure(Call call, IOException e) {
+                                        myDialog2.dismiss();
                                         //非主執行緒顯示UI(Toast)
                                         runOnUiThread(new Runnable() {
                                             @Override
@@ -298,6 +305,7 @@ public class ShipperActivity extends AppCompatActivity {
                                         //{"result":"1","CustomerPickups":[{"PickupNo":"S20160000004","Total":300.00},{"PickupNo":"S20160000014","Total":2000.00}]}
                                         String json3 = response.body().string();
                                         Log.e("取客戶有的撿貨單回傳", json3);
+                                        myDialog2.dismiss();
                                         //取出CustomerPickups
                                         //[{"PickupNo":"S20160000004","Total":300},{"PickupNo":"S20160000014","Total":2000}]
                                         try {
@@ -451,5 +459,63 @@ public class ShipperActivity extends AppCompatActivity {
         }
         //return super.onKeyDown(keyCode, event);
         return false;
+    }
+
+    private void setDialog(){
+        myDialog = new ProgressDialog(ShipperActivity.this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setButton("關閉", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                myDialog.dismiss();
+            }
+
+        });
+        myDialog.setCancelable(false);
+        myDialog.show();
+    }
+    private void setDialog2(){
+        myDialog2 = new ProgressDialog(ShipperActivity.this);
+        myDialog2.setTitle("載入中");
+        myDialog2.setMessage("載入資訊中，請稍後！");
+        myDialog2.setCancelable(false);
+        myDialog2.show();
+    }
+    private void hideSystemNavigationBar() {
+
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
     }
 }

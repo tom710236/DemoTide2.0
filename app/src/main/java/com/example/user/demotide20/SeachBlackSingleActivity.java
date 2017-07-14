@@ -1,7 +1,9 @@
 package com.example.user.demotide20;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -47,6 +49,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
     SpecialAdapter adapter;
     ArrayList<Map<String, String>> myList;
     Map<String, String> map;
+    ProgressDialog myDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +58,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
         getPreviousPage();
         PostGetType postGetType = new PostGetType();
         postGetType.start();
+        setDialog();
         setEditText();
     }
     //設定toolBar
@@ -119,6 +123,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                 //post 失敗後執行
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    myDialog.dismiss();
                     //非主執行緒顯示UI(Toast)
                     runOnUiThread(new Runnable() {
                         @Override
@@ -130,6 +135,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                 //post 成功後執行
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
+                    myDialog.dismiss();
                     //取得回傳資料json 還是JSON檔
                     String json = response.body().string();
                     Log.e("POST後的回傳值", json);
@@ -231,6 +237,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     //非主執行緒顯示UI(Toast)
+                    myDialog.dismiss();
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -242,6 +249,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     //取得回傳資料json 還是JSON檔
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("POST後的回傳值", json);
                     //解析 JSON
@@ -281,6 +289,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
         scrData = editText.getText().toString();
         PostSearch postSearch = new PostSearch();
         postSearch.start();
+        setDialog();
 
     }
     private void setArraylist(){
@@ -356,5 +365,48 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
         }
         //return super.onKeyDown(keyCode, event);
         return false;
+    }
+    private void hideSystemNavigationBar() {
+
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
+    }
+    private void setDialog(){
+        myDialog = new ProgressDialog(this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setCancelable(false);
+        myDialog.show();
     }
 }

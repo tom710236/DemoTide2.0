@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -63,7 +64,6 @@ import static com.example.user.demotide20.R.id.editText7;
 import static com.example.user.demotide20.R.id.textView21;
 import static com.example.user.demotide20.R.id.textView23;
 import static com.example.user.demotide20.R.id.textView24;
-import static com.example.user.demotide20.R.id.view;
 import static com.example.user.demotide20.R.layout.lview4;
 
 public class ShipperOrderActivity extends AppCompatActivity {
@@ -98,7 +98,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp;
     int PicInt = 0,PicADD = 0;
-
+    ProgressDialog myDialog;
     public class ProductIDInfo {
         private String mProductID;
 
@@ -196,6 +196,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //Post後回傳放入listView
         Post post = new Post();
         post.start();
+        setDialog();
         setEditText();
         setEditText2();
 
@@ -362,7 +363,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         @Override
         public View getView(final int position, View convertView, final ViewGroup parent) {
-            View view = super.getView(position, convertView, parent);
+            final View view = super.getView(position, convertView, parent);
             int colorPos = position % colors.length;
             view.setBackgroundColor(colors[colorPos]);
             convertView = null;
@@ -410,7 +411,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 newMap.put("Qty", myList.get(position).get("Qty"));
                                 //myList.remove(position);
                                 myList.set(position, newMap);
-
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
@@ -474,6 +474,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    myDialog.dismiss();
                     //非主執行緒顯示UI(Toast)
                     runOnUiThread(new Runnable() {
                         @Override
@@ -486,6 +487,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     //POST後 回傳的JSON檔
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("回傳的JSON", json);
                     String json2 = null;
@@ -504,6 +506,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 private void parseJson(String json2) {
 
                     myList = new ArrayList<LinkedHashMap<String, String>>();
+
                     try {
                         final JSONArray array = new JSONArray(json2);
                         for (iMax = 0; iMax < array.length(); iMax++) {
@@ -1111,7 +1114,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     AllBase64();
                     PostChangeInfo post = new PostChangeInfo();
                     post.start();
-
+                    setDialog();
                 }
                 //結案
                 else if (which == 1) {
@@ -1120,10 +1123,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     Log.e("Allbase64", String.valueOf(Allbase64));
 
                     if (check == 0) {
-                        setWait();
+                        //setWait();
                         PostEndInfo post = new PostEndInfo();
                         post.start();
-
+                        setDialog();
                     }else if (check!=0) {
                         Toast.makeText(ShipperOrderActivity.this, "商品未檢完", Toast.LENGTH_SHORT).show();
                     }
@@ -1177,6 +1180,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 //非主執行緒顯示UI(Toast)
+                myDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1190,6 +1194,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
+                myDialog.dismiss();
                 Log.e("結案後POST的回傳值", json);
                 changeEnd(json);
                 handler.sendEmptyMessage(0);
@@ -1224,6 +1229,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 //非主執行緒顯示UI(Toast)
+                myDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -1236,6 +1242,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 //取得回傳資料json 還是JSON檔
+                myDialog.dismiss();
                 String json = response.body().string();
                 Log.e("POST後的回傳值", json);
                 changeEnd(json);
@@ -1294,7 +1301,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            d.dismiss();
+            //d.dismiss();
+            myDialog.dismiss();
         }
     };
     private void setWait(){
@@ -1308,6 +1316,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
 
         if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_HOME){ // 攔截HOME鍵
             return true;
         }
         //return super.onKeyDown(keyCode, event);
@@ -1534,18 +1544,18 @@ public class ShipperOrderActivity extends AppCompatActivity {
     //判斷是否有檢完
     //要修改
     private void checkListArray() {
-        for(int i2 = 0; i2 < myList.size(); i2++){
+        for(int i2 = 0; i2 < myList.size(); i2++) {
             for (int i = 0; i < myList.size(); i++) {
                 LinkedHashMap<String, String> item = myList.get(i);
                 int size = myList.size() - 1;
-                Log.e("myList", String.valueOf(myList.get(i)));
+                Log.e("myList清單", String.valueOf(myList.get(i)));
                 if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
                     //Log.e("list", String.valueOf(myList.get(i)));
                     Log.e("item", String.valueOf(item));
                     myList.remove(i);
                     myList.add(size, item);
-                    //adapter.notifyDataSetChanged();
-                }else{
+
+                } else {
 
                 }
             }
@@ -1578,6 +1588,58 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
 
 
+    }
+    public void onTest (View v){
+        TestMyList();
+    }
+    private void TestMyList() {
+        Log.e("查詢", String.valueOf(myList.indexOf(map)));
+
+    }
+    private void setDialog(){
+        hideSystemNavigationBar();
+        myDialog = new ProgressDialog(ShipperOrderActivity.this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setCancelable(false);
+        myDialog.show();
+    }
+
+    private void hideSystemNavigationBar() {
+
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
     }
 }
 

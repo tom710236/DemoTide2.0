@@ -293,6 +293,15 @@
                 android:text="確定"
                 android:textSize="14sp" />
 
+            <Button
+                android:id="@+id/button19"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="onTest"
+                android:text="Button"
+                android:visibility="visible" />
+
 
         </LinearLayout>
 

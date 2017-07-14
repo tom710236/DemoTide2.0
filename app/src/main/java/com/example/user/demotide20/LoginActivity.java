@@ -1,7 +1,9 @@
 package com.example.user.demotide20;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     String cStatus, userName, passWord, cUserName,cUserID;
     //帳號登入的API
     String url = "http://demo.shinda.com.tw/ModernWebApi/WebApiLogin.aspx";
+    ProgressDialog myDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +42,11 @@ public class LoginActivity extends AppCompatActivity {
         EditText uId = (EditText) findViewById(R.id.userName);
         uId.setText(setting.getString("userName", ""));
 
+
     }
     // 登入鍵 - 執行執行緒
     public void login (View v){
+        setDialog();
         Post post = new Post();
         post.start();
     }
@@ -80,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                    public void run() {
+                        myDialog.dismiss();
                         Toast.makeText(LoginActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -88,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 //取得回傳資料json 還是JSON檔
+                myDialog.dismiss();
                 String json = response.body().string();
                 Log.e("POST後的回傳值", json);
                 //所要執行的方法 - 解析JSON
@@ -148,11 +155,62 @@ public class LoginActivity extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
 
-        if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
+        if (keyCode == KeyEvent.KEYCODE_BACK ) { // 攔截返回鍵
+            return true;
+        }else if(keyCode == KeyEvent.KEYCODE_MENU){
+            Toast.makeText(LoginActivity.this, "Menu", Toast.LENGTH_SHORT).show();
+            return super.onKeyDown(keyCode, event);
+        }else if(keyCode == KeyEvent.KEYCODE_HOME) {
+            Toast.makeText(LoginActivity.this, "Menu", Toast.LENGTH_SHORT).show();
             return true;
         }
-        //return super.onKeyDown(keyCode, event);
-        return false;
+        return super.onKeyDown(keyCode, event);
+        //return false;
     }
+    private void hideSystemNavigationBar() {
+
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
+    }
+
+    private void setDialog(){
+        myDialog = new ProgressDialog(LoginActivity.this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setCancelable(false);
+        myDialog.show();
+    }
+
 
 }

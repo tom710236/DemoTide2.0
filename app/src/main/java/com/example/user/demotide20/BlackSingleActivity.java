@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -85,6 +86,7 @@ public class BlackSingleActivity extends AppCompatActivity {
     int index,index2,iCheck,iMatch=0;
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp;
+    ProgressDialog myDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +97,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         getPreviousPage();
         PostGetType post = new PostGetType();
         post.start();
+        setDialog();
         setSwitch();
         setArraylist();
         setEditText();
@@ -217,6 +220,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                 //post 失敗後執行
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    myDialog.dismiss();
                     //非主執行緒顯示UI(Toast)
                     runOnUiThread(new Runnable() {
                         @Override
@@ -229,6 +233,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     //取得回傳資料json 還是JSON檔
+                    myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("POST後的回傳值", json);
                     //解析 JSON
@@ -330,6 +335,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                     Sname = SInputType.getSelectedItem().toString();
                     Log.e("index", String.valueOf(index));
                     Log.e("name", Sname);
+
 
                 }
 
@@ -1042,7 +1048,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         Log.e("upList", String.valueOf(upList));
         Log.e("upList.size()", String.valueOf(upList.size()));
         if(upList.size()>0&&index>0&&index2>0){
-            setWait();
+            setDialog();
 
             PostEndInfo post = new PostEndInfo();
             post.start();
@@ -1079,6 +1085,7 @@ public class BlackSingleActivity extends AppCompatActivity {
             //post 失敗後執行
             @Override
             public void onFailure(Call call, IOException e) {
+                myDialog.dismiss();
                 //非主執行緒顯示UI(Toast)
                 runOnUiThread(new Runnable() {
                     @Override
@@ -1090,6 +1097,7 @@ public class BlackSingleActivity extends AppCompatActivity {
             //post 成功後執行
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                myDialog.dismiss();
                 //取得回傳資料json 還是JSON檔
                 String json = response.body().string();
                 Log.e("結案後POST的回傳值", json);
@@ -1146,7 +1154,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            d.dismiss();
+            myDialog.dismiss();
         }
     };
     private void setWait(){
@@ -1380,5 +1388,48 @@ public class BlackSingleActivity extends AppCompatActivity {
         imv = (ImageView) findViewById(R.id.imageView18);
         imv.setImageBitmap(null);
         Ebase64 = null ;
+    }
+    private void hideSystemNavigationBar() {
+
+
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
+            View view = this.getWindow().getDecorView();
+            view.setSystemUiVisibility(View.GONE);
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        hideSystemNavigationBar();
+        View decorView = getWindow().getDecorView();
+        decorView.setOnSystemUiVisibilityChangeListener
+                (new View.OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+
+                        if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                            hideSystemNavigationBar();
+                        } else {
+                            // TODO: The system bars are NOT visible. Make any desired
+                            // adjustments to your UI, such as hiding the action bar or
+                            // other navigational controls.
+                            hideSystemNavigationBar();
+                        }
+                    }
+                });
+        super.onResume();
+    }
+    private void setDialog(){
+        myDialog = new ProgressDialog(BlackSingleActivity.this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setCancelable(false);
+        myDialog.show();
     }
 }

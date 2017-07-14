@@ -222,15 +222,15 @@
                     android:id="@+id/textView9"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="總量"
+                    android:layout_weight="2"
+                    android:text="訂單數量"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/textView25"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_weight="0.5"
                     android:textStyle="bold" />
 
             </LinearLayout>
