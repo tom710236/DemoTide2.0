@@ -159,7 +159,7 @@ public class SystemActivity extends AppCompatActivity {
                             String name = obj.optString("cProductName");
                             String NO = obj.optString("cGoodsNo");
                             String DT = obj.optString("cUpdateDT");
-                            Log.e("ID", trans.get(i).cProductID);
+                            //Log.e("ID", trans.get(i).cProductID);
                             //建立SQL
                             /*
                             setThingSQL();
@@ -174,7 +174,7 @@ public class SystemActivity extends AppCompatActivity {
 
                             db.close();
                                 */
-
+                            Log.e("資料下載", String.valueOf(i));
                         }
                         // 把資料放入資料庫(之前一個一個放太慢,整個抓下來後再一口氣放入)
                         setThingSQL();
@@ -188,6 +188,7 @@ public class SystemActivity extends AppCompatActivity {
                                 addbase.put("cGoodsNo", trans.get(i).cGoodsNo);
                                 addbase.put("cUpdateDT", trans.get(i).cUpdateDT);
                                 db.insert(DB_NAME, null, addbase);
+                                //Log.e("放進資料庫完成", String.valueOf(i));
                             }
                             db.setTransactionSuccessful();
                         }finally {
@@ -202,9 +203,9 @@ public class SystemActivity extends AppCompatActivity {
                             JSONObject obj = array1.getJSONObject(i);
                             trans2.add(new BarcodesInfo(obj.optString("cProductID"), obj.optString("cBarcode")));
                             String BID = obj.optString("cProductID");
-                            Log.e("BID",BID);
+                            //Log.e("BID",BID);
                             String Bcode = obj.optString("cBarcode");
-                            Log.e("Bcode",Bcode);
+                            //Log.e("Bcode",Bcode);
                             //建立SQL
                             /*
                             setBarcodeSQL();

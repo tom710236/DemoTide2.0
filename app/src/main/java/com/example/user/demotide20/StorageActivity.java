@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -46,8 +47,11 @@ public class StorageActivity extends AppCompatActivity {
     Map<String, String> map;
     ListView listView;
     SimpleAdapter adapter;
-    ArrayList upList;
+    ArrayList upList,checkList;
     ProgressDialog myDialog;
+    CheckBox checkBox;
+    int remInt;
+    private HashSet<Integer> mCheckSet = new HashSet<Integer>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -183,6 +187,7 @@ public class StorageActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.list);
         upList = new ArrayList();
+        checkList = new ArrayList();
         adapter = new SimpleAdapter(
                 StorageActivity.this,
                 myList,
@@ -194,22 +199,28 @@ public class StorageActivity extends AppCompatActivity {
                 //获取相应的view中的checkbox对象
                 if(convertView == null)
                     convertView = View.inflate(StorageActivity.this, R.layout.lview5, null);
-                CheckBox checkBox = (CheckBox)convertView.findViewById(R.id.checkBox);
+                checkBox = (CheckBox)convertView.findViewById(R.id.checkBox);
+                checkBox.setChecked(mCheckSet.contains(position));
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-
+                        remInt=position;
                         if(((CheckBox)v).isChecked()){
-
                             upList.add(myList.get(position).get("LackNo"));
-
+                            mCheckSet.add(position);
                         }else{
                             upList.remove(myList.get(position).get("LackNo"));
+                            mCheckSet.remove(position);
+
+
                         }
                         Log.e("UPLIST", String.valueOf(upList));
+                        Log.e("mCheckSet", String.valueOf(mCheckSet));
+
                     }
                 });
+
                 return super.getView(position, convertView, parent);
             }
 
@@ -328,8 +339,9 @@ public class StorageActivity extends AppCompatActivity {
         PassDel passDel = new PassDel();
         passDel.start();
         setDialog();
-        adapter.notifyDataSetChanged();
-
+        Log.e("remInt", String.valueOf(remInt));
+        Log.e("mCheckSet3", String.valueOf(mCheckSet));
+        mCheckSet.clear();
     }
     class PassDel extends Thread {
         @Override

@@ -42,7 +42,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, mLackNO, mLackName, cProductName, lackNoAdd, lackNameAdd,cProductIDeSQL,upStringList;
     String url = "http://demo.shinda.com.tw/ModernWebApi/LackAPI.aspx";
     ArrayList<Map<String, String>> myList,saveList;
-    ArrayList upList,Btrans,delList;
+    ArrayList upList,Btrans,delList,getCheckList;
     int iMax = 0;
     int newCount = 0;
     int editCount = 0;
@@ -236,6 +236,8 @@ public class StorageOrderActivity extends AppCompatActivity {
         upList = new ArrayList();
         delList = new ArrayList();
         checkMap = new LinkedHashMap();
+        getCheckList = new ArrayList();
+        final int[] i3 = new int[1];
         adapter = new SimpleAdapter(
                 StorageOrderActivity.this,
                 myList,
@@ -259,11 +261,16 @@ public class StorageOrderActivity extends AppCompatActivity {
 
                         } else {
                             upList.remove(String.valueOf(position));
+
                         }
-                        Log.e("UPLIST", String.valueOf(upList));
+                        //Log.e("UPLIST", String.valueOf(upList));
+
 
                     }
+
+
                 });
+
                 return super.getView(position, convertView, parent);
             }
 
