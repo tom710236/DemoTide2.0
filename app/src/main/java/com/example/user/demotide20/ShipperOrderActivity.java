@@ -50,8 +50,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,19 +69,20 @@ import static com.example.user.demotide20.R.id.editText7;
 import static com.example.user.demotide20.R.id.textView21;
 import static com.example.user.demotide20.R.id.textView23;
 import static com.example.user.demotide20.R.id.textView24;
+import static com.example.user.demotide20.R.layout.item;
 import static com.example.user.demotide20.R.layout.lview4;
 
 public class ShipperOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, order, checked, cProductIDeSQL;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     LinearLayout linear;
-    ListView listView;
+    ListView listView,listView2;
     int check = 0;
     int addNum = 0, iMax = 0;
     int indexSpinner;
     String[] stringArray;
     String Abase64, Bbase64, Cbase64, Dbase64, Ebase64;
-    ArrayList<LinkedHashMap<String, String>> myList, upList;
+    ArrayList<LinkedHashMap<String, String>> myList, upList, myList2;
     ArrayList  Btrans;
     MyDBhelper helper;
     MyDBhelper4 helper4;
@@ -87,7 +91,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     final String[] activity = {"換人檢", "結案"};
     ArrayList  Allbase64;
     LinkedHashMap<String, String> map;
-    SpecialAdapter adapter;
+    SpecialAdapter adapter,adapter2;
     Uri AImgUri, BImgUri, CImgUri, DImgUri, EImgUri;
     LinkedHashMap<String, String> newMap;
     int getint;
@@ -96,6 +100,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     ProgressDialog d;
     int iCheck,iCheck2;
     int iMatch=0;
+    private HashSet<Integer> mCheckSet = new HashSet<Integer>();
     //
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp;
@@ -400,6 +405,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                 }
                 //checkBox若勾選 則檢貨數量=訂單數量
+                //checkBox.setChecked(mCheckSet.contains(position));
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -416,6 +422,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
+                                Log.e("checkBox","數量滿");
 
                             }else {
                                 Log.e("CHECK", String.valueOf(position));
@@ -430,6 +437,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
+                                Log.e("checkBox2",myList.get(position).get("NowQty"));
+                                Log.e("checkBox3",myList.get(position).get("Qty"));
                             }
 
 
@@ -508,7 +517,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 private void parseJson(String json2) {
 
                     myList = new ArrayList<LinkedHashMap<String, String>>();
-
+                    myList2 = new ArrayList<LinkedHashMap<String, String>>();
                     try {
                         final JSONArray array = new JSONArray(json2);
                         for (iMax = 0; iMax < array.length(); iMax++) {
@@ -534,6 +543,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
                             map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
                             map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
+                            map.put("check","0");
                             myList.add(map);
                             db.close();
                         }
@@ -551,24 +561,23 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             new String[]{"cProductName", "ProductNo", "Qty", "NowQty", "checkbox"},
                             new int[]{textView21, R.id.textView22, textView23, textView24, checkBox4});
 
+                    //listView2 = (ListView) findViewById(R.id.list2);
+                    checkListArray();
+                    /*
+                    adapter2 = new SpecialAdapter(
+                            ShipperOrderActivity.this,
+                            myList2,
+                            lview4,
+                            new String[]{"cProductName", "ProductNo", "Qty", "NowQty", "checkbox"},
+                            new int[]{textView21, R.id.textView22, textView23, textView24, checkBox4});
 
-
-                    runOnUiThread(new Runnable()
-                    {
+                    */
+                    runOnUiThread(new Runnable() {
                         @Override
-                        public void run()
-                        {
-                            Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>()
-                            {
-                                @Override
-                                public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2)
-                                {
-                                    String value1 = (o1.get("ProductNo"));
-                                    String value2 = (o2.get("ProductNo"));
-                                    return value2.compareTo(value1);
-                                }
-                            });
+                        public void run() {
+
                             listView.setAdapter(adapter);
+                            //listView2.setAdapter(adapter2);
                         }
                     });
 
@@ -777,6 +786,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 checkListArray();
                 adapter.notifyDataSetChanged();
+
                 EditText editText = (EditText)findViewById(R.id.editText);
                 editText.setText("");
                 editText.requestFocus();
@@ -831,6 +841,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 checkListArray();
                 adapter.notifyDataSetChanged();
+
                 EditText editText = (EditText) findViewById(R.id.editText);
                 if (editText.getText().length() >= 13) {
                     editText.setText("");
@@ -895,6 +906,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         cBarcode();
         checkListArray();
         adapter.notifyDataSetChanged();
+
     }
 
     //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
@@ -1571,27 +1583,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         Ebase64 = null ;
     }
 
-    //判斷是否有檢完
-    //要修改
-    private void checkListArray() {
-        for(int i2 = 0; i2 < myList.size(); i2++) {
-            for (int i = 0; i < myList.size(); i++) {
-                LinkedHashMap<String, String> item = myList.get(i);
-                int size = myList.size() - 1;
-                Log.e("myList清單", String.valueOf(myList.get(i)));
-                if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
-                    //Log.e("list", String.valueOf(myList.get(i)));
-                    Log.e("item", String.valueOf(item));
-                    myList.remove(i);
-                    myList.add(size, item);
 
-                } else {
-
-                }
-            }
-        }
-
-    }
     public void onClickPic (View v){
         if(PicInt==0){
             LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
@@ -1670,6 +1662,100 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }
                 });
         super.onResume();
+    }
+    //判斷是否有檢完
+    //要修改
+    private void checkListArray() {
+        Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
+            @Override
+            public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
+
+                String value1 = (o1.get("ProductNo"));
+                String value2 = (o2.get("ProductNo"));
+
+                return value1.compareTo(value2);
+                //return value1.equals(value2);
+
+            }
+
+        });
+        for(int i=0 ; i<myList.size();i++){
+            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))){
+                newMap = new LinkedHashMap<String, String>();
+                newMap.put("NowQty", myList.get(i).get("NowQty"));
+                newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                newMap.put("cProductName", myList.get(i).get("cProductName"));
+                newMap.put("Qty", myList.get(i).get("Qty"));
+                newMap.put("check",myList.get(i).get("ProductNo"));
+                myList.set(i, newMap);
+            }else{
+                newMap = new LinkedHashMap<String, String>();
+                newMap.put("NowQty", myList.get(i).get("NowQty"));
+                newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                newMap.put("cProductName", myList.get(i).get("cProductName"));
+                newMap.put("Qty", myList.get(i).get("Qty"));
+                newMap.put("check","0");
+                myList.set(i, newMap);
+            }
+        }
+        Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
+            @Override
+            public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
+
+                String value1 = (o1.get("check"));
+                String value2 = (o2.get("check"));
+
+                return value1.compareTo(value2);
+                //return value1.equals(value2);
+
+            }
+
+        });
+
+        /*
+        for(int i2 = 0; i2 < myList.size(); i2++) {
+            for (int i = 0; i < myList.size(); i++) {
+                final LinkedHashMap<String, String> item = myList.get(i);
+                int size = myList.size() - 1;
+                Log.e("myList清單", String.valueOf(myList.get(i)));
+                if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                    //Log.e("list", String.valueOf(myList.get(i)));
+                    Log.e("item", String.valueOf(item));
+                    //myList2.add(0,item);
+                    myList.remove(i);
+
+                    myList.add(size, item);
+
+                } else {
+
+                }
+            }
+        }
+        */
+        //checkListArray2();
+    }
+    private void checkListArray2(){
+
+        for (int i=1; i<myList.size();i++){
+            final LinkedHashMap<String, String> item = myList.get(i);
+            if(Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))){
+                myList2.add(0, item);
+            }else {
+
+            }
+        }
+        Collections.sort(myList2, new Comparator<LinkedHashMap<String, String>>() {
+            @Override
+            public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
+                String value1 = (o1.get("ProductNo"));
+                String value2 = (o2.get("ProductNo"));
+                return value1.compareTo(value2);
+                //return value1.equals(value2);
+
+            }
+
+        });
+        Log.e("mylist2", String.valueOf(myList2));
     }
 }
 

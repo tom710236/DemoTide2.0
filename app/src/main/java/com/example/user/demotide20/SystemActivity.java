@@ -140,7 +140,7 @@ public class SystemActivity extends AppCompatActivity {
                 //解析JSON 放入SQL
                 private void parseJson(String json) {
 
-                    ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
+                    final ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
                     ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
                     try {
 
@@ -148,6 +148,7 @@ public class SystemActivity extends AppCompatActivity {
                         String json2 = new JSONObject(json).getString("Products");
                         Log.e("JSON2",json2);
                         final JSONArray array = new JSONArray(json2);
+
 
 
                         //setThingSQL();
@@ -175,6 +176,7 @@ public class SystemActivity extends AppCompatActivity {
                             db.close();
                                 */
                             Log.e("資料下載", String.valueOf(i));
+
                         }
                         // 把資料放入資料庫(之前一個一個放太慢,整個抓下來後再一口氣放入)
                         setThingSQL();
@@ -189,10 +191,14 @@ public class SystemActivity extends AppCompatActivity {
                                 addbase.put("cUpdateDT", trans.get(i).cUpdateDT);
                                 db.insert(DB_NAME, null, addbase);
                                 //Log.e("放進資料庫完成", String.valueOf(i));
+
                             }
                             db.setTransactionSuccessful();
-                        }finally {
+
+                        }
+                        finally {
                             db.endTransaction();
+
                         }
 
                         String json3 = new JSONObject(json).getString("ProductBarcodes");
@@ -242,6 +248,7 @@ public class SystemActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+
                                 Toast.makeText(SystemActivity.this, "已同步完畢", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -266,8 +273,8 @@ public class SystemActivity extends AppCompatActivity {
         //先刪除舊有資料表格
         db4.delete("tblTable4",null,null);
         //放入新增表格(商品清單)
-        //setWait();
-        d = ProgressDialog.show(SystemActivity.this, "更新中...", "", false);
+        setWait();
+        //d = ProgressDialog.show(SystemActivity.this, "更新中...", "", false);
         Get get = new Get();
         get.start();
         //用來紀錄更新日期和次數
@@ -510,12 +517,36 @@ public class SystemActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             d.dismiss();
+            hideSystemNavigationBar();
         }
     };
     private void setWait(){
+
+
+        //final int[] m_count = {0};
         d=new ProgressDialog(SystemActivity.this);
+        //d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         d.setMessage("同步中..");
+        //d.setProgress(13484);
+        d.setCancelable(false);
         d.show();
+        /*
+        new Thread(){
+            public void run(){
+                try{
+
+                    while (m_count[0] <= 100){
+                        d.setProgress(m_count[0]++);
+                        Thread.sleep(100);
+                    }
+                    d.cancel();
+                }
+                catch (InterruptedException e){
+
+                }
+            }
+        }.start();
+        */
     }
     private void hideSystemNavigationBar() {
 

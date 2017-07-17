@@ -205,7 +205,7 @@ public class StorageActivity extends AppCompatActivity {
 
                     @Override
                     public void onClick(View v) {
-                        remInt=position;
+
                         if(((CheckBox)v).isChecked()){
                             upList.add(myList.get(position).get("LackNo"));
                             mCheckSet.add(position);
@@ -339,8 +339,6 @@ public class StorageActivity extends AppCompatActivity {
         PassDel passDel = new PassDel();
         passDel.start();
         setDialog();
-        Log.e("remInt", String.valueOf(remInt));
-        Log.e("mCheckSet3", String.valueOf(mCheckSet));
         mCheckSet.clear();
     }
     class PassDel extends Thread {
@@ -622,7 +620,7 @@ public class StorageActivity extends AppCompatActivity {
         super.onResume();
     }
     private void setDialog(){
-
+        hideSystemNavigationBar();
         myDialog = new ProgressDialog(this);
         myDialog.setTitle("載入中");
         myDialog.setMessage("載入資訊中，請稍後！");
