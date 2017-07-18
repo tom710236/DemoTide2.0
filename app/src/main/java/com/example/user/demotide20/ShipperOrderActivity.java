@@ -193,6 +193,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //Android 對 EditText 取得 focus
         //editText.requestFocus();
 
+        setCheckBox ();
 
         //取得上一頁資料
         getPreviousPage();
@@ -206,6 +207,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         setDialog();
         setEditText();
         setEditText2();
+
+        //
 
 
     }
@@ -342,7 +345,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         iMatch = 0;
     }
     public void addAll(View v) {
-        addNum = 9999;
+        addNum = 999999;
         if (iMatch==1){
             addNum=9998;
             if (iCheck==1){
@@ -362,7 +365,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     //改變listView(SimpleAdapter) item的顏色
     public class SpecialAdapter extends SimpleAdapter {
+        //背景顏色
         private int[] colors = new int[]{0x30ffffff, 0x30696969};
+        //檢滿後字體顏色
         private int colors2 = Color.BLUE;
 
         public SpecialAdapter(Context context, ArrayList<LinkedHashMap<String, String>> items, int resource, String[] from, int[] to) {
@@ -386,7 +391,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 TextView textView24 = (TextView) view.findViewById(R.id.textView24);
                 textView24.setTextColor(Color.BLACK);
                 final CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox4);
-
+                //checkBox.setChecked(mCheckSet.contains(position));
 
                 //數量=總量時便item變顏色
                 for (int i = 0; i < myList.size(); i++) {
@@ -406,11 +411,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                 }
                 //checkBox若勾選 則檢貨數量=訂單數量
-                //checkBox.setChecked(mCheckSet.contains(position));
+                checkBox.setChecked(mCheckSet.contains(position));
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
+                        // 沒有勾勾的時候點擊
                         if (((CheckBox) v).isChecked()) {
                             if(myList.get(position).get("NowQty").equals(myList.get(position).get("Qty"))){
                                 newMap = new LinkedHashMap<String, String>();
@@ -440,8 +446,35 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 Log.e("checkBox3",myList.get(position).get("Qty"));
                             }
 
-
+                        //有勾勾的時候點擊
                         } else {
+                            if(myList.get(position).get("NowQty").equals(myList.get(position).get("Qty"))){
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", "0");
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, newMap);
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+                                Log.e("checkBox","數量滿");
+
+                            }else {
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", String.valueOf(myList.get(position).get("Qty")));
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, newMap);
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+                                Log.e("checkBox2",myList.get(position).get("NowQty"));
+                                Log.e("checkBox3",myList.get(position).get("Qty"));
+                            }
 
                         }
 
@@ -1664,8 +1697,8 @@ public class ShipperOrderActivity extends AppCompatActivity {
         super.onResume();
     }
     //判斷是否有檢完
-    //要修改
     private void checkListArray() {
+        //先依照商品名稱排序
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
             @Override
             public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
@@ -1679,25 +1712,27 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
 
         });
-        for(int i=0 ; i<myList.size();i++){
-            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))){
+        // 如果檢完貨 新添加的欄位(check)就等於商品名稱(方便下一次排序)
+        for (int i = 0; i < myList.size(); i++) {
+            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
                 newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", myList.get(i).get("NowQty"));
                 newMap.put("ProductNo", myList.get(i).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i).get("cProductName"));
                 newMap.put("Qty", myList.get(i).get("Qty"));
-                newMap.put("check",myList.get(i).get("ProductNo"));
+                newMap.put("check", myList.get(i).get("ProductNo"));
                 myList.set(i, newMap);
-            }else{
+            } else {
                 newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", myList.get(i).get("NowQty"));
                 newMap.put("ProductNo", myList.get(i).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i).get("cProductName"));
                 newMap.put("Qty", myList.get(i).get("Qty"));
-                newMap.put("check","0");
+                newMap.put("check", "0");
                 myList.set(i, newMap); // 替換
             }
         }
+        //排序check (及撿完貨的排序)
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
             @Override
             public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
@@ -1733,8 +1768,50 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
         */
 
-    }
+        // 排序完後 檢完貨的位置
+        for (int i = 0; i < myList.size(); i++) {
+            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                mCheckSet.add(i);
+            } else {
+                mCheckSet.remove(i);
+            }
+        }
 
+    }
+    private void setCheckBox (){
+        final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()) {
+                    for (int i = 0;i<myList.size();i++){
+                        newMap = new LinkedHashMap<String, String>();
+                        newMap.put("NowQty", myList.get(i).get("Qty"));
+                        newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                        newMap.put("cProductName", myList.get(i).get("cProductName"));
+                        newMap.put("Qty", myList.get(i).get("Qty"));
+                        newMap.put("check", myList.get(i).get("ProductNo"));
+                        myList.set(i, newMap);
+                        adapter.notifyDataSetChanged();
+                        mCheckSet.add(i);
+                    }
+                }else {
+                    Log.e("歸零","歸零");
+                    for (int i = 0;i<myList.size();i++){
+                        newMap = new LinkedHashMap<String, String>();
+                        newMap.put("NowQty", "0");
+                        newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                        newMap.put("cProductName", myList.get(i).get("cProductName"));
+                        newMap.put("Qty", myList.get(i).get("Qty"));
+                        newMap.put("check", "0");
+                        myList.set(i, newMap);
+                        adapter.notifyDataSetChanged();
+                        mCheckSet.remove(i);
+                    }
+                }
+            }
+        });
+    }
 }
 
 
