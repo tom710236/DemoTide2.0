@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -60,6 +61,7 @@ public class StorageOrderActivity extends AppCompatActivity {
     String[] stringArray;
     final String[] newStringArray = new String[1];
     ProgressDialog myDialog;
+    private HashSet<Integer> mCheckSet = new HashSet<Integer>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -250,7 +252,7 @@ public class StorageOrderActivity extends AppCompatActivity {
                 if (convertView == null)
                     convertView = View.inflate(StorageOrderActivity.this, R.layout.lview6, null);
                 final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox2);
-
+                checkBox.setChecked(mCheckSet.contains(position));
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -258,10 +260,10 @@ public class StorageOrderActivity extends AppCompatActivity {
 
                         if (((CheckBox) v).isChecked()) {
                             upList.add(String.valueOf(position));
-
+                            mCheckSet.add(position);
                         } else {
                             upList.remove(String.valueOf(position));
-
+                            mCheckSet.remove(position);
                         }
                         //Log.e("UPLIST", String.valueOf(upList));
 
@@ -303,6 +305,7 @@ public class StorageOrderActivity extends AppCompatActivity {
             }
         }
         setLackListView();
+        mCheckSet.clear();
     }
     //設定 用來新增數量
     public void onAdd(View v) {

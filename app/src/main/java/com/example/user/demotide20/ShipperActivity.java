@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -48,6 +49,7 @@ public class ShipperActivity extends AppCompatActivity {
     Map<String, String> map;
     ArrayList upList;
     ProgressDialog myDialog,myDialog2;
+    private HashSet<Integer> mCheckSet = new HashSet<Integer>();
     //檢貨單 客戶API
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     public class ProductInfo {
@@ -349,8 +351,9 @@ public class ShipperActivity extends AppCompatActivity {
                                             //获取相应的view中的checkbox对象
                                             if (convertView == null)
                                                 convertView = View.inflate(ShipperActivity.this, R.layout.lview8, null);
-                                            final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox3);
 
+                                            final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox3);
+                                            checkBox.setChecked(mCheckSet.contains(position));
                                             checkBox.setOnClickListener(new View.OnClickListener() {
 
                                                 @Override
@@ -358,9 +361,10 @@ public class ShipperActivity extends AppCompatActivity {
 
                                                     if (((CheckBox) v).isChecked()) {
                                                         upList.add(String.valueOf(position));
-
+                                                        mCheckSet.add(position);
                                                     } else {
                                                         upList.remove(String.valueOf(position));
+                                                        mCheckSet.remove(position);
                                                     }
                                                     Log.e("UPLIST", String.valueOf(upList));
 

@@ -217,8 +217,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         //回到上一頁的圖示
-        toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
+        //toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         //回到上一頁按鍵設定
+        /*
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -226,7 +227,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 back();
             }
         });
-
+            */
 
 
     }
@@ -411,7 +412,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         if (((CheckBox) v).isChecked()) {
-                            if(myList.get(position).get("NowQty")==myList.get(position).get("Qty")){
+                            if(myList.get(position).get("NowQty").equals(myList.get(position).get("Qty"))){
                                 newMap = new LinkedHashMap<String, String>();
                                 newMap.put("NowQty", "0");
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
@@ -425,8 +426,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 Log.e("checkBox","數量滿");
 
                             }else {
-                                Log.e("CHECK", String.valueOf(position));
-                                Log.e("CHECK2", String.valueOf(myList.get(position)));
                                 newMap = new LinkedHashMap<String, String>();
                                 newMap.put("NowQty", String.valueOf(myList.get(position).get("Qty")));
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
@@ -450,6 +449,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }
 
                 });
+
 
             }
 
@@ -1695,7 +1695,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 newMap.put("cProductName", myList.get(i).get("cProductName"));
                 newMap.put("Qty", myList.get(i).get("Qty"));
                 newMap.put("check","0");
-                myList.set(i, newMap);
+                myList.set(i, newMap); // 替換
             }
         }
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
@@ -1732,31 +1732,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
         }
         */
-        //checkListArray2();
+
     }
-    private void checkListArray2(){
 
-        for (int i=1; i<myList.size();i++){
-            final LinkedHashMap<String, String> item = myList.get(i);
-            if(Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))){
-                myList2.add(0, item);
-            }else {
-
-            }
-        }
-        Collections.sort(myList2, new Comparator<LinkedHashMap<String, String>>() {
-            @Override
-            public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
-                String value1 = (o1.get("ProductNo"));
-                String value2 = (o2.get("ProductNo"));
-                return value1.compareTo(value2);
-                //return value1.equals(value2);
-
-            }
-
-        });
-        Log.e("mylist2", String.valueOf(myList2));
-    }
 }
 
 
