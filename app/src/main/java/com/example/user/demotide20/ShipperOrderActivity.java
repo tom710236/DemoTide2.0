@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -105,6 +106,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp;
     int PicInt = 0,PicADD = 0;
+    int addInt = 0;
     ProgressDialog myDialog;
     public class ProductIDInfo {
         private String mProductID;
@@ -347,7 +349,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     public void addAll(View v) {
         addNum = 999999;
         if (iMatch==1){
-            addNum=9998;
+            addNum=999998;
             if (iCheck==1){
                 setNOWQty(addNum);
             }else if(iCheck>1){
@@ -691,7 +693,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 //先判斷條碼內的商品號碼是否有在listView裡
                 if (checkID() == true) {
                     //Switch 關閉時
-                    if (addNum == 0) {
+                    if (addInt == 1 && addNum ==0) {
                         //跳出輸入數字對話框
                         setAlertDialog();
                         Log.e("setAlertDialog","1");
@@ -723,7 +725,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             //先判斷條碼內的商品號碼是否有在listView裡
             if (checkID() == true) {
                 //Switch 關閉時
-                if (addNum == 0) {
+                if (addInt == 1 && addNum == 0) {
                     //跳出輸入數字對話框
                     setAlertDialog();
                     Log.e("setAlertDialog","1");
@@ -1811,6 +1813,20 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    public void onClickAdd (View v){
+        if(addInt==1){
+            addInt=0;
+        }else {
+            addInt=1;
+        }
+        if(addInt==0){
+            Button button = (Button)findViewById(R.id.button20);
+            button.setText("+1");
+        }else {
+            Button button = (Button)findViewById(R.id.button20);
+            button.setText("NUM");
+        }
     }
 }
 

@@ -43,7 +43,11 @@ public class LoginActivity extends AppCompatActivity {
         uId.setText(setting.getString("userName", ""));
 
 
+
+
+
     }
+
     // 登入鍵 - 執行執行緒
     public void login (View v){
         setDialog();
@@ -156,16 +160,42 @@ public class LoginActivity extends AppCompatActivity {
         // TODO Auto-generated method stub
 
         if (keyCode == KeyEvent.KEYCODE_BACK ) { // 攔截返回鍵
+            Log.e("MENU","MENU");
             return true;
-        }else if(keyCode == KeyEvent.KEYCODE_MENU){
-            Toast.makeText(LoginActivity.this, "Menu", Toast.LENGTH_SHORT).show();
-            return super.onKeyDown(keyCode, event);
-        }else if(keyCode == KeyEvent.KEYCODE_HOME) {
-            Toast.makeText(LoginActivity.this, "Menu", Toast.LENGTH_SHORT).show();
+        }else if (keyCode == KeyEvent.KEYCODE_SEARCH ) { // 攔截返回鍵
+            Log.e("MENU","MENU");
+            return true;
+        }else if (keyCode == KeyEvent.KEYCODE_MENU){
+            Log.e("MENU","MENU");
             return true;
         }
+
         return super.onKeyDown(keyCode, event);
         //return false;
+    }
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            Log.e("MENU","MENU");
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_SEARCH ) { // 攔截返回鍵
+            Log.e("MENU","MENU");
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int keyCode = event.getKeyCode();
+        int action = event.getAction();
+        boolean isDown = action == 0;
+
+        if (keyCode == KeyEvent.KEYCODE_MENU) {
+            Log.e("MENU","MENU");
+            return isDown ? this.onKeyDown(keyCode, event) : this.onKeyUp(keyCode, event);
+        }
+
+        return super.dispatchKeyEvent(event);
     }
     private void hideSystemNavigationBar() {
 

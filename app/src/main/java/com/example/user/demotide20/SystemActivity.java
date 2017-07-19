@@ -55,7 +55,8 @@ public class SystemActivity extends AppCompatActivity {
     ProgressDialog d;
     int upDateNumI ;
     int upDateNumL ;
-
+    final ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
+    ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
     //String ID,name,NO,DT;
 
     public class ProductInfo {
@@ -140,8 +141,8 @@ public class SystemActivity extends AppCompatActivity {
                 //解析JSON 放入SQL
                 private void parseJson(String json) {
 
-                    final ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
-                    ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
+                    //final ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
+                    //ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
                     try {
 
 
@@ -191,8 +192,10 @@ public class SystemActivity extends AppCompatActivity {
                                 addbase.put("cUpdateDT", trans.get(i).cUpdateDT);
                                 db.insert(DB_NAME, null, addbase);
                                 //Log.e("放進資料庫完成", String.valueOf(i));
+                                upDateNumI = i;
 
                             }
+                            upDateNumL = trans.size();
                             db.setTransactionSuccessful();
 
                         }
@@ -243,7 +246,6 @@ public class SystemActivity extends AppCompatActivity {
                         }
 
 
-
                         handler.sendEmptyMessage(0);
                         runOnUiThread(new Runnable() {
                             @Override
@@ -262,6 +264,42 @@ public class SystemActivity extends AppCompatActivity {
         }
 
     }
+    private void intoSQL() {
+        setThingSQL();
+        db.beginTransaction();
+        try {
+            addbase = new ContentValues();
+            for (final int[] i = {0}; i[0] < trans.size(); i[0]++) {
+
+                addbase.put("cProductID", trans.get(i[0]).cProductID);
+                addbase.put("cProductName", trans.get(i[0]).cProductName);
+                addbase.put("cGoodsNo", trans.get(i[0]).cGoodsNo);
+                addbase.put("cUpdateDT", trans.get(i[0]).cUpdateDT);
+                db.insert(DB_NAME, null, addbase);
+                //Log.e("放進資料庫完成", String.valueOf(i));
+                new Thread() {
+                    public void run() {
+                        try {
+                            hideSystemNavigationBar();
+                            while (i[0] <= trans.size()) {
+                                d.setProgress(i[0]++);
+                                Thread.sleep(trans.size());
+                            }
+                            d.cancel();
+                        } catch (InterruptedException e) {
+
+                        }
+                    }
+                }.start();
+
+            }
+            upDateNumL = trans.size();
+            db.setTransactionSuccessful();
+
+        } finally {
+            db.endTransaction();
+        }
+    }
     //立即同步商品鍵
     public void upthing (View v){
         //建立商品資訊SQL
@@ -274,9 +312,10 @@ public class SystemActivity extends AppCompatActivity {
         db4.delete("tblTable4",null,null);
         //放入新增表格(商品清單)
         setWait();
-        //d = ProgressDialog.show(SystemActivity.this, "更新中...", "", false);
+
         Get get = new Get();
         get.start();
+        //intoSQL();
         //用來紀錄更新日期和次數
         upDateTimes();
         db4.close();
@@ -520,33 +559,33 @@ public class SystemActivity extends AppCompatActivity {
             hideSystemNavigationBar();
         }
     };
-    private void setWait(){
+    private void setWait() {
 
 
-        //final int[] m_count = {0};
-        d=new ProgressDialog(SystemActivity.this);
-        //d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        final int[] m_count = {0};
+        d = new ProgressDialog(SystemActivity.this);
+        d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         d.setMessage("同步中..");
-        //d.setProgress(13484);
+        d.setProgress(100);
         d.setCancelable(false);
         d.show();
-        /*
-        new Thread(){
-            public void run(){
-                try{
 
-                    while (m_count[0] <= 100){
+
+        new Thread() {
+            public void run() {
+                try {
+                    hideSystemNavigationBar();
+                    while (m_count[0] <= 200) {
                         d.setProgress(m_count[0]++);
-                        Thread.sleep(100);
+                        Thread.sleep(200);
                     }
                     d.cancel();
-                }
-                catch (InterruptedException e){
+                } catch (InterruptedException e) {
 
                 }
             }
         }.start();
-        */
+
     }
     private void hideSystemNavigationBar() {
 
@@ -584,4 +623,5 @@ public class SystemActivity extends AppCompatActivity {
                 });
         super.onResume();
     }
+
 }
