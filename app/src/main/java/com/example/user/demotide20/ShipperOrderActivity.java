@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -785,7 +786,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-
+                        vibrator ();
                     } else {
                         if(i2 + getint2 <0){
                             i2=0;
@@ -797,7 +798,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-
+                        vibrator ();
                     } else  {
                         if(i2 + getint2 <0){
                             i2=0;
@@ -842,7 +843,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-
+                        vibrator ();
                     } else {
                         if(i2 + getint2 <0){
                             i2=0;
@@ -854,7 +855,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-
+                        vibrator ();
                     } else {
                         if(i2 + getint2 <0){
                             i2=0;
@@ -1827,6 +1828,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
             Button button = (Button)findViewById(R.id.button20);
             button.setText("NUM");
         }
+    }
+    //手機震動
+    private void vibrator (){
+        Vibrator vb = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        vb.vibrate(1500);
+
     }
 }
 
