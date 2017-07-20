@@ -64,19 +64,21 @@ public class SystemActivity extends AppCompatActivity {
         private String cProductName;
         private String cGoodsNo;
         private String cUpdateDT;
+        private String cProductShortName;
 
         //建構子
-        ProductInfo(final String ProductID, final String ProductName, final String GoodsNo,final String UpdateDT) {
+        ProductInfo(final String ProductID, final String ProductName, final String GoodsNo,final String UpdateDT,final  String ProductShortName) {
             this.cProductID = ProductID;
             this.cProductName = ProductName;
             this.cGoodsNo = GoodsNo;
             this.cUpdateDT = UpdateDT;
+            this.cProductShortName = ProductShortName;
 
         }
         //方法
         @Override
         public String toString() {
-            return this.cProductID +  this.cProductName  + this.cGoodsNo + this.cUpdateDT;
+            return this.cProductID +  this.cProductName  + this.cGoodsNo + this.cUpdateDT + this.cProductShortName;
         }
     }
     public class BarcodesInfo {
@@ -119,16 +121,28 @@ public class SystemActivity extends AppCompatActivity {
 
         // Get 更新資訊的方法
         private void okHttpGet(){
+            //OkHttpClient client = ProgressManager.getInstance().with(new OkHttpClient.Builder()).build();
+            //ProgressManager.getInstance().addResponseListener(DOWNLOAD_URL, getDownloadListener());
             final OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
                     .url(url)
                     .build();
+
+
+
             Call call = client.newCall(request);
             call.enqueue(new Callback(){
 
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    handler.sendEmptyMessage(0);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
+                            Toast.makeText(SystemActivity.this, "商品更新失敗", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
                 //把get到的資料(JSON)轉為字串 並執行parseJson方法
                 @Override
@@ -138,6 +152,7 @@ public class SystemActivity extends AppCompatActivity {
                     parseJson(json);
 
                 }
+
                 //解析JSON 放入SQL
                 private void parseJson(String json) {
 
@@ -150,17 +165,14 @@ public class SystemActivity extends AppCompatActivity {
                         Log.e("JSON2",json2);
                         final JSONArray array = new JSONArray(json2);
 
-
-
-                        //setThingSQL();
-
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
-                            trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT")));
+                            trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT"),obj.optString("cProductShortName")));
                             String ID = obj.optString("cProductID");
                             String name = obj.optString("cProductName");
                             String NO = obj.optString("cGoodsNo");
                             String DT = obj.optString("cUpdateDT");
+                            String Short2 = obj.optString("cProductShortName");
                             //Log.e("ID", trans.get(i).cProductID);
                             //建立SQL
                             /*
@@ -176,10 +188,10 @@ public class SystemActivity extends AppCompatActivity {
 
                             db.close();
                                 */
-                            Log.e("資料下載", String.valueOf(i));
 
                         }
                         // 把資料放入資料庫(之前一個一個放太慢,整個抓下來後再一口氣放入)
+
                         setThingSQL();
                         db.beginTransaction();
                         try {
@@ -190,6 +202,7 @@ public class SystemActivity extends AppCompatActivity {
                                 addbase.put("cProductName", trans.get(i).cProductName);
                                 addbase.put("cGoodsNo", trans.get(i).cGoodsNo);
                                 addbase.put("cUpdateDT", trans.get(i).cUpdateDT);
+                                addbase.put("cProductShortName", trans.get(i).cProductShortName);
                                 db.insert(DB_NAME, null, addbase);
                                 //Log.e("放進資料庫完成", String.valueOf(i));
                                 upDateNumI = i;
@@ -229,6 +242,8 @@ public class SystemActivity extends AppCompatActivity {
                                 */
 
                         }
+
+
                         setBarcodeSQL();
                         db4.beginTransaction();
 
@@ -255,6 +270,7 @@ public class SystemActivity extends AppCompatActivity {
                             }
                         });
 
+
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -264,42 +280,7 @@ public class SystemActivity extends AppCompatActivity {
         }
 
     }
-    private void intoSQL() {
-        setThingSQL();
-        db.beginTransaction();
-        try {
-            addbase = new ContentValues();
-            for (final int[] i = {0}; i[0] < trans.size(); i[0]++) {
 
-                addbase.put("cProductID", trans.get(i[0]).cProductID);
-                addbase.put("cProductName", trans.get(i[0]).cProductName);
-                addbase.put("cGoodsNo", trans.get(i[0]).cGoodsNo);
-                addbase.put("cUpdateDT", trans.get(i[0]).cUpdateDT);
-                db.insert(DB_NAME, null, addbase);
-                //Log.e("放進資料庫完成", String.valueOf(i));
-                new Thread() {
-                    public void run() {
-                        try {
-                            hideSystemNavigationBar();
-                            while (i[0] <= trans.size()) {
-                                d.setProgress(i[0]++);
-                                Thread.sleep(trans.size());
-                            }
-                            d.cancel();
-                        } catch (InterruptedException e) {
-
-                        }
-                    }
-                }.start();
-
-            }
-            upDateNumL = trans.size();
-            db.setTransactionSuccessful();
-
-        } finally {
-            db.endTransaction();
-        }
-    }
     //立即同步商品鍵
     public void upthing (View v){
         //建立商品資訊SQL
@@ -315,7 +296,7 @@ public class SystemActivity extends AppCompatActivity {
 
         Get get = new Get();
         get.start();
-        //intoSQL();
+
         //用來紀錄更新日期和次數
         upDateTimes();
         db4.close();
@@ -574,7 +555,7 @@ public class SystemActivity extends AppCompatActivity {
         new Thread() {
             public void run() {
                 try {
-                    hideSystemNavigationBar();
+
                     while (m_count[0] <= 200) {
                         d.setProgress(m_count[0]++);
                         Thread.sleep(200);
@@ -623,5 +604,6 @@ public class SystemActivity extends AppCompatActivity {
                 });
         super.onResume();
     }
+
 
 }

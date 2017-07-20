@@ -66,6 +66,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import static com.example.user.demotide20.R.id.checkBox;
 import static com.example.user.demotide20.R.id.checkBox4;
 import static com.example.user.demotide20.R.id.editText7;
 import static com.example.user.demotide20.R.id.textView21;
@@ -82,6 +84,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int check = 0;
     int addNum = 0, iMax = 0;
     int indexSpinner;
+    int checkInt = 0 ,checkInt2 = 0 ,checkInt3 = 0;
     String[] stringArray;
     String Abase64, Bbase64, Cbase64, Dbase64, Ebase64;
     ArrayList<LinkedHashMap<String, String>> myList, upList, myList2;
@@ -196,7 +199,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //Android 對 EditText 取得 focus
         //editText.requestFocus();
 
-        setCheckBox ();
+
 
         //取得上一頁資料
         getPreviousPage();
@@ -210,7 +213,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         setDialog();
         setEditText();
         setEditText2();
-
+        setCheckBox ();
         //
 
 
@@ -569,7 +572,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                     null);                                             // Order By字串語法(排序)
 
                             while (c.moveToNext()) {
-                                cProductName = c.getString(c.getColumnIndex("cProductName"));
+                                cProductName = c.getString(c.getColumnIndex("cProductShortName"));  //商品名稱顯示改變
                                 Log.e("cProductName", cProductName);
                             }
                             //用自訂類別 把JSONArray的值取出來
@@ -613,6 +616,20 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         public void run() {
 
                             listView.setAdapter(adapter);
+
+                            //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
+                            final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+                            for (int i = 0; i<myList.size();i++){
+                                if(Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))){
+                                    checkInt++;
+                                }
+                            }
+                            Log.e("checkInt", String.valueOf(checkInt));
+                            if(checkInt>0){
+                                checkBox.setChecked(true);
+                            }else{
+                                checkBox.setChecked(false);
+                            }
                             //listView2.setAdapter(adapter2);
                         }
                     });
@@ -1699,7 +1716,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 });
         super.onResume();
     }
-    //判斷是否有檢完
+    //檢完和沒檢完的排序
     private void checkListArray() {
         //先依照商品名稱排序
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
@@ -1771,7 +1788,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         }
         */
 
-        // 排序完後 檢完貨的位置
+        // 排序完後 檢完貨的位置 假如檢完 勾勾留著
         for (int i = 0; i < myList.size(); i++) {
             if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
                 mCheckSet.add(i);
@@ -1780,9 +1797,23 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
         }
 
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+                if(mCheckSet.size()==myList.size()){
+                    checkBox.setChecked(true);
+                }else {
+                    checkBox.setChecked(false);
+                }
+            }
+        });
+
+
     }
     private void setCheckBox (){
         final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1797,7 +1828,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         myList.set(i, newMap);
                         adapter.notifyDataSetChanged();
                         mCheckSet.add(i);
+                        //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
+
                     }
+
                 }else {
                     Log.e("歸零","歸零");
                     for (int i = 0;i<myList.size();i++){
@@ -1810,11 +1844,19 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         myList.set(i, newMap);
                         adapter.notifyDataSetChanged();
                         mCheckSet.remove(i);
+                        //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
+
+                    }
+                    if(mCheckSet.size()==myList.size()){
+                        checkBox.setChecked(true);
+                    }else {
+                        checkBox.setChecked(false);
                     }
                 }
             }
         });
     }
+    // 判斷是否要+1還是輸入數量
     public void onClickAdd (View v){
         if(addInt==1){
             addInt=0;
