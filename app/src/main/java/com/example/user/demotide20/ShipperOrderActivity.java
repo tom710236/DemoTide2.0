@@ -84,7 +84,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int check = 0;
     int addNum = 0, iMax = 0;
     int indexSpinner;
-    int checkInt = 0 ,checkInt2 = 0 ,checkInt3 = 0;
+    int checkInt = 0 ;
     String[] stringArray;
     String Abase64, Bbase64, Cbase64, Dbase64, Ebase64;
     ArrayList<LinkedHashMap<String, String>> myList, upList, myList2;
@@ -625,7 +625,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 }
                             }
                             Log.e("checkInt", String.valueOf(checkInt));
-                            if(checkInt>0){
+                            if(checkInt==myList.size()){
                                 checkBox.setChecked(true);
                             }else{
                                 checkBox.setChecked(false);
@@ -670,17 +670,17 @@ public class ShipperOrderActivity extends AppCompatActivity {
         String barcode = editText.getText().toString();
         Log.e("barcode", barcode);
         setBarcodeSQL();
-        Cursor c = db4.query("tblTable4",                            // 資料表名字
+        Cursor c = db4.query("tblTable4",                          // 資料表名字
                 null,                                              // 要取出的欄位資料
-                "cBarcode = ? OR cProductID = ?",                                    // 查詢條件式(WHERE)
-                new String[]{barcode,barcode},                            // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                "cBarcode = ? OR cProductID = ?",                  // 查詢條件式(WHERE)
+                new String[]{barcode,barcode},                     // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
                 null,                                              // Group By字串語法
                 null,                                              // Having字串法
                 null);                                             // Order By字串語法(排序)
 
         while (c.moveToNext()) {
             cProductIDeSQL = c.getString(c.getColumnIndex("cProductID"));
-            Log.e("cBarcode", cProductIDeSQL);
+            Log.e("cBarcode1", cProductIDeSQL);
             Btrans.add(cProductIDeSQL);
 
         }

@@ -22,6 +22,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kaopiz.kprogresshud.KProgressHUD;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -52,13 +55,13 @@ public class SystemActivity extends AppCompatActivity {
     MyDBhelper helper;MyDBhelper2 helper2;MyDBhelper4 helper4;MyDBhelper3 helper3;
     SQLiteDatabase db,db2,db3,db4;
     ContentValues addbase,addbase2;
-    ProgressDialog d;
+    ProgressDialog d,d2,d3,d4;
     int upDateNumI ;
     int upDateNumL ;
     final ArrayList<ProductInfo> trans = new ArrayList<ProductInfo>();
     ArrayList<BarcodesInfo> trans2 = new ArrayList<>();
     //String ID,name,NO,DT;
-
+    KProgressHUD hud;
     public class ProductInfo {
         private String cProductID;
         private String cProductName;
@@ -117,17 +120,23 @@ public class SystemActivity extends AppCompatActivity {
         @Override
         public void run() {
             okHttpGet();
+
         }
 
         // Get 更新資訊的方法
         private void okHttpGet(){
             //OkHttpClient client = ProgressManager.getInstance().with(new OkHttpClient.Builder()).build();
             //ProgressManager.getInstance().addResponseListener(DOWNLOAD_URL, getDownloadListener());
-            final OkHttpClient client = new OkHttpClient();
+            OkHttpClient client = new OkHttpClient();
             final Request request = new Request.Builder()
                     .url(url)
                     .build();
-
+            //處理 java.net.SocketTimeoutException in okhttp
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.connectTimeout(30, TimeUnit.SECONDS);
+            builder.readTimeout(30, TimeUnit.SECONDS);
+            builder.writeTimeout(30, TimeUnit.SECONDS);
+            client = builder.build();
 
 
             Call call = client.newCall(request);
@@ -139,10 +148,10 @@ public class SystemActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
                             Toast.makeText(SystemActivity.this, "商品更新失敗", Toast.LENGTH_SHORT).show();
                         }
                     });
+                    Log.e("E", String.valueOf(e));
                 }
                 //把get到的資料(JSON)轉為字串 並執行parseJson方法
                 @Override
@@ -165,7 +174,7 @@ public class SystemActivity extends AppCompatActivity {
                         Log.e("JSON2",json2);
                         final JSONArray array = new JSONArray(json2);
 
-                        for (int i = 0; i < array.length(); i++) {
+                        for (int i = 0 ; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
                             trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT"),obj.optString("cProductShortName")));
                             String ID = obj.optString("cProductID");
@@ -189,6 +198,8 @@ public class SystemActivity extends AppCompatActivity {
                             db.close();
                                 */
 
+                            Log.e("放進資料庫完成", String.valueOf(i));
+
                         }
                         // 把資料放入資料庫(之前一個一個放太慢,整個抓下來後再一口氣放入)
 
@@ -205,10 +216,12 @@ public class SystemActivity extends AppCompatActivity {
                                 addbase.put("cProductShortName", trans.get(i).cProductShortName);
                                 db.insert(DB_NAME, null, addbase);
                                 //Log.e("放進資料庫完成", String.valueOf(i));
-                                upDateNumI = i;
-
+                                //upDateNumI = i;
+                                d.setMax(trans.size());
+                                d.setProgress(i);
+                                Thread.sleep(0);
                             }
-                            upDateNumL = trans.size();
+
                             db.setTransactionSuccessful();
 
                         }
@@ -254,6 +267,7 @@ public class SystemActivity extends AppCompatActivity {
                                 addbase2.put("cProductID", trans2.get(i).cProductID);
                                 addbase2.put("cBarcode", trans2.get(i).cBarcode);
                                 db4.insert("tblTable4", null, addbase2);
+
                             }
                             db4.setTransactionSuccessful();
                         }finally {
@@ -265,7 +279,7 @@ public class SystemActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-
+                                //d.dismiss();
                                 Toast.makeText(SystemActivity.this, "已同步完畢", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -273,7 +287,10 @@ public class SystemActivity extends AppCompatActivity {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
+
                 }
             });
 
@@ -284,22 +301,26 @@ public class SystemActivity extends AppCompatActivity {
     //立即同步商品鍵
     public void upthing (View v){
         //建立商品資訊SQL
+
+        trans.clear();
+        trans2.clear();
         setThingSQL();
         //先刪除舊有資料表格
         db.delete(DB_NAME, null, null);
+        db.close();
         //建立條碼比對商品資訊SQL
         setBarcodeSQL();
         //先刪除舊有資料表格
         db4.delete("tblTable4",null,null);
+        db4.close();
         //放入新增表格(商品清單)
-        setWait();
 
         Get get = new Get();
         get.start();
-
+        setWait();
         //用來紀錄更新日期和次數
         upDateTimes();
-        db4.close();
+
 
     }
     //刪除全部商品鍵
@@ -538,36 +559,62 @@ public class SystemActivity extends AppCompatActivity {
             super.handleMessage(msg);
             d.dismiss();
             hideSystemNavigationBar();
+
+
         }
     };
     private void setWait() {
 
 
-        final int[] m_count = {0};
         d = new ProgressDialog(SystemActivity.this);
         d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        d.setMessage("同步中..");
-        d.setProgress(100);
+        d.setMessage("商品資訊更新");
+        //d.setProgress(100);
         d.setCancelable(false);
+        //d.setMax(0);
         d.show();
 
+        /*
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                int Progress = 0;
+                while (Progress < 100) {
+                    try {
+                        Thread.sleep(100);
+                        Progress++;
+                        // dialog.setProgress(Progress);
+                        d.incrementProgressBy(1);// 进度条一次加1
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                d.dismiss();// 完成后消失
+            }
+        }).start();
+        */
 
+
+
+        /*
         new Thread() {
             public void run() {
+                Log.e("數量", String.valueOf(upDateNumI));
                 try {
-
-                    while (m_count[0] <= 200) {
+                    while ( m_count[0] <= 100) {
+                        Log.e("數量2", String.valueOf(upDateNumI));
                         d.setProgress(m_count[0]++);
                         Thread.sleep(200);
                     }
-                    d.cancel();
+                    //d.cancel();
                 } catch (InterruptedException e) {
 
                 }
             }
         }.start();
-
+            */
     }
+
     private void hideSystemNavigationBar() {
 
 
