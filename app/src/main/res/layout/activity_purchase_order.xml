@@ -346,13 +346,13 @@
             android:layout_weight="1.6"
             android:text="檢貨數量"
             android:textStyle="bold" />
-
         <CheckBox
             android:id="@+id/checkBox5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:visibility="invisible" />
+            android:visibility="visible" />
+
 
     </LinearLayout>
 

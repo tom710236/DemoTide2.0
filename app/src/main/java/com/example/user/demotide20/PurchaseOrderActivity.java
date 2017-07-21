@@ -45,7 +45,10 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -62,8 +65,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, json, cProductName, cProductIDeSQL, order, upStringList, activity2, order2;
     SQLiteDatabase db, db4;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
-    Map<String, String> map;
-    ArrayList<Map<String, String>> myList, upList;
+    LinkedHashMap<String, String> map;
+    ArrayList<LinkedHashMap<String, String>> myList, upList;
     ListView listView;
     int addNum = 0, iMax = 0, check = 0, indexSpinner;
     SpecialAdapter adapter;
@@ -85,6 +88,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     Bitmap bmp;
     int PicInt = 0,PicADD = 0;
     ProgressDialog myDialog;
+    int checkInt = 0 ;
+    private HashSet<Integer> mCheckSet = new HashSet<Integer>();
     public class ProductIDInfo {
         private String mProductID;
 
@@ -151,8 +156,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         setDialog();
         setEditText();
         setEditText2();
-
         setSwitch();
+        setCheckBox();
     }
 
     //設定toolBar
@@ -188,7 +193,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     private void getPreviousPage() {
         //上一頁傳過來的資料取得
         Intent intent = getIntent();
-        myList = (ArrayList<Map<String, String>>) getIntent().getSerializableExtra("myList");
+        myList = (ArrayList<LinkedHashMap<String, String>>) getIntent().getSerializableExtra("myList");
         Log.e("myList拍照回傳至採購單", String.valueOf(myList));
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
@@ -261,7 +266,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
 
     private void parseJson(String json2) {
-        myList = new ArrayList<Map<String, String>>();
+        myList = new ArrayList<LinkedHashMap<String, String>>();
         try {
             final JSONArray array = new JSONArray(json2);
             for (iMax = 0; iMax < array.length(); iMax++) {
@@ -281,7 +286,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     Log.e("cProductName", cProductName);
                 }
                 //用自訂類別 把JSONArray的值取出來
-                map = new HashMap<String, String>();
+                map = new LinkedHashMap<String, String>();
                 map.put("NowQty", String.valueOf(new NowQtyInfo(obj.optString("NowQty"))));
                 map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
                 map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
@@ -306,7 +311,19 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             @Override
             public void run() {
                 listView.setAdapter(adapter);
-
+                //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
+                final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+                for (int i = 0; i<myList.size();i++){
+                    if(Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))){
+                        checkInt++;
+                    }
+                }
+                Log.e("checkInt", String.valueOf(checkInt));
+                if(checkInt==myList.size()){
+                    checkBox.setChecked(true);
+                }else{
+                    checkBox.setChecked(false);
+                }
             }
         });
     }
@@ -329,7 +346,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         private int[] colors = new int[]{0x30ffffff, 0x30696969};
         private int colors2 = Color.BLUE;
 
-        public SpecialAdapter(Context context, ArrayList<Map<String, String>> items, int resource, String[] from, int[] to) {
+        public SpecialAdapter(Context context, ArrayList<LinkedHashMap<String, String>> items, int resource, String[] from, int[] to) {
             super(context, items, resource, from, to);
         }
 
@@ -369,6 +386,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
                 }
                 //checkBox若勾選 則檢貨數量=訂單數量
+                checkBox.setChecked(mCheckSet.contains(position));
                 checkBox.setOnClickListener(new View.OnClickListener() {
 
                     @Override
@@ -381,7 +399,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
                                 //myList.remove(position);
-                                myList.set(position, newMap);
+                                myList.set(position, (LinkedHashMap<String, String>) newMap);
 
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
@@ -396,17 +414,43 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
                                 //myList.remove(position);
-                                myList.set(position, newMap);
+                                myList.set(position, (LinkedHashMap<String, String>) newMap);
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
                             }
 
 
+                            //有勾勾的時候點擊
                         } else {
+                            if (myList.get(position).get("NowQty").equals(myList.get(position).get("Qty"))) {
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", "0");
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, (LinkedHashMap<String, String>) newMap);
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+                                Log.e("checkBox", "數量滿");
 
+                            } else {
+                                newMap = new LinkedHashMap<String, String>();
+                                newMap.put("NowQty", String.valueOf(myList.get(position).get("Qty")));
+                                newMap.put("ProductNo", myList.get(position).get("ProductNo"));
+                                newMap.put("cProductName", myList.get(position).get("cProductName"));
+                                newMap.put("Qty", myList.get(position).get("Qty"));
+                                //myList.remove(position);
+                                myList.set(position, (LinkedHashMap<String, String>) newMap);
+                                checkListArray();
+                                adapter.notifyDataSetChanged();
+                                checkBox.setChecked(false);
+                                Log.e("checkBox2", myList.get(position).get("NowQty"));
+                                Log.e("checkBox3", myList.get(position).get("Qty"));
+                            }
                         }
-
 
                     }
 
@@ -682,7 +726,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
                 newMap.put("Qty", myList.get(i3).get("Qty"));
-                myList.set(i3, newMap);
+                myList.set(i3, (LinkedHashMap<String, String>) newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 checkListArray();
@@ -734,7 +778,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
                 newMap.put("Qty", myList.get(i3).get("Qty"));
-                myList.set(i3, newMap);
+                myList.set(i3, (LinkedHashMap<String, String>) newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 checkListArray();
@@ -897,13 +941,13 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
         Map<String, String> upMap;
 
-        upList = new ArrayList<Map<String, String>>();
+        upList = new ArrayList<LinkedHashMap<String, String>>();
         for (int i = 0; i < myList.size(); i++) {
             //LinkedHashMap<String, String>() 會依照put的順序
             upMap = new LinkedHashMap<String, String>();
             upMap.put("\"ProductNo\"", "\"" + myList.get(i).get("ProductNo") + "\"");
             upMap.put("\"NowQty\"", myList.get(i).get("NowQty"));
-            upList.add(upMap);
+            upList.add((LinkedHashMap<String, String>) upMap);
         }
         Log.e("upList", String.valueOf(upList));
         String upString = String.valueOf(upList).replaceAll("=", ":");
@@ -1556,23 +1600,99 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         Ebase64 = null;
     }
 
-    //把撿完的貨物移到最下面
-    //要修改
+    //檢完和沒檢完的排序
     private void checkListArray() {
-        for (int i2 = 0; i2 < myList.size(); i2++) {
+        //先依照商品名稱排序
+        Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
+            @Override
+            public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
+
+                String value1 = (o1.get("ProductNo"));
+                String value2 = (o2.get("ProductNo"));
+
+                return value1.compareTo(value2);
+                //return value1.equals(value2);
+
+            }
+
+        });
+        // 如果檢完貨 新添加的欄位(check)就等於商品名稱(方便下一次排序)
+        for (int i = 0; i < myList.size(); i++) {
+            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                newMap = new LinkedHashMap<String, String>();
+                newMap.put("NowQty", myList.get(i).get("NowQty"));
+                newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                newMap.put("cProductName", myList.get(i).get("cProductName"));
+                newMap.put("Qty", myList.get(i).get("Qty"));
+                newMap.put("check", myList.get(i).get("ProductNo"));
+                myList.set(i, (LinkedHashMap<String, String>) newMap);
+            } else {
+                newMap = new LinkedHashMap<String, String>();
+                newMap.put("NowQty", myList.get(i).get("NowQty"));
+                newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                newMap.put("cProductName", myList.get(i).get("cProductName"));
+                newMap.put("Qty", myList.get(i).get("Qty"));
+                newMap.put("check", "0");
+                myList.set(i, (LinkedHashMap<String, String>) newMap); // 替換
+            }
+        }
+        //排序check (及撿完貨的排序)
+        Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
+            @Override
+            public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
+
+                String value1 = (o1.get("check"));
+                String value2 = (o2.get("check"));
+
+                return value1.compareTo(value2);
+                //return value1.equals(value2);
+
+            }
+
+        });
+
+        /*
+        for(int i2 = 0; i2 < myList.size(); i2++) {
             for (int i = 0; i < myList.size(); i++) {
-                Map<String, String> item = myList.get(i);
+                final LinkedHashMap<String, String> item = myList.get(i);
                 int size = myList.size() - 1;
-                Log.e("myList", String.valueOf(myList.get(i)));
+                Log.e("myList清單", String.valueOf(myList.get(i)));
                 if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
                     //Log.e("list", String.valueOf(myList.get(i)));
                     Log.e("item", String.valueOf(item));
+                    //myList2.add(0,item);
                     myList.remove(i);
+
                     myList.add(size, item);
-                    //adapter.notifyDataSetChanged();
+
+                } else {
+
                 }
             }
         }
+        */
+
+        // 排序完後 檢完貨的位置 假如檢完 勾勾留著
+        for (int i = 0; i < myList.size(); i++) {
+            if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
+                mCheckSet.add(i);
+            } else {
+                mCheckSet.remove(i);
+            }
+        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+                if(mCheckSet.size()==myList.size()){
+                    checkBox.setChecked(true);
+                }else {
+                    checkBox.setChecked(false);
+                }
+            }
+        });
+
 
     }
 
@@ -1666,5 +1786,51 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         myDialog.setMessage("載入資訊中，請稍後！");
         myDialog.setCancelable(false);
         myDialog.show();
+    }
+
+    private void setCheckBox (){
+        final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()) {
+                    for (int i = 0;i<myList.size();i++){
+                        newMap = new LinkedHashMap<String, String>();
+                        newMap.put("NowQty", myList.get(i).get("Qty"));
+                        newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                        newMap.put("cProductName", myList.get(i).get("cProductName"));
+                        newMap.put("Qty", myList.get(i).get("Qty"));
+                        newMap.put("check", myList.get(i).get("ProductNo"));
+                        myList.set(i, (LinkedHashMap<String, String>) newMap);
+                        adapter.notifyDataSetChanged();
+                        mCheckSet.add(i);
+                        //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
+
+                    }
+
+                }else {
+                    Log.e("歸零","歸零");
+                    for (int i = 0;i<myList.size();i++){
+                        newMap = new LinkedHashMap<String, String>();
+                        newMap.put("NowQty", "0");
+                        newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                        newMap.put("cProductName", myList.get(i).get("cProductName"));
+                        newMap.put("Qty", myList.get(i).get("Qty"));
+                        newMap.put("check", "0");
+                        myList.set(i, (LinkedHashMap<String, String>) newMap);
+                        adapter.notifyDataSetChanged();
+                        mCheckSet.remove(i);
+                        //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
+
+                    }
+                    if(mCheckSet.size()==myList.size()){
+                        checkBox.setChecked(true);
+                    }else {
+                        checkBox.setChecked(false);
+                    }
+                }
+            }
+        });
     }
 }
