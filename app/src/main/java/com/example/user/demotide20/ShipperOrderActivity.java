@@ -840,9 +840,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 checkListArray();
                 adapter.notifyDataSetChanged();
 
-                EditText editText = (EditText)findViewById(R.id.editText);
-                editText.setText("");
-                editText.requestFocus();
+                EditText editText = (EditText) findViewById(R.id.editText);
+                if (editText.getText().length() >= 13) {
+                    editText.setText("");
+                    editText.requestFocus();
+                }
 
             }
         }

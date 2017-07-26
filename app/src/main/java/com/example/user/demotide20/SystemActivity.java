@@ -528,9 +528,20 @@ public class SystemActivity extends AppCompatActivity {
 
         if (keyCode == KeyEvent.KEYCODE_BACK) { // 攔截返回鍵
             return true;
+        }else if (keyCode == KeyEvent.KEYCODE_MENU){
+            Toast.makeText(SystemActivity.this, "按下了HOME鍵", Toast.LENGTH_LONG).show();
+            return true;
         }
         //return super.onKeyDown(keyCode, event);
         return false;
+    }
+
+    public boolean onKeyUp(int keyCode,KeyEvent keyevent){
+        if(keyCode==keyevent.KEYCODE_MENU){
+            Toast.makeText(SystemActivity.this, "Menu Up", Toast.LENGTH_LONG).show();
+            return true;
+        }
+        return super.onKeyUp(keyCode, keyevent);
     }
     //到排定更新的時間的SQL 去得到更新的時間
     private String getTimeUp(){
@@ -569,7 +580,6 @@ public class SystemActivity extends AppCompatActivity {
         d = new ProgressDialog(SystemActivity.this);
         d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         d.setMessage("商品資訊更新");
-        //d.setProgress(100);
         d.setCancelable(false);
         //d.setMax(0);
         d.show();

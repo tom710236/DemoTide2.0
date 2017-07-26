@@ -98,6 +98,7 @@ public class ShipperActivity extends AppCompatActivity {
         Post post = new Post();
         post.start();
         setDialog();
+        setCheckBox();
 
     }
     //設定toolBar
@@ -244,6 +245,7 @@ public class ShipperActivity extends AppCompatActivity {
 
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                                 //所點擊的索引值
                                 index = spinner.getSelectedItemPosition();
                                 //所點擊的內容文字
@@ -323,6 +325,7 @@ public class ShipperActivity extends AppCompatActivity {
                             }
                             //POST成功後把回傳的值(陣列)取出來 用listView顯示 把JSON2帶進來
                             private void parseJson2(String json4) {
+
                                 //ListView 設定
                                 final ListView listView = (ListView)findViewById(R.id.listView);
 
@@ -349,27 +352,54 @@ public class ShipperActivity extends AppCompatActivity {
                                         @Override
                                         public View getView(final int position, View convertView, final ViewGroup parent) {
                                             //获取相应的view中的checkbox对象
-                                            if (convertView == null)
+
+                                            if (convertView == null){
                                                 convertView = View.inflate(ShipperActivity.this, R.layout.lview8, null);
+                                                final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox3);
 
-                                            final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox3);
-                                            checkBox.setChecked(mCheckSet.contains(position));
-                                            checkBox.setOnClickListener(new View.OnClickListener() {
-
-                                                @Override
-                                                public void onClick(View v) {
-
-                                                    if (((CheckBox) v).isChecked()) {
-                                                        upList.add(String.valueOf(position));
-                                                        mCheckSet.add(position);
-                                                    } else {
-                                                        upList.remove(String.valueOf(position));
-                                                        mCheckSet.remove(position);
+                                                final CheckBox checkBox1 = (CheckBox)findViewById(R.id.checkBox6);
+                                                checkBox1.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        if (checkBox1.isChecked()){
+                                                            for(int i = 0; i<myList.size() ; i++){
+                                                                adapter.notifyDataSetChanged();
+                                                                mCheckSet.add(i);
+                                                                upList.add(i);
+                                                            }
+                                                            Log.e("mCheckSet2", String.valueOf(mCheckSet));
+                                                        }else {
+                                                            adapter.notifyDataSetChanged();
+                                                            mCheckSet.clear();
+                                                            upList.clear();
+                                                            Log.e("mCheckSet3", String.valueOf(mCheckSet));
+                                                        }
                                                     }
-                                                    Log.e("UPLIST", String.valueOf(upList));
 
-                                                }
-                                            });
+                                                });
+                                                checkBox.setChecked(mCheckSet.contains(position));
+                                                adapter.notifyDataSetChanged();
+                                                checkBox.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+
+                                                        if (((CheckBox) v).isChecked()) {
+                                                            upList.add(String.valueOf(position));
+                                                            mCheckSet.add(position);
+
+                                                        } else {
+                                                            upList.remove(String.valueOf(position));
+                                                            mCheckSet.remove(position);
+
+
+                                                        }
+                                                        Log.e("UPLIST", String.valueOf(upList));
+                                                        Log.e("mCheckSet", String.valueOf(mCheckSet));
+                                                    }
+                                                });
+
+                                            }
+
                                             return super.getView(position, convertView, parent);
                                         }
 
@@ -381,8 +411,10 @@ public class ShipperActivity extends AppCompatActivity {
                                         public void run() {
                                             //顯示出listView
                                             listView.setVisibility(View.VISIBLE);
+
                                             //設定 ListView 的接收器, 做為選項的來源
                                             listView.setAdapter(adapter);
+                                            adapter.notifyDataSetChanged();
                                             //假如選到請選擇 list將不會出現
                                             if (index ==0){
                                                 listView.setVisibility(View.GONE);
@@ -398,6 +430,7 @@ public class ShipperActivity extends AppCompatActivity {
                             @Override
                             public void onNothingSelected(AdapterView<?> parent) {
                                 // sometimes you need nothing here
+                                adapter.notifyDataSetChanged();
                             }
                         });
 
@@ -513,5 +546,31 @@ public class ShipperActivity extends AppCompatActivity {
                     }
                 });
         super.onResume();
+    }
+    private void setCheckBox(){
+        final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox6);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkBox.isChecked()){
+                    for(int i = 0; i<myList.size() ; i++){
+                        mCheckSet.add(i);
+                        upList.add(i);
+                        adapter.notifyDataSetChanged();
+                    }
+
+                    Log.e("mCheckSet2", String.valueOf(mCheckSet));
+                }else {
+                    mCheckSet.clear();
+                    upList.clear();
+                    Log.e("mCheckSet3", String.valueOf(mCheckSet));
+                    adapter.notifyDataSetChanged();
+                }
+
+            }
+
+
+        });
+
     }
 }
