@@ -214,7 +214,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         setEditText();
         setEditText2();
         setCheckBox ();
-        //
+
 
 
     }
@@ -537,7 +537,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     //POST後 回傳的JSON檔
-                    myDialog.dismiss();
+                    //myDialog.dismiss();
                     String json = response.body().string();
                     Log.e("回傳的JSON", json);
                     String json2 = null;
@@ -614,7 +614,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-
+                            myDialog.dismiss();
                             listView.setAdapter(adapter);
 
                             //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾

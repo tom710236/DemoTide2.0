@@ -147,7 +147,7 @@
         android:orientation="horizontal"
         android:paddingBottom="2dp"
         android:paddingTop="2dp"
-        android:visibility="invisible">
+        android:visibility="gone">
 
         <Button
             android:id="@+id/button10"

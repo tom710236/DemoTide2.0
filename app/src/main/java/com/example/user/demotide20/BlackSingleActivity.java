@@ -1183,6 +1183,7 @@ public class BlackSingleActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //editText歸零
+                        hideSystemNavigationBar();
                         EditText editText = (EditText)findViewById(R.id.editText);
                         editText.setText("");
                     }
@@ -1197,9 +1198,11 @@ public class BlackSingleActivity extends AppCompatActivity {
                             //判斷有無商品代碼 並帶入數字
                             setNOWQty(getint);
                             //editText歸零
+                            hideSystemNavigationBar();
                             EditText editText1 = (EditText)findViewById(R.id.editText);
                             editText1.setText("");
                         }else{
+                            hideSystemNavigationBar();
                             EditText editText1 = (EditText)findViewById(R.id.editText);
                             editText1.setText("");
                         }
@@ -1210,6 +1213,7 @@ public class BlackSingleActivity extends AppCompatActivity {
         //editText歸零
         EditText editText1 = (EditText)findViewById(R.id.editText);
         editText1.setText("");
+        hideSystemNavigationBar();
     }
     public void onPic1 (View v){
         String dir = Environment.getExternalStoragePublicDirectory(  //取得系統的公用圖檔路徑

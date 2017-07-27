@@ -1,6 +1,7 @@
 package com.example.user.demotide20;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,7 +27,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -38,20 +41,21 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ShipperActivity extends AppCompatActivity {
-    String cUserName,listname,listTotal,json4,door1=null,cUserID;
-    String name,order ;
-    String checked2,checked3;
-    int index,indexSpinner;
+    String cUserName, listname, listTotal, json4, door1 = null, cUserID;
+    String name, order;
+    String checked2, checked3;
+    int index, indexSpinner;
     ArrayList<String> checked;
     ArrayList<String> json2;
     SimpleAdapter adapter;
     ArrayList<Map<String, String>> myList;
     Map<String, String> map;
     ArrayList upList;
-    ProgressDialog myDialog,myDialog2;
+    ProgressDialog myDialog, myDialog2;
     private HashSet<Integer> mCheckSet = new HashSet<Integer>();
     //檢貨單 客戶API
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
+
     public class ProductInfo {
         private String cCustomerName;
         private String cTotal;
@@ -64,12 +68,14 @@ public class ShipperActivity extends AppCompatActivity {
 
 
         }
+
         //方法
         @Override
         public String toString() {
-            return this.cCustomerName + "("+ this.cTotal +")";
+            return this.cCustomerName + "(" + this.cTotal + ")";
         }
     }
+
     public class PickNOInfo {
         private String cPickupNo;
         private String cTotal;
@@ -82,10 +88,11 @@ public class ShipperActivity extends AppCompatActivity {
 
 
         }
+
         //方法
         @Override
         public String toString() {
-            return this.cPickupNo + "("+ this.cTotal +")";
+            return this.cPickupNo + "(" + this.cTotal + ")";
         }
     }
 
@@ -101,6 +108,7 @@ public class ShipperActivity extends AppCompatActivity {
         setCheckBox();
 
     }
+
     //設定toolBar
     private void toolBar() {
         //Toolbar 設定
@@ -117,14 +125,15 @@ public class ShipperActivity extends AppCompatActivity {
                 Intent intent = new Intent(ShipperActivity.this, AllListActivity.class);
                 Bundle bag = new Bundle();
                 bag.putString("cUserName", cUserName);
-                bag.putString("cUserID",cUserID);
-                bag.putInt("indexSpinner",indexSpinner);
+                bag.putString("cUserID", cUserID);
+                bag.putInt("indexSpinner", indexSpinner);
                 intent.putExtras(bag);
                 startActivity(intent);
                 ShipperActivity.this.finish();
             }
         });
     }
+
     //取得上一頁傳過來的資料
     private void getPreviousPage() {
         //上一頁傳過來的資料取得
@@ -132,15 +141,15 @@ public class ShipperActivity extends AppCompatActivity {
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
         cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID",null);
-        indexSpinner = bag.getInt("indexSpinner",0);
-        Log.e("cUserID",cUserID);
+        cUserID = bag.getString("cUserID", null);
+        indexSpinner = bag.getInt("indexSpinner", 0);
+        Log.e("cUserID", cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
 
     // 執行緒 - 執行PostCustomerInfo方法
-    class Post extends Thread{
+    class Post extends Thread {
         @Override
         public void run() {
             //POST後取得客戶清單
@@ -152,9 +161,9 @@ public class ShipperActivity extends AppCompatActivity {
             OkHttpClient client = new OkHttpClient();
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
-            String json = "{\"Token\":\"\" ,\"Action\":\"customer\",\"UserID\":\""+cUserID+"\"}";
-            Log.e("JSON",json);
-            final RequestBody body = RequestBody.create(JSON,json);
+            String json = "{\"Token\":\"\" ,\"Action\":\"customer\",\"UserID\":\"" + cUserID + "\"}";
+            Log.e("JSON", json);
+            final RequestBody body = RequestBody.create(JSON, json);
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
@@ -176,14 +185,14 @@ public class ShipperActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String json = response.body().string();
-                    Log.e("客戶API回傳JSON",json);
+                    Log.e("客戶API回傳JSON", json);
                     myDialog.dismiss();
                     //解析 回傳JSON
                     //{"result":"1","PickUpCustomers":[{"CustomerID":"C000000003","CustomerName":"磯法資訊","Total":19500.00},{"CustomerID":"C000000002","CustomerName":"新達科技","Total":13100.00},{"CustomerID":"C000000001","CustomerName":"大島屋企業","Total":9400.00}]}
                     json2 = new ArrayList<>();
                     try {
                         JSONObject j = new JSONObject(json);
-                        for(int i=0;i<j.getJSONArray("PickUpCustomers").length();i++){
+                        for (int i = 0; i < j.getJSONArray("PickUpCustomers").length(); i++) {
                             String json0 = j.getJSONArray("PickUpCustomers").getString(i);
                             json2.add(json0);
 
@@ -196,6 +205,7 @@ public class ShipperActivity extends AppCompatActivity {
                     //parseJson(String.valueOf(json2));
                     parseJson(String.valueOf(json2));
                 }
+
                 //POST成功後回傳的值(陣列)取出來 用spinner顯示
                 private void parseJson(final String json2) {
 
@@ -251,10 +261,10 @@ public class ShipperActivity extends AppCompatActivity {
                                 //所點擊的內容文字
                                 name = spinner.getSelectedItem().toString();
                                 //index=0 為請選擇 所以不能用 ProductInfo
-                                if(index !=0){
-                                    ProductInfo cName = (ProductInfo) list.getItem(index) ;
+                                if (index != 0) {
+                                    ProductInfo cName = (ProductInfo) list.getItem(index);
                                     order = cName.cCustomerName;
-                                    Log.e("客戶名稱",order );
+                                    Log.e("客戶名稱", order);
                                 }
 
                                 Log.e("客戶清單點擊 索引值", String.valueOf(index));
@@ -280,7 +290,7 @@ public class ShipperActivity extends AppCompatActivity {
                                 final MediaType JSON
                                         = MediaType.parse("application/json; charset=utf-8");
                                 //取客戶有的撿貨單
-                                String json = "{\"Token\":\"\" ,\"Action\":\"pickups\",\"UserID\":\""+cUserID+"\",\"CustomerID\":\""+door1+"\"}";
+                                String json = "{\"Token\":\"\" ,\"Action\":\"pickups\",\"UserID\":\"" + cUserID + "\",\"CustomerID\":\"" + door1 + "\"}";
                                 Log.e("取客戶有的撿貨單", json);
                                 RequestBody body = RequestBody.create(JSON, json);
                                 Request request = new Request.Builder()
@@ -314,7 +324,7 @@ public class ShipperActivity extends AppCompatActivity {
                                         try {
                                             JSONObject j = new JSONObject(json3);
                                             json4 = j.getString("CustomerPickups");
-                                            Log.e("取CustomerPickups",json4);
+                                            Log.e("取CustomerPickups", json4);
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
@@ -323,11 +333,12 @@ public class ShipperActivity extends AppCompatActivity {
                                     }
                                 });
                             }
+
                             //POST成功後把回傳的值(陣列)取出來 用listView顯示 把JSON2帶進來
                             private void parseJson2(String json4) {
 
                                 //ListView 設定
-                                final ListView listView = (ListView)findViewById(R.id.listView);
+                                final ListView listView = (ListView) findViewById(R.id.listView);
 
                                 try {
                                     upList = new ArrayList();
@@ -336,74 +347,22 @@ public class ShipperActivity extends AppCompatActivity {
                                     for (int i = 0; i < array.length(); i++) {
                                         JSONObject obj = array.getJSONObject(i);
                                         map = new LinkedHashMap<String, String>();
-                                        map.put("PickupNo",obj.optString("PickupNo"));
-                                        map.put("Total",obj.optString("Total"));
+                                        map.put("PickupNo", obj.optString("PickupNo"));
+                                        map.put("Total", obj.optString("Total"));
+                                        map.put("check","0");
                                         myList.add(map);
                                         Log.e("單號和總數量", String.valueOf(myList));
 
                                     }
 
-                                    adapter = new SimpleAdapter(
+                                    adapter = new SpecialAdapter(
                                             ShipperActivity.this,
                                             myList,
                                             R.layout.lview8,
                                             new String[]{"PickupNo", "Total", "checkbox"},
-                                            new int[]{R.id.textView31, R.id.textView30,R.id.checkBox3}){
-                                        @Override
-                                        public View getView(final int position, View convertView, final ViewGroup parent) {
-                                            //获取相应的view中的checkbox对象
-
-                                            if (convertView == null){
-                                                convertView = View.inflate(ShipperActivity.this, R.layout.lview8, null);
-                                                final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox3);
-
-                                                final CheckBox checkBox1 = (CheckBox)findViewById(R.id.checkBox6);
-                                                checkBox1.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        if (checkBox1.isChecked()){
-                                                            for(int i = 0; i<myList.size() ; i++){
-                                                                adapter.notifyDataSetChanged();
-                                                                mCheckSet.add(i);
-                                                                upList.add(i);
-                                                            }
-                                                            Log.e("mCheckSet2", String.valueOf(mCheckSet));
-                                                        }else {
-                                                            adapter.notifyDataSetChanged();
-                                                            mCheckSet.clear();
-                                                            upList.clear();
-                                                            Log.e("mCheckSet3", String.valueOf(mCheckSet));
-                                                        }
-                                                    }
-
-                                                });
-                                                checkBox.setChecked(mCheckSet.contains(position));
-                                                adapter.notifyDataSetChanged();
-                                                checkBox.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-
-                                                        if (((CheckBox) v).isChecked()) {
-                                                            upList.add(String.valueOf(position));
-                                                            mCheckSet.add(position);
-
-                                                        } else {
-                                                            upList.remove(String.valueOf(position));
-                                                            mCheckSet.remove(position);
-
-
-                                                        }
-                                                        Log.e("UPLIST", String.valueOf(upList));
-                                                        Log.e("mCheckSet", String.valueOf(mCheckSet));
-                                                    }
-                                                });
-
-                                            }
-
-                                            return super.getView(position, convertView, parent);
-                                        }
-
-                                    };
+                                            new int[]{R.id.textView31, R.id.textView30, R.id.checkBox3});
+                                    setCheckBox();
+                                    adapter.notifyDataSetChanged();
                                     //非主執行緒顯示UI
                                     runOnUiThread(new Runnable() {
 
@@ -411,13 +370,20 @@ public class ShipperActivity extends AppCompatActivity {
                                         public void run() {
                                             //顯示出listView
                                             listView.setVisibility(View.VISIBLE);
-
+                                            CheckBox checkbox = (CheckBox)findViewById(R.id.checkBox6);
+                                            checkbox.setVisibility(View.VISIBLE);
                                             //設定 ListView 的接收器, 做為選項的來源
                                             listView.setAdapter(adapter);
+                                            mCheckSet.clear();
+                                            upList.clear();
                                             adapter.notifyDataSetChanged();
                                             //假如選到請選擇 list將不會出現
-                                            if (index ==0){
+                                            if (index == 0) {
                                                 listView.setVisibility(View.GONE);
+                                                checkbox.setVisibility(View.GONE);
+
+                                            }else {
+                                                checkbox.setChecked(false);
                                             }
 
                                         }
@@ -427,6 +393,7 @@ public class ShipperActivity extends AppCompatActivity {
                                 }
 
                             }
+
                             @Override
                             public void onNothingSelected(AdapterView<?> parent) {
                                 // sometimes you need nothing here
@@ -445,13 +412,21 @@ public class ShipperActivity extends AppCompatActivity {
 
 
     }
-    public void enter (View v){
+
+    public void enter(View v) {
         ArrayList checked;
         checked = new ArrayList();
-        Log.e("upList.size()", String.valueOf(upList.size()));
-        if(upList.size()>0){
+        Iterator it;
+        it = mCheckSet.iterator();
+        while (it.hasNext()){
+            upList.add(it.next());
+        }
 
-            for(int i=0; i<upList.size();i++){
+        //upList.add(mCheckSet);
+        Log.e("upList.size()", String.valueOf(upList.size()));
+        if (upList.size() > 0) {
+
+            for (int i = 0; i < upList.size(); i++) {
                 Log.e("myList.get(i)", String.valueOf(upList.get(i)));
                 int icheck;
                 icheck = Integer.valueOf(String.valueOf(upList.get(i)));
@@ -464,27 +439,27 @@ public class ShipperActivity extends AppCompatActivity {
             //再取字串範圍 (0和最後是[])
             //回傳指定範圍(1.i-1)第二個和倒數第二個
             checked3 = checked2.substring(1, i - 1);
-            Log.e("CHECK3",checked3);
-            Intent intent = new Intent(ShipperActivity.this,ShipperOrderActivity.class);
+            Log.e("CHECK3", checked3);
+            Intent intent = new Intent(ShipperActivity.this, ShipperOrderActivity.class);
             Bundle bag = new Bundle();
             bag.putString("checked", checked3);
             bag.putString("order", String.valueOf(order));
-            bag.putString("cUserID",cUserID);
-            bag.putString("cUserName",cUserName);
+            bag.putString("cUserID", cUserID);
+            bag.putString("cUserName", cUserName);
             intent.putExtras(bag);
             startActivity(intent);
             ShipperActivity.this.finish();
 
         }
         //沒有點擊
-        else{
-            Toast.makeText(ShipperActivity.this,"請選擇出貨單", Toast.LENGTH_SHORT).show();
+        else {
+            Toast.makeText(ShipperActivity.this, "請選擇出貨單", Toast.LENGTH_SHORT).show();
 
         }
 
 
-
     }
+
     //設定返回鍵
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -497,20 +472,22 @@ public class ShipperActivity extends AppCompatActivity {
         return false;
     }
 
-    private void setDialog(){
+    private void setDialog() {
         myDialog = new ProgressDialog(ShipperActivity.this);
         myDialog.setTitle("載入中");
         myDialog.setMessage("載入資訊中，請稍後！");
         myDialog.setCancelable(false);
         myDialog.show();
     }
-    private void setDialog2(){
+
+    private void setDialog2() {
         myDialog2 = new ProgressDialog(ShipperActivity.this);
         myDialog2.setTitle("載入中");
         myDialog2.setMessage("載入資訊中，請稍後！");
         myDialog2.setCancelable(false);
         myDialog2.show();
     }
+
     private void hideSystemNavigationBar() {
 
 
@@ -520,7 +497,7 @@ public class ShipperActivity extends AppCompatActivity {
         } else if (Build.VERSION.SDK_INT >= 19) {
             View decorView = getWindow().getDecorView();
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_IMMERSIVE;
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE;
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
@@ -547,30 +524,90 @@ public class ShipperActivity extends AppCompatActivity {
                 });
         super.onResume();
     }
-    private void setCheckBox(){
+
+    private void setCheckBox() {
         final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox6);
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkBox.isChecked()){
-                    for(int i = 0; i<myList.size() ; i++){
+                if (checkBox.isChecked()) {
+                    for (int i = 0; i < myList.size(); i++) {
                         mCheckSet.add(i);
-                        upList.add(i);
                         adapter.notifyDataSetChanged();
+                        Log.e("mCheckSet3", String.valueOf(mCheckSet));
+
                     }
 
-                    Log.e("mCheckSet2", String.valueOf(mCheckSet));
-                }else {
-                    mCheckSet.clear();
-                    upList.clear();
-                    Log.e("mCheckSet3", String.valueOf(mCheckSet));
-                    adapter.notifyDataSetChanged();
-                }
 
+                } else {
+                    for (int i = 0; i < myList.size(); i++) {
+                        mCheckSet.clear();
+                        adapter.notifyDataSetChanged();
+                        Log.e("mCheckSet4", String.valueOf(mCheckSet));
+                    }
+                }
+                checkFull();
             }
 
 
         });
 
+
+
     }
+
+    public class SpecialAdapter extends SimpleAdapter {
+
+        public SpecialAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
+            super(context, data, resource, from, to);
+        }
+        @Override
+        public View getView(final int position, View convertView, final ViewGroup parent) {
+            //获取相应的view中的checkbox对象
+            convertView = null;
+            if (convertView == null) {
+                convertView = View.inflate(ShipperActivity.this, R.layout.lview8, null);
+                final CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkBox3);
+
+                Log.e("mCheckSet2", String.valueOf(mCheckSet));
+                checkBox.setChecked(mCheckSet.contains(position));
+                checkBox.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if (((CheckBox) v).isChecked()) {
+                            mCheckSet.add(position);
+                            Log.e("mCheckSet5", String.valueOf(mCheckSet));
+                            //upList.add(position);
+                            checkFull();
+                            adapter.notifyDataSetChanged();
+                        }else {
+
+                            mCheckSet.remove(position);
+                            //upList.remove(position);
+                            checkFull();
+                            adapter.notifyDataSetChanged();
+                        }
+                        Log.e("UPLIST", String.valueOf(upList));
+                        Log.e("mCheckSet", String.valueOf(mCheckSet));
+                    }
+                });
+
+            }
+
+            return super.getView(position, convertView, parent);
+        }
+
+    }
+    private void checkFull(){
+        CheckBox checkBox = (CheckBox)findViewById(R.id.checkBox6);
+        if(mCheckSet.size() == myList.size()){
+            checkBox.setChecked(true);
+        }else {
+            checkBox.setChecked(false);
+        }
+    }
+
+
+
 }
