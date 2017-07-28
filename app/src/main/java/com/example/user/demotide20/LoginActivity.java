@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -31,11 +32,15 @@ public class LoginActivity extends AppCompatActivity {
     //帳號登入的API
     String url = "http://demo.shinda.com.tw/ModernWebApi/WebApiLogin.aspx";
     ProgressDialog myDialog;
+    String upDate ="V1.06"; //版本
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+
+        TextView textView = (TextView)findViewById(R.id.textView14);
+        textView.setText(upDate);
         //帳號若輸入正確 記住登入帳號
         SharedPreferences setting =
                 getSharedPreferences("Login", MODE_PRIVATE);

@@ -416,6 +416,8 @@ public class ShipperActivity extends AppCompatActivity {
     public void enter(View v) {
         ArrayList checked;
         checked = new ArrayList();
+
+        // 把點擊的item放入mcheckset裡面 在一個一個取出放入upl
         Iterator it;
         it = mCheckSet.iterator();
         while (it.hasNext()){

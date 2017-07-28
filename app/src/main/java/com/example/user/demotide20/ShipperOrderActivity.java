@@ -804,6 +804,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
+                        EditText editText = (EditText) findViewById(R.id.editText);
+                        if (editText.getText().length() >= 13) {
+                            editText.setText("");
+                            editText.requestFocus();
+                        }
                     } else {
                         if(i2 + getint2 <0){
                             i2=0;
@@ -816,6 +821,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
+                        EditText editText = (EditText) findViewById(R.id.editText);
+                        if (editText.getText().length() >= 13) {
+                            editText.setText("");
+                            editText.requestFocus();
+                        }
                     } else  {
                         if(i2 + getint2 <0){
                             i2=0;
@@ -863,6 +873,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
+                        EditText editText = (EditText) findViewById(R.id.editText);
+                        if (editText.getText().length() >= 13) {
+                            editText.setText("");
+                            editText.requestFocus();
+                        }
                     } else {
                         if(i2 + getint2 <0){
                             i2=0;
@@ -875,6 +890,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
+                        EditText editText = (EditText) findViewById(R.id.editText);
+                        if (editText.getText().length() >= 13) {
+                            editText.setText("");
+                            editText.requestFocus();
+                        }
                     } else {
                         if(i2 + getint2 <0){
                             i2=0;
