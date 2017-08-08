@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     String cStatus, userName, passWord, cUserName,cUserID;
     //帳號登入的API
     String url = "http://demo.shinda.com.tw/ModernWebApi/WebApiLogin.aspx";
+    //String url = "192.168.0.2:8011/WebApiLogin.aspx";
     ProgressDialog myDialog;
     String upDate ="V1.06"; //版本
     @Override

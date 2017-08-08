@@ -42,6 +42,7 @@ import okhttp3.Response;
 public class StorageOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, mLackNO, mLackName, cProductName, lackNoAdd, lackNameAdd,cProductIDeSQL,upStringList;
     String url = "http://demo.shinda.com.tw/ModernWebApi/LackAPI.aspx";
+    //String url = "192.168.0.2:8011/LackAPI.aspx";
     ArrayList<Map<String, String>> myList,saveList;
     ArrayList upList,Btrans,delList,getCheckList;
     int iMax = 0;

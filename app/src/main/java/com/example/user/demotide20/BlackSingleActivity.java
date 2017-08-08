@@ -60,6 +60,7 @@ import okhttp3.Response;
 
 public class BlackSingleActivity extends AppCompatActivity {
     String url = "http://demo.shinda.com.tw/ModernWebApi/Blank.aspx";
+    //String url = "192.168.0.2:8011/Blank.aspx";
     ArrayList mWarehouse,mInputType;
     Object Warehouse;
     Object InputType;

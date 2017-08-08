@@ -48,15 +48,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,19 +68,19 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-import static com.example.user.demotide20.R.id.checkBox;
+import static android.R.attr.data;
 import static com.example.user.demotide20.R.id.checkBox4;
+import static com.example.user.demotide20.R.id.checkBox5;
 import static com.example.user.demotide20.R.id.editText7;
 import static com.example.user.demotide20.R.id.textView21;
 import static com.example.user.demotide20.R.id.textView23;
 import static com.example.user.demotide20.R.id.textView24;
-import static com.example.user.demotide20.R.layout.item;
 import static com.example.user.demotide20.R.layout.lview4;
 
 public class ShipperOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, order, checked, cProductIDeSQL;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
+    //String url = "192.168.0.2:8011/Pickup.aspx";
     LinearLayout linear;
     ListView listView,listView2;
     int check = 0;
@@ -112,6 +114,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int PicInt = 0,PicADD = 0;
     int addInt = 0;
     ProgressDialog myDialog;
+
+    String today;
+    String logToday=null,logBarcode=null,logProductName = null,logProductID=null,logQty=null,logNowQty=null,logAdd=null; //設定文件檔名裡面的內容
+    String fileName = "my_file2.txt";// LOG的文件檔名
+    //String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n"; //文件檔名裡面的內容
     public class ProductIDInfo {
         private String mProductID;
 
@@ -199,6 +206,18 @@ public class ShipperOrderActivity extends AppCompatActivity {
         //Android 對 EditText 取得 focus
         //editText.requestFocus();
 
+        //判斷外部空間狀態
+        if(isExternalStorageWritable()){
+            //可寫
+            Log.e("外部空間狀態","可寫");
+
+        } else if(isExternalStorageReadable()){
+            //可讀
+            Log.e("外部空間狀態","可讀");
+        } else{
+            //不可寫不可讀
+            Log.e("外部空間狀態","不可寫不可讀");
+        }
 
 
         //取得上一頁資料
@@ -430,8 +449,15 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
-                                //myList.remove(position);
                                 myList.set(position, newMap);
+                                //
+                                logBarcode = "打勾";
+                                logProductName = myList.get(position).get("cProductName");
+                                logProductID = myList.get(position).get("ProductNo");
+                                logQty = myList.get(position).get("Qty");
+                                logNowQty = myList.get(position).get("NowQty");
+                                logAdd = myList.get(position).get("Qty");
+                                //
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
@@ -445,6 +471,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 newMap.put("Qty", myList.get(position).get("Qty"));
                                 //myList.remove(position);
                                 myList.set(position, newMap);
+                                //
+                                logBarcode = "打勾";
+                                logProductName = myList.get(position).get("cProductName");
+                                logProductID = myList.get(position).get("ProductNo");
+                                logQty = myList.get(position).get("Qty");
+                                logNowQty = myList.get(position).get("NowQty");
+                                logAdd = myList.get(position).get("Qty");
+                                //
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
@@ -462,6 +496,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 newMap.put("Qty", myList.get(position).get("Qty"));
                                 //myList.remove(position);
                                 myList.set(position, newMap);
+                                //
+                                logBarcode = "打勾";
+                                logProductName = myList.get(position).get("cProductName");
+                                logProductID = myList.get(position).get("ProductNo");
+                                logQty = myList.get(position).get("Qty");
+                                logNowQty = myList.get(position).get("NowQty");
+                                logAdd = myList.get(position).get("Qty");
+                                //
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
@@ -473,8 +515,15 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
-                                //myList.remove(position);
                                 myList.set(position, newMap);
+                                //
+                                logBarcode = "打勾";
+                                logProductName = myList.get(position).get("cProductName");
+                                logProductID = myList.get(position).get("ProductNo");
+                                logQty = myList.get(position).get("Qty");
+                                logNowQty = myList.get(position).get("NowQty");
+                                logAdd = myList.get(position).get("Qty");
+                                //
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
                                 checkBox.setChecked(false);
@@ -484,7 +533,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
                         }
 
-
+                        extelnalPrivateCreateFoler();
                     }
 
                 });
@@ -618,7 +667,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                             listView.setAdapter(adapter);
 
                             //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
-                            final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+                            final CheckBox checkBox = (CheckBox) findViewById(checkBox5);
                             for (int i = 0; i<myList.size();i++){
                                 if(Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))){
                                     checkInt++;
@@ -668,6 +717,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         EditText editText = (EditText) findViewById(R.id.editText);
 
         String barcode = editText.getText().toString();
+        logBarcode=barcode;
         Log.e("barcode", barcode);
         setBarcodeSQL();
         Cursor c = db4.query("tblTable4",                          // 資料表名字
@@ -680,6 +730,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
         while (c.moveToNext()) {
             cProductIDeSQL = c.getString(c.getColumnIndex("cProductID"));
+            logProductID = cProductIDeSQL;
             Log.e("cBarcode1", cProductIDeSQL);
             Btrans.add(cProductIDeSQL);
 
@@ -707,6 +758,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             if(iCheck ==0 ){
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 editText.setText("");
+                extelnalPrivateCreateFoler();
             }else if (iCheck == 1) {
                 //先判斷條碼內的商品號碼是否有在listView裡
                 if (checkID() == true) {
@@ -729,6 +781,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                     editText.setText("");
+                    extelnalPrivateCreateFoler();
                 }
                 //條碼找到一筆以上商品編號
             } else if (iCheck > 1) {
@@ -761,6 +814,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 editText.setText("");
+                extelnalPrivateCreateFoler();
             }
             //條碼找到一筆以上商品編號
         } else if (iCheck > 1) {
@@ -768,6 +822,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             chooseThings();
             editText.setText("");
         }
+
     }
 
     //判斷條碼內的商品是否有在list裡 有就回傳true
@@ -796,6 +851,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             if (cProductIDeSQL.equals(myList.get(i3).get("ProductNo"))) {
                 int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
                 int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
+
                 Log.e("I22", String.valueOf(i2));
                 Log.e("I44", String.valueOf(i4));
                 //數量
@@ -847,6 +903,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 myList.set(i3, newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
+                //
+                logProductName = myList.get(i3).get("cProductName");
+                logProductID = myList.get(i3).get("ProductNo");
+                logNowQty = String.valueOf(i2);
+                logQty = myList.get(i3).get("Qty");
+                logAdd = String.valueOf(getint2);
+                //
                 checkListArray();
                 adapter.notifyDataSetChanged();
 
@@ -858,6 +921,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
             }
         }
+        extelnalPrivateCreateFoler();
     }
 
     private void setNOWQty2(int getint2) {
@@ -865,6 +929,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             if (newStringArray[0].equals(myList.get(i3).get("ProductNo"))) {
                 int i2 = Integer.parseInt(myList.get(i3).get("NowQty"));
                 int i4 = Integer.parseInt(myList.get(i3).get("Qty"));
+
                 Log.e("I22", String.valueOf(i2));
                 Log.e("I44", String.valueOf(i4));
                 //數量
@@ -912,8 +977,13 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
                 newMap.put("Qty", myList.get(i3).get("Qty"));
                 myList.set(i3, newMap);
-                //myList.remove(i).get("NowQty");
-                //Log.e("myList",myList.remove(i).get("NowQty"));
+                //
+                logProductName = myList.get(i3).get("cProductName");
+                logProductID = myList.get(i3).get("ProductNo");
+                logNowQty = String.valueOf(i2);
+                logQty = myList.get(i3).get("Qty");
+                logAdd = String.valueOf(getint2);
+                //
                 checkListArray();
                 adapter.notifyDataSetChanged();
 
@@ -922,8 +992,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     editText.setText("");
                     editText.requestFocus();
                 }
+
             }
+
         }
+        extelnalPrivateCreateFoler();
     }
     private void addNOWQty() {
         if (checkID2() == true) {
@@ -997,6 +1070,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 Log.e("點擊2", newStringArray[0]);
                 Log.e("PRODUCTNO", map.get("ProductNo"));
                 addNOWQty();
+
             }
         });
 
@@ -1374,6 +1448,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     EditText editText1 = (EditText) findViewById(R.id.editText7);
                     editText1.getText();
                     editText1.requestFocus();
+                    //extelnalPrivateCreateFoler();
                 }
 
                 return false;
@@ -1704,7 +1779,6 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     private void hideSystemNavigationBar() {
 
-
         if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
             View view = this.getWindow().getDecorView();
             view.setSystemUiVisibility(View.GONE);
@@ -1822,7 +1896,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+                final CheckBox checkBox = (CheckBox) findViewById(checkBox5);
                 if(mCheckSet.size()==myList.size()){
                     checkBox.setChecked(true);
                 }else {
@@ -1834,7 +1908,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     }
     private void setCheckBox (){
-        final CheckBox checkBox = (CheckBox) findViewById(R.id.checkBox5);
+        final CheckBox checkBox = (CheckBox) findViewById(checkBox5);
 
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1853,6 +1927,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
 
                     }
+                    logBarcode = "全選";
+                    logProductID = "全選";
+                    logProductName = "全選";
+                    logQty = "All";
+                    logNowQty = "All";
+                    logAdd = "All";
 
                 }else {
                     Log.e("歸零","歸零");
@@ -1874,7 +1954,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     }else {
                         checkBox.setChecked(false);
                     }
+                    logBarcode = "全清除";
+                    logProductName = "全清除";
+                    logProductID = "全清除";
+                    logQty = "0";
+                    logNowQty = "0";
+                    logAdd = "0";
                 }
+                extelnalPrivateCreateFoler();
             }
         });
     }
@@ -1899,6 +1986,83 @@ public class ShipperOrderActivity extends AppCompatActivity {
         vb.vibrate(1500);
 
     }
+    //判斷外部儲存空間是否可以讀寫
+    public boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+    //判斷外部空間是否可以儲存
+    public boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    //公用
+    private File getExtermalStoragePublicDir(String albumName) {
+        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if(file.mkdir()){
+            File f = new File(file, albumName);
+            if(f.mkdir()){
+                return f;
+            }
+        }
+        return new File(file, albumName);
+    }
+    //外部空間建立公開資料夾
+    private void extelnalPublicCreateFoler(){
+        File dir = getExtermalStoragePublicDir("aa");
+        File f = new File(dir.getPath(), fileName);
+        String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n";
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(f);
+            outputStream.write(data.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //私用
+    private File getExtermalStoragePrivateDir(String albumName) {
+        File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), albumName);
+        if (!file.mkdirs()) {
+            //Log.e("", "Directory not created or exist");
+        }
+        return file;
+    }
+    //外部空間建立私有資料夾
+    private void extelnalPrivateCreateFoler(){
+        File dir = getExtermalStoragePrivateDir("bb");
+        File f = new File(dir, fileName);
+        time();
+        String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductName+",商品編號:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n";
+
+        try {
+            //new FileOutputStream(f,true) 多加true 就可以複寫
+            FileOutputStream outputStream = new FileOutputStream(f,true);
+            outputStream.write(data.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //得到現在時間
+    private void time() {
+        Calendar mCal = Calendar.getInstance();
+        String dateformat = "yyyy/MM/dd/ HH:mm:ss";
+        SimpleDateFormat df = new SimpleDateFormat(dateformat);
+        today = df.format(mCal.getTime());
+        logToday = today;
+    }
+
 }
 
 

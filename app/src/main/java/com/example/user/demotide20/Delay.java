@@ -36,6 +36,7 @@ public class Delay extends Service {
     Handler handler;
     //商品同步API
     String url = "http://demo.shinda.com.tw/ModernWebApi/getProduct.aspx";
+    //String url = "192.168.0.2:8011/getProduct.aspx";
     private MyDBhelper helper;
     private MyDBhelper2 helper2;
     private MyDBhelper4 helper4;
