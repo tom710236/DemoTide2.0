@@ -115,9 +115,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
     int addInt = 0;
     ProgressDialog myDialog;
 
-    String today;
+    String today,today2;
     String logToday=null,logBarcode=null,logProductName = null,logProductID=null,logQty=null,logNowQty=null,logAdd=null; //設定文件檔名裡面的內容
-    String fileName = "my_file2.txt";// LOG的文件檔名
+    //String fileName = "my_file2.txt";// LOG的文件檔名
     //String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n"; //文件檔名裡面的內容
     public class ProductIDInfo {
         private String mProductID;
@@ -497,12 +497,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 //myList.remove(position);
                                 myList.set(position, newMap);
                                 //
-                                logBarcode = "打勾";
+                                logBarcode = "清除";
                                 logProductName = myList.get(position).get("cProductName");
                                 logProductID = myList.get(position).get("ProductNo");
                                 logQty = myList.get(position).get("Qty");
                                 logNowQty = myList.get(position).get("NowQty");
-                                logAdd = myList.get(position).get("Qty");
+                                logAdd = "-"+myList.get(position).get("Qty");
                                 //
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
@@ -517,12 +517,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
                                 newMap.put("Qty", myList.get(position).get("Qty"));
                                 myList.set(position, newMap);
                                 //
-                                logBarcode = "打勾";
+                                logBarcode = "清除";
                                 logProductName = myList.get(position).get("cProductName");
                                 logProductID = myList.get(position).get("ProductNo");
                                 logQty = myList.get(position).get("Qty");
                                 logNowQty = myList.get(position).get("NowQty");
-                                logAdd = myList.get(position).get("Qty");
+                                logAdd =  "-"+myList.get(position).get("Qty");
                                 //
                                 checkListArray();
                                 adapter.notifyDataSetChanged();
@@ -1927,9 +1927,9 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         //若進入後 訂單數量和檢貨數量都已經檢滿 checkBox5 打勾勾
 
                     }
-                    logBarcode = "全選";
-                    logProductID = "全選";
-                    logProductName = "全選";
+                    logBarcode = "全打勾";
+                    logProductID = "全打勾";
+                    logProductName = "全打勾";
                     logQty = "All";
                     logNowQty = "All";
                     logAdd = "All";
@@ -2017,6 +2017,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
     //外部空間建立公開資料夾
     private void extelnalPublicCreateFoler(){
+        String fileName = "APK";
         File dir = getExtermalStoragePublicDir("aa");
         File f = new File(dir.getPath(), fileName);
         String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n";
@@ -2039,9 +2040,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
     }
     //外部空間建立私有資料夾
     private void extelnalPrivateCreateFoler(){
-        File dir = getExtermalStoragePrivateDir("bb");
-        File f = new File(dir, fileName);
         time();
+        File dir = getExtermalStoragePrivateDir("Log");
+        String fileName = today2+".txt";
+        File f = new File(dir, fileName);
         String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductName+",商品編號:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n";
 
         try {
@@ -2052,14 +2054,18 @@ public class ShipperOrderActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     //得到現在時間
     private void time() {
         Calendar mCal = Calendar.getInstance();
         String dateformat = "yyyy/MM/dd/ HH:mm:ss";
+        String dateformat2=  "yyyyMMdd";
         SimpleDateFormat df = new SimpleDateFormat(dateformat);
+        SimpleDateFormat df2 = new SimpleDateFormat(dateformat2);
         today = df.format(mCal.getTime());
+        today2 = df2.format(mCal.getTime());
         logToday = today;
     }
 
