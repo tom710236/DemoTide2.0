@@ -10,6 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.media.ToneGenerator;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -68,7 +71,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static android.R.attr.data;
 import static com.example.user.demotide20.R.id.checkBox4;
 import static com.example.user.demotide20.R.id.checkBox5;
 import static com.example.user.demotide20.R.id.editText7;
@@ -77,7 +79,7 @@ import static com.example.user.demotide20.R.id.textView23;
 import static com.example.user.demotide20.R.id.textView24;
 import static com.example.user.demotide20.R.layout.lview4;
 
-public class ShipperOrderActivity extends AppCompatActivity {
+public class ShipperOrderActivity extends AppCompatActivity implements SoundPool.OnLoadCompleteListener {
     String cUserName, cUserID, order, checked, cProductIDeSQL;
     String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     //String url = "192.168.0.2:8011/Pickup.aspx";
@@ -117,6 +119,14 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
     String today,today2;
     String logToday=null,logBarcode=null,logProductName = null,logProductID=null,logQty=null,logNowQty=null,logAdd=null; //設定文件檔名裡面的內容
+    int mSoundID ;
+    SoundPool mSoundPool;
+
+    @Override
+    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+
+    }
+
     //String fileName = "my_file2.txt";// LOG的文件檔名
     //String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n"; //文件檔名裡面的內容
     public class ProductIDInfo {
@@ -218,7 +228,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
             //不可寫不可讀
             Log.e("外部空間狀態","不可寫不可讀");
         }
-
+        //音效設定
+        mSoundPool = new SoundPool(1,AudioManager.STREAM_MUSIC,0);
+        mSoundPool.setOnLoadCompleteListener(ShipperOrderActivity.this);
+        mSoundID = mSoundPool.load (this, R.raw.windows_8_notify,1);
 
         //取得上一頁資料
         getPreviousPage();
@@ -758,6 +771,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
             if(iCheck ==0 ){
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 editText.setText("");
+                logProductName="null";
+                logQty = "null";
+                logNowQty = "null";
+                logAdd = "null";
                 extelnalPrivateCreateFoler();
             }else if (iCheck == 1) {
                 //先判斷條碼內的商品號碼是否有在listView裡
@@ -781,6 +798,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                     editText.setText("");
+                    logProductName="null";
+                    logQty = "null";
+                    logNowQty = "null";
+                    logAdd = "null";
                     extelnalPrivateCreateFoler();
                 }
                 //條碼找到一筆以上商品編號
@@ -814,6 +835,10 @@ public class ShipperOrderActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
                 editText.setText("");
+                logProductName="null";
+                logQty = "null";
+                logNowQty = "null";
+                logAdd = "null";
                 extelnalPrivateCreateFoler();
             }
             //條碼找到一筆以上商品編號
@@ -877,6 +902,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
+
                         EditText editText = (EditText) findViewById(R.id.editText);
                         if (editText.getText().length() >= 13) {
                             editText.setText("");
@@ -921,6 +947,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
 
             }
         }
+        Bsound();
         extelnalPrivateCreateFoler();
     }
 
@@ -996,11 +1023,12 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
 
         }
+        Bsound();
         extelnalPrivateCreateFoler();
     }
     private void addNOWQty() {
         if (checkID2() == true) {
-            if (addNum == 0) {
+            if (addNum == 0 && addInt == 1) {
                 final View item = LayoutInflater.from(ShipperOrderActivity.this).inflate(R.layout.item, null);
                 new AlertDialog.Builder(ShipperOrderActivity.this)
                         .setTitle("請輸入數量")
@@ -1043,7 +1071,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
             EditText editText = (EditText)findViewById(R.id.editText);
             editText.setText("");
-
+            logProductName="null";
+            logQty = "null";
+            logNowQty = "null";
+            logAdd = "null";
+            extelnalPrivateCreateFoler();
         }
 
     }
@@ -1069,6 +1101,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                 newStringArray[0] = stringArray[i];
                 Log.e("點擊2", newStringArray[0]);
                 Log.e("PRODUCTNO", map.get("ProductNo"));
+                logProductID = newStringArray[0];
                 addNOWQty();
 
             }
@@ -1448,7 +1481,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
                     EditText editText1 = (EditText) findViewById(R.id.editText7);
                     editText1.getText();
                     editText1.requestFocus();
-                    //extelnalPrivateCreateFoler();
+
                 }
 
                 return false;
@@ -1965,7 +1998,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
             }
         });
     }
-    // 判斷是否要+1還是輸入數量
+    // 判斷是否要+1還是輸入數量 (NUM or +1 )
     public void onClickAdd (View v){
         if(addInt==1){
             addInt=0;
@@ -2044,6 +2077,7 @@ public class ShipperOrderActivity extends AppCompatActivity {
         File dir = getExtermalStoragePrivateDir("Log");
         String fileName = today2+".txt";
         File f = new File(dir, fileName);
+
         String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductName+",商品編號:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n";
 
         try {
@@ -2068,6 +2102,11 @@ public class ShipperOrderActivity extends AppCompatActivity {
         today2 = df2.format(mCal.getTime());
         logToday = today;
     }
+    //音效
+    private void Bsound(){
+        mSoundPool.play(mSoundID,1.0F,1.0F,0,0,0.0f);
+    }
+
 
 }
 
