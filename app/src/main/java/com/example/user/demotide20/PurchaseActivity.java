@@ -33,8 +33,9 @@ import okhttp3.Response;
 public class PurchaseActivity extends AppCompatActivity {
     String cUserName,cUserID;
     String order;
-    String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
+    //String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
     //String url = "192.168.0.2:8011/Purchase.aspx";
+    String url = Application.TideUrl+"Purchase.aspx";
     ArrayList<String> json2;
     ProgressDialog myDialog;
     int index,indexSpinner;

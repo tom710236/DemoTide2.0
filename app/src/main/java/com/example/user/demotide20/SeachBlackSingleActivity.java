@@ -40,8 +40,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class SeachBlackSingleActivity extends AppCompatActivity {
-    String url = "http://demo.shinda.com.tw/ModernWebApi/Blank.aspx";
+    //String url = "http://demo.shinda.com.tw/ModernWebApi/Blank.aspx";
     //String url = "192.168.0.2:8011/Blank.aspx";
+    String url = Application.TideUrl+"Blank.aspx";
     ArrayList mWarehouse,mInputType;
     String cUserName,cUserID,Sname,scrData,mBlackNo;
     Object Warehouse,BlankNo,WHTypeName;

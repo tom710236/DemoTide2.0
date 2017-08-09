@@ -41,8 +41,9 @@ import okhttp3.Response;
 
 public class StorageActivity extends AppCompatActivity {
     String cUserName, cUserID,mLackNO,mLackName,lackNoAdd,lackNameAdd,scr;
-    String url="http://demo.shinda.com.tw/ModernWebApi/LackAPI.aspx";
+    //String url="http://demo.shinda.com.tw/ModernWebApi/LackAPI.aspx";
     //String url="192.168.0.2:8011/LackAPI.aspx";
+    String url = Application.TideUrl+"LackAPI.aspx";
     ArrayList<Map<String, String>> myList;
     int iMax = 0,indexSpinner;
     Map<String, String> map;

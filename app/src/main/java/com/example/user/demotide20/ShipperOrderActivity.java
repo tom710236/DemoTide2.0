@@ -81,8 +81,9 @@ import static com.example.user.demotide20.R.layout.lview4;
 
 public class ShipperOrderActivity extends AppCompatActivity implements SoundPool.OnLoadCompleteListener {
     String cUserName, cUserID, order, checked, cProductIDeSQL;
-    String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
+    //String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     //String url = "192.168.0.2:8011/Pickup.aspx";
+    String url = Application.TideUrl+"Pickup.aspx";
     LinearLayout linear;
     ListView listView,listView2;
     int check = 0;

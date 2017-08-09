@@ -44,8 +44,9 @@ import okhttp3.Response;
 public class SystemActivity extends AppCompatActivity {
     String cUserName,today,tblTable4,cUserID;
     //商品同步API
-    String url = "http://demo.shinda.com.tw/ModernWebApi/getProduct.aspx";
+    //String url = "http://demo.shinda.com.tw/ModernWebApi/getProduct.aspx";
     //String url = "192.168.0.2:8011/getProduct.aspx";
+    String url = Application.TideUrl+"getProduct.aspx";
     //建立一個類別存JSON
     //資料庫名稱
     final String DB_NAME = "tblTable";

@@ -36,8 +36,9 @@ import okhttp3.Response;
 
 public class SearchBlackSingleListActivity extends AppCompatActivity {
     String cUserName, cUserID, scrData, mBlackNo, cProductName;
-    String url = "http://demo.shinda.com.tw/ModernWebApi/Blank.aspx";
+    //String url = "http://demo.shinda.com.tw/ModernWebApi/Blank.aspx";
     //String url = "192.168.0.2:8011/Blank.aspx";
+    String url = Application.TideUrl+"Blank.aspx";
     Map<String, String> map;
     ArrayList<Map<String, String>> myList;
     MyDBhelper helper;

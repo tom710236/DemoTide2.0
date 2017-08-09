@@ -54,8 +54,9 @@ public class ShipperActivity extends AppCompatActivity {
     ProgressDialog myDialog, myDialog2;
     private HashSet<Integer> mCheckSet = new HashSet<Integer>();
     //檢貨單 客戶API
-    String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
+    //String url = "http://demo.shinda.com.tw/ModernWebApi/Pickup.aspx";
     //String url = "192.168.0.2:8011/Pickup.aspx";
+    String url = Application.TideUrl+"Pickup.aspx";
     public class ProductInfo {
         private String cCustomerName;
         private String cTotal;

@@ -64,8 +64,9 @@ import okhttp3.Response;
 public class PurchaseOrderActivity extends AppCompatActivity {
     String cUserName, cUserID, json, cProductName, cProductIDeSQL, order, upStringList, activity2, order2;
     SQLiteDatabase db, db4;
-    String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
+    //String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
     //String url = "192.168.0.2:8011/Purchase.aspx";
+    String url = Application.TideUrl+"Purchase.aspx";
     LinkedHashMap<String, String> map;
     ArrayList<LinkedHashMap<String, String>> myList, upList;
     ListView listView;
