@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     //String url = "192.168.0.2:8011/WebApiLogin.aspx";
     String url = Application.TideUrl+"WebApiLogin.aspx";
     ProgressDialog myDialog;
-    String upDate ="V1.07"; //版本
+    String upDate ="V1.06"; //版本
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
