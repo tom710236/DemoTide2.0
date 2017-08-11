@@ -3,6 +3,8 @@ package com.example.user.demotide20;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -103,9 +105,9 @@ public class ShipperActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shipper);
         getPreviousPage();
         toolBar();
+        setDialog();
         Post post = new Post();
         post.start();
-        setDialog();
         setCheckBox();
 
     }
@@ -151,14 +153,22 @@ public class ShipperActivity extends AppCompatActivity {
 
     // 執行緒 - 執行PostCustomerInfo方法
     class Post extends Thread {
+
         @Override
         public void run() {
-            //POST後取得客戶清單
-            PostCustomerInfo();
+            if(isConnected()){
+                //POST後取得客戶清單
+                PostCustomerInfo();
+
+            }else {
+                Toast.makeText(ShipperActivity.this,"請確認網路是否正常",Toast.LENGTH_SHORT).show();
+                myDialog2.dismiss();
+            }
+
         }
 
         private void PostCustomerInfo() {
-            //post--取撿貨單客戶列表
+
             OkHttpClient client = new OkHttpClient();
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
@@ -186,8 +196,8 @@ public class ShipperActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     String json = response.body().string();
-                    Log.e("客戶API回傳JSON", json);
                     myDialog.dismiss();
+                    //Log.e("客戶API回傳JSON", json);
                     //解析 回傳JSON
                     //{"result":"1","PickUpCustomers":[{"CustomerID":"C000000003","CustomerName":"磯法資訊","Total":19500.00},{"CustomerID":"C000000002","CustomerName":"新達科技","Total":13100.00},{"CustomerID":"C000000001","CustomerName":"大島屋企業","Total":9400.00}]}
                     json2 = new ArrayList<>();
@@ -271,8 +281,13 @@ public class ShipperActivity extends AppCompatActivity {
                                 Log.e("客戶清單點擊 索引值", String.valueOf(index));
                                 Log.e("客戶清單點擊 內容", name);
                                 //點擊後所要執行的方法 並把所回傳的json和索引值帶入
-                                postjson2(String.valueOf(json2), index);
-                                setDialog2();
+                                if (isConnected()) {
+                                    postjson2(String.valueOf(json2), index);
+                                    setDialog2();
+                                }else {
+                                    Toast.makeText(ShipperActivity.this,"請確認網路是否有連線",Toast.LENGTH_SHORT).show();
+                                }
+
                             }
 
                             //點擊 spinner項目後 所要執行的方法
@@ -285,54 +300,54 @@ public class ShipperActivity extends AppCompatActivity {
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
-                                //把連接到的客戶IP帶入JSON並POST上去
-                                OkHttpClient client = new OkHttpClient();
-                                final MediaType JSON
-                                        = MediaType.parse("application/json; charset=utf-8");
-                                //取客戶有的撿貨單
-                                String json = "{\"Token\":\"\" ,\"Action\":\"pickups\",\"UserID\":\"" + cUserID + "\",\"CustomerID\":\"" + door1 + "\"}";
-                                Log.e("取客戶有的撿貨單", json);
-                                RequestBody body = RequestBody.create(JSON, json);
-                                Request request = new Request.Builder()
-                                        .url(url)
-                                        .post(body)
-                                        .build();
-                                //使用OkHttp的newCall方法建立一個呼叫物件(尚未連線至主機)
-                                Call call = client.newCall(request);
-                                call.enqueue(new Callback() {
-                                    @Override
-                                    public void onFailure(Call call, IOException e) {
-                                        myDialog2.dismiss();
-                                        //非主執行緒顯示UI(Toast)
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(ShipperActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
-                                        //取得POST上去後所得到的JSON檔
-                                        //{"result":"1","CustomerPickups":[{"PickupNo":"S20160000004","Total":300.00},{"PickupNo":"S20160000014","Total":2000.00}]}
-                                        String json3 = response.body().string();
-                                        Log.e("取客戶有的撿貨單回傳", json3);
-                                        myDialog2.dismiss();
-                                        //取出CustomerPickups
-                                        //[{"PickupNo":"S20160000004","Total":300},{"PickupNo":"S20160000014","Total":2000}]
-                                        try {
-                                            JSONObject j = new JSONObject(json3);
-                                            json4 = j.getString("CustomerPickups");
-                                            Log.e("取CustomerPickups", json4);
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
+                                    //把連接到的客戶IP帶入JSON並POST上去
+                                    OkHttpClient client = new OkHttpClient();
+                                    final MediaType JSON
+                                            = MediaType.parse("application/json; charset=utf-8");
+                                    //取客戶有的撿貨單
+                                    String json = "{\"Token\":\"\" ,\"Action\":\"pickups\",\"UserID\":\"" + cUserID + "\",\"CustomerID\":\"" + door1 + "\"}";
+                                    Log.e("取客戶有的撿貨單", json);
+                                    RequestBody body = RequestBody.create(JSON, json);
+                                    Request request = new Request.Builder()
+                                            .url(url)
+                                            .post(body)
+                                            .build();
+                                    //使用OkHttp的newCall方法建立一個呼叫物件(尚未連線至主機)
+                                    Call call = client.newCall(request);
+                                    call.enqueue(new Callback() {
+                                        @Override
+                                        public void onFailure(Call call, IOException e) {
+                                            myDialog2.dismiss();
+                                            //非主執行緒顯示UI(Toast)
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(ShipperActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
                                         }
 
-                                        parseJson2(json4);
-                                    }
-                                });
+                                        @Override
+                                        public void onResponse(Call call, Response response) throws IOException {
+                                            //取得POST上去後所得到的JSON檔
+                                            //{"result":"1","CustomerPickups":[{"PickupNo":"S20160000004","Total":300.00},{"PickupNo":"S20160000014","Total":2000.00}]}
+                                            String json3 = response.body().string();
+                                            Log.e("取客戶有的撿貨單回傳", json3);
+                                            myDialog2.dismiss();
+                                            //取出CustomerPickups
+                                            //[{"PickupNo":"S20160000004","Total":300},{"PickupNo":"S20160000014","Total":2000}]
+                                            try {
+                                                JSONObject j = new JSONObject(json3);
+                                                json4 = j.getString("CustomerPickups");
+                                                Log.e("取CustomerPickups", json4);
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            parseJson2(json4);
+                                        }
+                                    });
+
                             }
 
                             //POST成功後把回傳的值(陣列)取出來 用listView顯示 把JSON2帶進來
@@ -415,50 +430,56 @@ public class ShipperActivity extends AppCompatActivity {
     }
 
     public void enter(View v) {
-        ArrayList checked;
-        checked = new ArrayList();
 
-        // 把點擊的item放入mcheckset裡面 在一個一個取出放入upl
-        Iterator it;
-        it = mCheckSet.iterator();
-        while (it.hasNext()){
-            upList.add(it.next());
-        }
+        if(isConnected()){
+            ArrayList checked;
+            checked = new ArrayList();
 
-        //upList.add(mCheckSet);
-        Log.e("upList.size()", String.valueOf(upList.size()));
-        if (upList.size() > 0) {
-
-            for (int i = 0; i < upList.size(); i++) {
-                Log.e("myList.get(i)", String.valueOf(upList.get(i)));
-                int icheck;
-                icheck = Integer.valueOf(String.valueOf(upList.get(i)));
-                checked.add(myList.get(icheck).get("PickupNo"));
+            // 把點擊的item放入mcheckset裡面 在一個一個取出放入upl
+            Iterator it;
+            it = mCheckSet.iterator();
+            while (it.hasNext()){
+                upList.add(it.next());
             }
-            Log.e("checked", String.valueOf(checked));
-            //把逗號的空白處取代
-            checked2 = String.valueOf(checked).replaceAll(", ", ",");
-            int i = checked2.length();
-            //再取字串範圍 (0和最後是[])
-            //回傳指定範圍(1.i-1)第二個和倒數第二個
-            checked3 = checked2.substring(1, i - 1);
-            Log.e("CHECK3", checked3);
-            Intent intent = new Intent(ShipperActivity.this, ShipperOrderActivity.class);
-            Bundle bag = new Bundle();
-            bag.putString("checked", checked3);
-            bag.putString("order", String.valueOf(order));
-            bag.putString("cUserID", cUserID);
-            bag.putString("cUserName", cUserName);
-            intent.putExtras(bag);
-            startActivity(intent);
-            ShipperActivity.this.finish();
 
-        }
-        //沒有點擊
-        else {
-            Toast.makeText(ShipperActivity.this, "請選擇出貨單", Toast.LENGTH_SHORT).show();
+            //upList.add(mCheckSet);
+            Log.e("upList.size()", String.valueOf(upList.size()));
+            if (upList.size() > 0) {
 
+                for (int i = 0; i < upList.size(); i++) {
+                    Log.e("myList.get(i)", String.valueOf(upList.get(i)));
+                    int icheck;
+                    icheck = Integer.valueOf(String.valueOf(upList.get(i)));
+                    checked.add(myList.get(icheck).get("PickupNo"));
+                }
+                Log.e("checked", String.valueOf(checked));
+                //把逗號的空白處取代
+                checked2 = String.valueOf(checked).replaceAll(", ", ",");
+                int i = checked2.length();
+                //再取字串範圍 (0和最後是[])
+                //回傳指定範圍(1.i-1)第二個和倒數第二個
+                checked3 = checked2.substring(1, i - 1);
+                Log.e("CHECK3", checked3);
+                Intent intent = new Intent(ShipperActivity.this, ShipperOrderActivity.class);
+                Bundle bag = new Bundle();
+                bag.putString("checked", checked3);
+                bag.putString("order", String.valueOf(order));
+                bag.putString("cUserID", cUserID);
+                bag.putString("cUserName", cUserName);
+                intent.putExtras(bag);
+                startActivity(intent);
+                ShipperActivity.this.finish();
+
+            }
+            //沒有點擊
+            else {
+                Toast.makeText(ShipperActivity.this, "請選擇出貨單", Toast.LENGTH_SHORT).show();
+
+            }
+        }else {
+            Toast.makeText(this,"請確認網路是否正常",Toast.LENGTH_SHORT).show();
         }
+
 
 
     }
@@ -610,7 +631,15 @@ public class ShipperActivity extends AppCompatActivity {
             checkBox.setChecked(false);
         }
     }
-
+    //判斷網路有無訊號
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
 
 
 }

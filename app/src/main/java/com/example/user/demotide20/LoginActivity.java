@@ -1,8 +1,11 @@
 package com.example.user.demotide20;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -34,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     //String url = "192.168.0.2:8011/WebApiLogin.aspx";
     String url = Application.TideUrl+"WebApiLogin.aspx";
     ProgressDialog myDialog;
-    String upDate ="V1.06"; //版本
+    String upDate ="V1.08"; //版本
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,9 +60,15 @@ public class LoginActivity extends AppCompatActivity {
 
     // 登入鍵 - 執行執行緒
     public void login (View v){
-        setDialog();
-        Post post = new Post();
-        post.start();
+        if(isConnected()){
+            Post post = new Post();
+            post.start();
+            setDialog();
+        }else{
+            Toast.makeText(this,"請確認網路是否有連線",Toast.LENGTH_SHORT).show();
+
+        }
+
     }
     // 執行緒 - 執行PostUserInfo()方法
     class Post extends Thread{
@@ -248,6 +257,14 @@ public class LoginActivity extends AppCompatActivity {
         myDialog.setCancelable(false);
         myDialog.show();
     }
-
+    //判斷網路有無訊號
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
 
 }
