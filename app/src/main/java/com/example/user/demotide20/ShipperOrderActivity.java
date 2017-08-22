@@ -77,6 +77,7 @@ import static com.example.user.demotide20.R.id.editText7;
 import static com.example.user.demotide20.R.id.textView21;
 import static com.example.user.demotide20.R.id.textView23;
 import static com.example.user.demotide20.R.id.textView24;
+import static com.example.user.demotide20.R.id.textView49;
 import static com.example.user.demotide20.R.layout.lview4;
 
 public class ShipperOrderActivity extends AppCompatActivity implements SoundPool.OnLoadCompleteListener {
@@ -165,6 +166,17 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
             return mmQty;
         }
     }
+    public class SortInfo {
+        private String mmSort;
+
+        SortInfo(String ProductID) {
+            this.mmSort = ProductID;
+        }
+
+        public String toString() {
+            return mmSort;
+        }
+    }
 
     public class NowQtyInfo {
         private String mNowQty;
@@ -246,7 +258,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
         setDialog();
         setEditText();
         setEditText2();
-        setCheckBox ();
+        setCheckBox();
 
 
 
@@ -463,6 +475,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
+                                newMap.put("Sort", myList.get(position).get("Sort"));
                                 myList.set(position, newMap);
                                 //
                                 logBarcode = "打勾";
@@ -483,6 +496,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
+                                newMap.put("Sort", myList.get(position).get("Sort"));
                                 //myList.remove(position);
                                 myList.set(position, newMap);
                                 //
@@ -508,6 +522,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
+                                newMap.put("Sort", myList.get(position).get("Sort"));
                                 //myList.remove(position);
                                 myList.set(position, newMap);
                                 //
@@ -529,6 +544,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                                 newMap.put("ProductNo", myList.get(position).get("ProductNo"));
                                 newMap.put("cProductName", myList.get(position).get("cProductName"));
                                 newMap.put("Qty", myList.get(position).get("Qty"));
+                                newMap.put("Sort", myList.get(position).get("Sort"));
                                 myList.set(position, newMap);
                                 //
                                 logBarcode = "清除";
@@ -563,7 +579,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
     // 執行緒 - 執行PostUserInfo()方法
     class Post extends Thread {
         String cProductName;
-
+        String cSort;
         @Override
         public void run() {
             PostOrderThingsInfo();
@@ -628,7 +644,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                             setThingSQL();
                             Cursor c = db.query("tblTable",                            // 資料表名字
                                     null,                                              // 要取出的欄位資料
-                                    "cProductID=?",                                    // 查詢條件式(WHERE)
+                                    "cProductID = ? ",                        // 查詢條件式(WHERE)
                                     new String[]{obj.optString("ProductNo")},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
                                     null,                                              // Group By字串語法
                                     null,                                              // Having字串法
@@ -637,7 +653,10 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                             while (c.moveToNext()) {
                                 cProductName = c.getString(c.getColumnIndex("cProductShortName"));  //商品名稱顯示改變
                                 Log.e("cProductName", cProductName);
+                                cSort = c.getString(c.getColumnIndex("cSort"));  //商品名稱顯示改變
+                                Log.e("cSort", cSort);
                             }
+
                             //用自訂類別 把JSONArray的值取出來
 
                             map = new LinkedHashMap<String, String>();
@@ -645,6 +664,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                             map.put("ProductNo", String.valueOf(new ProductIDInfo(obj.getString("ProductNo"))));
                             map.put("cProductName", String.valueOf(new ProductNameInfo(cProductName)));
                             map.put("Qty", String.valueOf(new QtyInfo(obj.getString("Qty"))));
+                            map.put("Sort", String.valueOf(new SortInfo(cSort)));
                             map.put("check","0");
                             myList.add(map);
                             db.close();
@@ -660,8 +680,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                             ShipperOrderActivity.this,
                             myList,
                             lview4,
-                            new String[]{"cProductName", "ProductNo", "Qty", "NowQty", "checkbox"},
-                            new int[]{textView21, R.id.textView22, textView23, textView24, checkBox4});
+                            new String[]{"cProductName", "ProductNo", "Qty", "NowQty", "checkbox","Sort"},
+                            new int[]{textView21, R.id.textView22, textView23, textView24, checkBox4, textView49});
 
                     //listView2 = (ListView) findViewById(R.id.list2);
                     checkListArray();
@@ -771,6 +791,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
             Log.e("筆數2", String.valueOf(iCheck));
             if(iCheck ==0 ){
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                Bsound1();
                 editText.setText("");
                 logProductName="null";
                 logQty = "null";
@@ -798,6 +819,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                     }
                 } else {
                     Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                    Bsound1();
                     editText.setText("");
                     logProductName="null";
                     logQty = "null";
@@ -835,6 +857,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 }
             } else {
                 Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                Bsound1();
                 editText.setText("");
                 logProductName="null";
                 logQty = "null";
@@ -1070,6 +1093,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
             }
         } else {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            Bsound1();
+
             EditText editText = (EditText)findViewById(R.id.editText);
             editText.setText("");
             logProductName="null";
@@ -1849,6 +1874,10 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
     //檢完和沒檢完的排序
     private void checkListArray() {
         //先依照商品名稱排序
+
+
+
+        //先依照商品名稱排序
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
             @Override
             public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
@@ -1862,7 +1891,20 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
             }
 
         });
-        // 如果檢完貨 新添加的欄位(check)就等於商品名稱(方便下一次排序)
+        Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
+            @Override
+            public int compare(LinkedHashMap<String, String> o1, LinkedHashMap<String, String> o2) {
+
+                String value1 = (o1.get("Sort"));
+                String value2 = (o2.get("Sort"));
+
+                return value1.compareTo(value2);
+                //return value1.equals(value2);
+
+            }
+
+        });
+        // 如果檢完貨 新添加的欄位(check)就等於sort(方便下一次排序)
         for (int i = 0; i < myList.size(); i++) {
             if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
                 newMap = new LinkedHashMap<String, String>();
@@ -1870,7 +1912,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 newMap.put("ProductNo", myList.get(i).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i).get("cProductName"));
                 newMap.put("Qty", myList.get(i).get("Qty"));
-                newMap.put("check", myList.get(i).get("ProductNo"));
+                newMap.put("Sort",myList.get(i).get("Sort"));
+                newMap.put("check", myList.get(i).get("Sort"));
                 myList.set(i, newMap);
             } else {
                 newMap = new LinkedHashMap<String, String>();
@@ -1878,10 +1921,12 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 newMap.put("ProductNo", myList.get(i).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i).get("cProductName"));
                 newMap.put("Qty", myList.get(i).get("Qty"));
+                newMap.put("Sort",myList.get(i).get("Sort"));
                 newMap.put("check", "0");
                 myList.set(i, newMap); // 替換
             }
         }
+
         //排序check (及撿完貨的排序)
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
             @Override
@@ -1918,6 +1963,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
         }
         */
 
+
         // 排序完後 檢完貨的位置 假如檢完 勾勾留著
         for (int i = 0; i < myList.size(); i++) {
             if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
@@ -1941,7 +1987,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
 
 
     }
-    private void setCheckBox (){
+    private void setCheckBox(){
         final CheckBox checkBox = (CheckBox) findViewById(checkBox5);
 
         checkBox.setOnClickListener(new View.OnClickListener() {
@@ -1954,7 +2000,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                         newMap.put("ProductNo", myList.get(i).get("ProductNo"));
                         newMap.put("cProductName", myList.get(i).get("cProductName"));
                         newMap.put("Qty", myList.get(i).get("Qty"));
-                        newMap.put("check", myList.get(i).get("ProductNo"));
+                        newMap.put("Sort",myList.get(i).get("Sort"));
+                        newMap.put("check", myList.get(i).get("Sort"));
                         myList.set(i, newMap);
                         adapter.notifyDataSetChanged();
                         mCheckSet.add(i);
@@ -1976,6 +2023,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                         newMap.put("ProductNo", myList.get(i).get("ProductNo"));
                         newMap.put("cProductName", myList.get(i).get("cProductName"));
                         newMap.put("Qty", myList.get(i).get("Qty"));
+                        newMap.put("Sort",myList.get(i).get("Sort"));
                         newMap.put("check", "0");
                         myList.set(i, newMap);
                         adapter.notifyDataSetChanged();
@@ -1995,7 +2043,9 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                     logNowQty = "0";
                     logAdd = "0";
                 }
+                checkListArray();
                 extelnalPrivateCreateFoler();
+
             }
         });
     }
@@ -2103,9 +2153,13 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
         today2 = df2.format(mCal.getTime());
         logToday = today;
     }
-    //音效
+    //音效 短
     private void Bsound(){
         mSoundPool.play(mSoundID,1.0F,1.0F,0,0,0.0f);
+    }
+    //音效 長
+    private void Bsound1(){
+        mSoundPool.play(mSoundID,1.0F,1.0F,0,0,1.0f);
     }
 
 

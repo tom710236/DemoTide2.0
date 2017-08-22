@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class MyDBhelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 6;	//資料庫版本
+    private static final int DATABASE_VERSION = 7;	//資料庫版本
     public MyDBhelper(SystemActivity context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, DATABASE_VERSION);
     }
@@ -51,6 +51,7 @@ public class MyDBhelper extends SQLiteOpenHelper {
                         + "cProductName TEXT, "
                         + "cGoodsNo TEXT, "
                         + "cProductShortName TEXT, "
+                        + "cSort TEXT, "
                         + "cUpdateDT TEXT);");
         db.execSQL(create);
     }

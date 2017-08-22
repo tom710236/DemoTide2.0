@@ -70,20 +70,22 @@ public class SystemActivity extends AppCompatActivity {
         private String cGoodsNo;
         private String cUpdateDT;
         private String cProductShortName;
+        private String cSort;
 
         //建構子
-        ProductInfo(final String ProductID, final String ProductName, final String GoodsNo,final String UpdateDT,final  String ProductShortName) {
+        ProductInfo(final String ProductID, final String ProductName, final String GoodsNo,final String UpdateDT,final  String ProductShortName,final  String Sort) {
             this.cProductID = ProductID;
             this.cProductName = ProductName;
             this.cGoodsNo = GoodsNo;
             this.cUpdateDT = UpdateDT;
             this.cProductShortName = ProductShortName;
+            this.cSort = Sort;
 
         }
         //方法
         @Override
         public String toString() {
-            return this.cProductID +  this.cProductName  + this.cGoodsNo + this.cUpdateDT + this.cProductShortName;
+            return this.cProductID +  this.cProductName  + this.cGoodsNo + this.cUpdateDT + this.cProductShortName + this.cSort;
         }
     }
     public class BarcodesInfo {
@@ -178,7 +180,7 @@ public class SystemActivity extends AppCompatActivity {
 
                         for (int i = 0 ; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
-                            trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT"),obj.optString("cProductShortName")));
+                            trans.add(new ProductInfo(obj.optString("cProductID"), obj.optString("cProductName"),obj.optString("cGoodsNo"),obj.optString("cUpdateDT"),obj.optString("cProductShortName"),obj.optString("cSort")));
                             String ID = obj.optString("cProductID");
                             String name = obj.optString("cProductName");
                             String NO = obj.optString("cGoodsNo");
@@ -216,6 +218,7 @@ public class SystemActivity extends AppCompatActivity {
                                 addbase.put("cGoodsNo", trans.get(i).cGoodsNo);
                                 addbase.put("cUpdateDT", trans.get(i).cUpdateDT);
                                 addbase.put("cProductShortName", trans.get(i).cProductShortName);
+                                addbase.put("cSort", trans.get(i).cSort);
                                 db.insert(DB_NAME, null, addbase);
                                 //Log.e("放進資料庫完成", String.valueOf(i));
                                 //upDateNumI = i;

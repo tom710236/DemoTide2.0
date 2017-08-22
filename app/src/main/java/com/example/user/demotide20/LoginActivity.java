@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         EditText uPw = (EditText) findViewById(R.id.passWord);
         userName = uId.getText().toString();
         passWord = uPw.getText().toString();
-
+        Log.e("登入URL",url);
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
@@ -97,6 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                 .post(body)
                 .build();
         Call call = client.newCall(request);
+
         call.enqueue(new Callback() {
             //post 失敗後執行
             @Override
