@@ -54,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.WriteAbortedException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -905,10 +906,10 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 Log.e("I44", String.valueOf(i4));
                 //數量
                 if (iMatch == 0) {
-                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                    if (i2 + getint2 >= i4 || getint2 >= i4 || i2 >= i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
-                        vibrator ();
+                        vibrator();
                         EditText editText = (EditText) findViewById(R.id.editText);
                         if (editText.getText().length() >= 13) {
                             editText.setText("");
@@ -922,11 +923,10 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                         }
                             }
                 } else  {
-                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                    if (i2 + getint2 >= i4 || getint2 >= i4 || i2 >= i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
-
                         EditText editText = (EditText) findViewById(R.id.editText);
                         if (editText.getText().length() >= 13) {
                             editText.setText("");
@@ -950,6 +950,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
                 newMap.put("Qty", myList.get(i3).get("Qty"));
+                newMap.put("check",myList.get(i3).get("check"));
+                newMap.put("Sort",myList.get(i3).get("Sort"));
                 myList.set(i3, newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
@@ -985,7 +987,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 Log.e("I44", String.valueOf(i4));
                 //數量
                 if (getint2 != 1) {
-                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                    if (i2 + getint2 >= i4 || getint2 >= i4 || i2 >= i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
@@ -1002,7 +1004,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                         }
                     }
                 } else {
-                    if (i2 + getint2 > i4 || getint2 > i4 || i2 > i4) {
+                    if (i2 + getint2 >= i4 || getint2 >= i4 || i2 >= i4) {
                         i2 = i4;
                         Toast.makeText(ShipperOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
                         vibrator ();
@@ -1027,6 +1029,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
                 newMap.put("Qty", myList.get(i3).get("Qty"));
+                newMap.put("check",myList.get(i3).get("check"));
+                newMap.put("Sort",myList.get(i3).get("Sort"));
                 myList.set(i3, newMap);
                 //
                 logProductName = myList.get(i3).get("cProductName");
@@ -1110,7 +1114,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
     public void enter(View v) {
         iMatch=1;
         cBarcode();
-        checkListArray();
+        //checkListArray();
         adapter.notifyDataSetChanged();
 
     }
@@ -1873,9 +1877,6 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
     }
     //檢完和沒檢完的排序
     private void checkListArray() {
-        //先依照商品名稱排序
-
-
 
         //先依照商品名稱排序
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
@@ -1886,7 +1887,6 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 String value2 = (o2.get("ProductNo"));
 
                 return value1.compareTo(value2);
-                //return value1.equals(value2);
 
             }
 
@@ -1899,11 +1899,11 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 String value2 = (o2.get("Sort"));
 
                 return value1.compareTo(value2);
-                //return value1.equals(value2);
 
             }
 
         });
+
         // 如果檢完貨 新添加的欄位(check)就等於sort(方便下一次排序)
         for (int i = 0; i < myList.size(); i++) {
             if (Integer.parseInt((myList.get(i).get("NowQty"))) == Integer.parseInt(myList.get(i).get("Qty"))) {
@@ -1927,6 +1927,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
             }
         }
 
+
         //排序check (及撿完貨的排序)
         Collections.sort(myList, new Comparator<LinkedHashMap<String, String>>() {
             @Override
@@ -1936,7 +1937,6 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 String value2 = (o2.get("check"));
 
                 return value1.compareTo(value2);
-                //return value1.equals(value2);
 
             }
 
