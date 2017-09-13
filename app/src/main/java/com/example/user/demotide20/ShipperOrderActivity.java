@@ -12,7 +12,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.media.ToneGenerator;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -54,7 +53,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.WriteAbortedException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -594,6 +592,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                     = MediaType.parse("application/json; charset=utf-8");
             String json = "{\"Token\":\"\" ,\"Action\":\"dopickups\",\"UserID\":\"" + cUserID + "\",\"PickupNumbers\":\"" + checked + "\"}";
             Log.e("POST的JSON", json);
+            Log.e("POST的URL",url);
             RequestBody body = RequestBody.create(JSON, json);
             Request request = new Request.Builder()
                     .url(url)
@@ -1405,7 +1404,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
         String json = "{\"Token\":\"\" ,\"Action\":\"finish\",\"PickupNumbers\" :\"" + checked + "\",\"PickupProducts\":" + upStringList + ",\"imgbase64\": " + Allbase64 + "}";
-        Log.e("POST", json);
+        Log.e("結案POST", json);
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
@@ -1433,6 +1432,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 String json = response.body().string();
                 myDialog.dismiss();
                 Log.e("結案後POST的回傳值", json);
+                Log.e("結案URL",url);
+
                 changeEnd(json);
                 handler.sendEmptyMessage(0);
             }
@@ -1454,7 +1455,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
         String json = "{\"Token\":\"\" ,\"Action\":\"save\",\"PickupNumbers\" :\"" + checked + "\",\"PickupProducts\":" + upStringList + "}";
-        Log.e("POST", json);
+        Log.e("換人檢POST", json);
         RequestBody body = RequestBody.create(JSON, json);
         final Request request = new Request.Builder()
                 .url(url)
@@ -1481,7 +1482,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
                 //取得回傳資料json 還是JSON檔
                 myDialog.dismiss();
                 String json = response.body().string();
-                Log.e("POST後的回傳值", json);
+                Log.e("換人檢POST的回傳值", json);
+                Log.e("換人檢URL",url);
                 changeEnd(json);
             }
 

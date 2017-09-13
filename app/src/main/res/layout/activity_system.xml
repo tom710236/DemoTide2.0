@@ -144,7 +144,8 @@
             android:layout_height="wrap_content"
             android:onClick="out"
             android:text="登出"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="visible" />
 
         <ListView
             android:id="@+id/listView"

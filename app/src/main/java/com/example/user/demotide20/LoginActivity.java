@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
+        //顯示版本
         TextView textView = (TextView)findViewById(R.id.textView14);
         textView.setText(upDate);
         //帳號若輸入正確 記住登入帳號
@@ -51,10 +51,6 @@ public class LoginActivity extends AppCompatActivity {
                 getSharedPreferences("Login", MODE_PRIVATE);
         EditText uId = (EditText) findViewById(R.id.userName);
         uId.setText(setting.getString("userName", ""));
-
-
-
-
 
     }
 
