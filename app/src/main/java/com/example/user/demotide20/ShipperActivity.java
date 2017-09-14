@@ -443,7 +443,7 @@ public class ShipperActivity extends AppCompatActivity {
             }
 
             //upList.add(mCheckSet);
-            Log.e("upList.size()", String.valueOf(upList.size()));
+            //Log.e("upList.size()", String.valueOf(upList.size()));
             if (upList.size() > 0) {
 
                 for (int i = 0; i < upList.size(); i++) {
@@ -641,5 +641,13 @@ public class ShipperActivity extends AppCompatActivity {
         return false;
     }
 
-
+    public void onUpdata (View v ){
+        Intent intent = new Intent(this,ShipperActivity.class);
+        Bundle bag = new Bundle();
+        bag.putString("cUserName",cUserName);
+        bag.putString("cUserID",cUserID);
+        intent.putExtras(bag);
+        startActivity(intent);
+        ShipperActivity.this.finish();
+    }
 }

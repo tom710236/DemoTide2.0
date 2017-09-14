@@ -130,6 +130,8 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
 
     //String fileName = "my_file2.txt";// LOG的文件檔名
     //String data = "時間:"+logToday+",條碼:"+logBarcode+",商品名稱:"+logProductID+",訂單數量:"+logQty+",檢貨數量:"+logNowQty+",增加數量:"+logAdd+"\r\n"; //文件檔名裡面的內容
+
+    //建構子
     public class ProductIDInfo {
         private String mProductID;
 
@@ -240,7 +242,7 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
             //不可寫不可讀
             Log.e("外部空間狀態","不可寫不可讀");
         }
-        //音效設定
+        //音效宣告
         mSoundPool = new SoundPool(1,AudioManager.STREAM_MUSIC,0);
         mSoundPool.setOnLoadCompleteListener(ShipperOrderActivity.this);
         mSoundID = mSoundPool.load (this, R.raw.windows_8_notify,1);
@@ -258,8 +260,6 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
         setEditText();
         setEditText2();
         setCheckBox();
-
-
 
     }
 
@@ -281,7 +281,6 @@ public class ShipperOrderActivity extends AppCompatActivity implements SoundPool
             }
         });
             */
-
 
     }
 
