@@ -287,10 +287,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2.4"
                 android:ems="10"
-                android:inputType="text|textCapCharacters|textCapSentences"
 
+                android:imeOptions="actionDone"
+                android:inputType="none|textCapCharacters"
                 android:selectAllOnFocus="false"
-                android:singleLine="false"
+                android:singleLine="true"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 

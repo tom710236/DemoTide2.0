@@ -45,7 +45,7 @@ public class SystemActivity extends AppCompatActivity {
     String cUserName,today,tblTable4,cUserID;
     //商品同步API
     //String url = "http://demo.shinda.com.tw/ModernWebApi/getProduct.aspx";
-    //String url = "192.168.0.2:8011/getProduct.aspx";
+    //String url = "http://192.168.0.2:8011/ModernWebApi/getProduct.aspx";
     String url = Application.TideUrl+"getProduct.aspx";
     //建立一個類別存JSON
     //資料庫名稱
@@ -243,7 +243,7 @@ public class SystemActivity extends AppCompatActivity {
                             JSONObject obj = array1.getJSONObject(i);
                             trans2.add(new BarcodesInfo(obj.optString("cProductID"), obj.optString("cBarcode")));
                             String BID = obj.optString("cProductID");
-                            //Log.e("BID",BID);
+                            Log.e("BID",BID);
                             String Bcode = obj.optString("cBarcode");
                             //Log.e("Bcode",Bcode);
                             //建立SQL
@@ -457,7 +457,7 @@ public class SystemActivity extends AppCompatActivity {
     }
     //商品條碼SQL
     private void setBarcodeSQL(){
-        helper4 = new MyDBhelper4(this, "tblTable4" , null, 1);
+        helper4 = new MyDBhelper4(this, "tblTable4" , null, 2);
         //實做 db(繼承SQLiteDatabase)類別 getWritableDatabase用來更新 新增修改刪除
         db4 = helper4.getWritableDatabase();
     }
@@ -501,8 +501,10 @@ public class SystemActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
-        cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID",null);
+        //cUserName = bag.getString("cUserName", null);
+        //cUserID = bag.getString("cUserID",null);
+        cUserName = Application.UserName;
+        cUserID = Application.UserID;
         TextView textView = (TextView) findViewById(R.id.textView3);
         textView.setText(cUserName + "您好");
     }
@@ -575,12 +577,9 @@ public class SystemActivity extends AppCompatActivity {
             super.handleMessage(msg);
             d.dismiss();
             hideSystemNavigationBar();
-
-
         }
     };
     private void setWait() {
-
 
         d = new ProgressDialog(SystemActivity.this);
         d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

@@ -37,8 +37,6 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         cursor3();
         //用來顯示產品資訊撈取
         dateUp2="產品資訊撈取"+"("+i2+"筆資訊"+")"+"\n"+dateUp+"("+i+"次更新"+")";
-        //取得上一頁的資訊
-        getPreviousPage();
         //toolBar設定
         toolBar();
         //啟動Delay service 每次到這畫面就會啟動一次 所以先停止再啟動
@@ -69,7 +67,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
         //往下一個 收尋
         while(c.moveToNext()) {
             dateUp = c.getString(c.getColumnIndex("cUpdateDT"));
-            Log.e("email",dateUp);
+
         }
         i=c.getCount();
         //最後更新時間
@@ -112,6 +110,10 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
 
     }
     private void toolBar() {
+
+        TextView textView = (TextView) findViewById(R.id.textView3);
+        textView.setText(Application.UserName + "您好");
+
         //Toolbar 設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -128,22 +130,14 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
             }
         });
     }
-    //取得上一頁傳來的資訊
-    private void getPreviousPage() {
-        Intent intent = getIntent();
-        Bundle bag = intent.getExtras();
-        cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID",null);
-        TextView textView = (TextView) findViewById(R.id.textView3);
-        textView.setText(cUserName + "您好");
-    }
+
     //自定的ListView的點擊方法
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case 0:
                 //點擊後到另一頁 並把cUserName帶到另一頁
-                Intent intent = new Intent(AllListActivity.this,ShipperActivity.class);
+                Intent intent = new Intent(AllListActivity.this,ShipperCheck.class);
                 Bundle bag = new Bundle();
                 bag.putString("cUserName",cUserName);
                 bag.putString("cUserID",cUserID);
@@ -210,7 +204,7 @@ public class AllListActivity extends AppCompatActivity implements AdapterView.On
 
         //int陣列方式將功能儲存在icons陣列
         int[] icons = {R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp
-                , R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp};
+                , R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp, R.drawable.ic_keyboard_arrow_right_black_24dp,0};
 
         @Override
         public int getCount() {

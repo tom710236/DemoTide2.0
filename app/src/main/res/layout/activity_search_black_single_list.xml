@@ -79,7 +79,8 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="單號:"
-                android:textSize="18sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView41"
@@ -87,8 +88,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:text="TextView"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -104,7 +104,8 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="入庫分類:"
-                android:textSize="18sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView46"
@@ -112,8 +113,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:text="TextView"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -129,7 +129,8 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="庫別:"
-                android:textSize="18sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView43"
@@ -137,8 +138,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:text="TextView"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -154,7 +154,8 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="檢貨人員:"
-                android:textSize="18sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView44"
@@ -162,8 +163,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:text="TextView"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -179,7 +179,8 @@
                 android:layout_weight="1"
                 android:gravity="center_vertical"
                 android:text="結案日期:"
-                android:textSize="18sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView45"
@@ -187,7 +188,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:gravity="center_vertical"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -208,6 +209,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="商品名稱"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -216,6 +218,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="商品編號"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -224,6 +227,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:text="訂單數量"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -245,5 +249,14 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_weight="3" />
+
+    <Button
+        android:id="@+id/button21"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onChange"
+        android:text="編輯"
+        android:textSize="18sp"
+        android:visibility="visible" />
 
 </LinearLayout>

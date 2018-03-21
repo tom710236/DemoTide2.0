@@ -24,7 +24,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -39,14 +38,14 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
     //String url = "http://demo.shinda.com.tw/ModernWebApi/Blank.aspx";
     //String url = "192.168.0.2:8011/Blank.aspx";
     String url = Application.TideUrl+"Blank.aspx";
-    Map<String, String> map;
-    ArrayList<Map<String, String>> myList;
+    LinkedHashMap<String, String> map;
+    ArrayList<LinkedHashMap<String, String>> myList;
     MyDBhelper helper;
     MyDBhelper4 helper4;
     SQLiteDatabase db, db4;
     final String DB_NAME = "tblTable";
     SpecialAdapter adapter;
-    Object BlankNo, BlankTypeName, WHTypeName, UserName, FinishDate;
+    Object BlankNo, BlankTypeName, WHTypeName, UserName, FinishDate,BlackType,WHType;
     int indexSpinner;
     ProgressDialog myDialog;
     @Override
@@ -66,8 +65,10 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
-        cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID", null);
+        //cUserName = bag.getString("cUserName", null);
+        //cUserID = bag.getString("cUserID", null);
+        cUserName = Application.UserName;
+        cUserID = Application.UserID;
         mBlackNo = bag.getString("mBlackNo", null);
         indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("mBlackNo", mBlackNo);
@@ -155,7 +156,7 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
         //解析JSON的方法 並把取出的資料放進arrayList
         private void paraJson(String json) {
 
-            myList = new ArrayList<Map<String, String>>();
+            myList = new ArrayList<>();
             try {
                 JSONObject j = new JSONObject(json);
                 BlankNo = j.getJSONArray("BlankList").getJSONObject(0).get("BlankNo");
@@ -163,6 +164,8 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
                 WHTypeName = j.getJSONArray("BlankList").getJSONObject(0).get("WHTypeName");
                 UserName = j.getJSONArray("BlankList").getJSONObject(0).get("UserName");
                 FinishDate = j.getJSONArray("BlankList").getJSONObject(0).get("FinishDate");
+                BlackType = j.getJSONArray("BlankList").getJSONObject(0).get("BlankType");
+                WHType = j.getJSONArray("BlankList").getJSONObject(0).get("WHType");
                 Log.e("BlankTypeName", String.valueOf(BlankTypeName));
                 runOnUiThread(new Runnable() {
                     @Override
@@ -200,7 +203,7 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
                     }
                     map = new LinkedHashMap<String, String>();
                     map.put("cProductName", cProductName);
-                    map.put("ProductID", j2.optString("ProductNo"));
+                    map.put("ProductNo", j2.optString("ProductNo"));
                     map.put("Qty", j2.optString("Qty"));
                     map.put("NOWQty","");
                     myList.add(map);
@@ -229,7 +232,7 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
                 SearchBlackSingleListActivity.this,
                 myList,
                 R.layout.lview9,
-                new String[]{"cProductName", "ProductID", "Qty","NOWQty"},
+                new String[]{"cProductName", "ProductNo", "Qty","NOWQty"},
                 new int[]{R.id.textView21, R.id.textView22, R.id.textView23,R.id.textView24});
         runOnUiThread(new Runnable() {
             @Override
@@ -241,7 +244,7 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
     public class SpecialAdapter extends SimpleAdapter {
         private int[] colors = new int[] { 0x30ffffff, 0x30696969 };
 
-        public SpecialAdapter(Context context, ArrayList<Map<String, String>> items, int resource, String[] from, int[] to) {
+        public SpecialAdapter(Context context, ArrayList<LinkedHashMap<String, String>> items, int resource, String[] from, int[] to) {
             super(context, items, resource, from, to);
         }
 
@@ -306,5 +309,17 @@ public class SearchBlackSingleListActivity extends AppCompatActivity {
         myDialog.setMessage("載入資訊中，請稍後！");
         myDialog.setCancelable(false);
         myDialog.show();
+    }
+
+    public void onChange (View v){
+        Log.e("mBlackNo",mBlackNo);
+        Log.e("mBlackNo", String.valueOf(myList));
+        Intent intent = new Intent(this,BlackSingleActivity.class);
+        Application.checkChange = true;
+        Application.cBlankNo = mBlackNo;
+        Application.cMyList = myList;
+        Application.cBlankType = String.valueOf(BlackType);
+        Application.cWHType = String.valueOf(WHType);
+        startActivity(intent);
     }
 }

@@ -56,7 +56,6 @@ public class PurchaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchase);
         toolBar();
-        getPreviousPage();
         Post post = new Post();
         post.start();
         setDialog();
@@ -64,6 +63,10 @@ public class PurchaseActivity extends AppCompatActivity {
 
     //設定toolBar
     private void toolBar() {
+        Log.e("NAME2", Application.UserName);
+        TextView textView = (TextView) findViewById(R.id.textView3);
+        textView.setText(Application.UserName + "您好");
+
         //Toolbar 設定
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
@@ -74,32 +77,13 @@ public class PurchaseActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //因為cUserName從上一頁傳過來了 所以要回到上一頁 要把cUserName再傳回去
                 Intent intent = new Intent(PurchaseActivity.this, AllListActivity.class);
-                Bundle bag = new Bundle();
-                bag.putString("cUserName", cUserName);
-                bag.putString("cUserID", cUserID);
-                bag.putInt("indexSpinner",indexSpinner);
-                intent.putExtras(bag);
                 startActivity(intent);
                 PurchaseActivity.this.finish();
             }
         });
     }
 
-    //取得上一頁傳過來的資料
-    private void getPreviousPage() {
-        //上一頁傳過來的資料取得
-        Intent intent = getIntent();
-        //取得Bundle物件後 再一一取得資料
-        Bundle bag = intent.getExtras();
-        cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID", null);
-        indexSpinner = bag.getInt("indexSpinner",0);
-        Log.e("cUserID", cUserID);
-        TextView textView = (TextView) findViewById(R.id.textView3);
-        textView.setText(cUserName + "您好");
-    }
 
     class Post extends Thread {
         @Override
@@ -113,7 +97,7 @@ public class PurchaseActivity extends AppCompatActivity {
             OkHttpClient client = new OkHttpClient();
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
-            String json = "{\"Token\":\"\" ,\"Action\":\"purchases\",\"UserID\" :\""+cUserID+"\"}";
+            String json = "{\"Token\":\"\" ,\"Action\":\"purchases\",\"UserID\" :\""+Application.UserID+"\"}";
             Log.e("JSON", json);
             RequestBody body = RequestBody.create(JSON, json);
             Request request = new Request.Builder()
@@ -208,9 +192,7 @@ public class PurchaseActivity extends AppCompatActivity {
                                 //所點擊的索引值
                                 index = spinner.getSelectedItemPosition();
                                 //所點擊的內容文字
-
                                 order = spinner.getSelectedItem().toString();
-
                                 Log.e("index", String.valueOf(index));
                                 Log.e("name", String.valueOf(order));
 

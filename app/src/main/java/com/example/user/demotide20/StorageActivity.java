@@ -100,8 +100,10 @@ public class StorageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
-        cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID", null);
+        //cUserName = bag.getString("cUserName", null);
+        //cUserID = bag.getString("cUserID", null);
+        cUserName = Application.UserName;
+        cUserID = Application.UserID;
         indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("cUserID", cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);

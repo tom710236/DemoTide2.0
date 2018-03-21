@@ -10,12 +10,15 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -26,6 +29,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -47,7 +52,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -61,7 +65,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 
-public class PurchaseOrderActivity extends AppCompatActivity {
+public class PurchaseOrderActivity extends AppCompatActivity implements SoundPool.OnLoadCompleteListener{
     String cUserName, cUserID, json, cProductName, cProductIDeSQL, order, upStringList, activity2, order2;
     SQLiteDatabase db, db4;
     //String url = "http://demo.shinda.com.tw/ModernWebApi/Purchase.aspx";
@@ -77,7 +81,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     LinearLayout linear;
     final String DB_NAME = "tblTable";
     final String[] newStringArray = new String[1];
-    Map<String, String> newMap;
+    LinkedHashMap<String, String> newMap;
     ArrayList Btrans, AllImgUri, Allbase64;
     int getint;
     String[] stringArray;
@@ -85,13 +89,29 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     String Abase64, Bbase64, Cbase64, Dbase64, Ebase64;
     final String[] activity = {"換人檢", "結案"};
     ProgressDialog pd;
-    int iCheck, iMatch = 0;
+    int iCheck; //iMatch = 0;
     Uri imgUri;    //用來參照拍照存檔的 Uri 物件
     Bitmap bmp;
     int PicInt = 0,PicADD = 0;
     ProgressDialog myDialog;
     int checkInt = 0 ;
+    int addInt  = 1 ;
+
+    boolean checkAdd ; //判斷是加一還是輸入數字
+    boolean picInt ;   //判斷是否開啟工具模式
+    boolean picAdd ;   //判斷是否開啟快速模式
+    boolean iMatch ;   //判斷是否為第一次掃描或確定 (ex:每次掃描或確定都+1,然後快速模式+5 : 1+4 = 5 之後 每次都+5)
+
+    int mSoundID ;
+    SoundPool mSoundPool;
     private HashSet<Integer> mCheckSet = new HashSet<Integer>();
+
+    @Override
+    public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+
+    }
+
+
     public class ProductIDInfo {
         private String mProductID;
 
@@ -147,9 +167,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_purchase_order);
 
-
-        EditText editText = (EditText) findViewById(R.id.editText);
-        //editText.requestFocus();
+        enterExitText();
+        setKeyboard();
         toolBar();
         getPreviousPage();
 
@@ -160,6 +179,11 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         setEditText2();
         setSwitch();
         setCheckBox();
+
+        //音效宣告
+        mSoundPool = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+        mSoundPool.setOnLoadCompleteListener(PurchaseOrderActivity.this);
+        mSoundID = mSoundPool.load (this, R.raw.windows_8_notify,1);
     }
 
     //設定toolBar
@@ -168,6 +192,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
+        /*
         //回到上一頁的圖示
         toolbar.setNavigationIcon(R.drawable.ic_chevron_left_black_24dp);
         //回到上一頁按鍵設定
@@ -178,6 +203,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 back();
             }
         });
+        */
     }
 
     private void back() {
@@ -224,7 +250,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             OkHttpClient client = new OkHttpClient();
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
-            String json3 = "{\"Token\":\"\" ,\"Action\":\"dopurchase\",\"UserID\" :\"" + cUserID + "\" ,\"PurchaseID\" : \"" + order2 + "\"}";
+            String json3 = "{\"Token\":\"\" ,\"Action\":\"dopurchase\",\"UserID\" :\"" + Application.UserID + "\" ,\"PurchaseID\" : \"" + order2 + "\"}";
             Log.e("JSON", json3);
             RequestBody body = RequestBody.create(JSON, json3);
             Request request = new Request.Builder()
@@ -274,7 +300,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             for (iMax = 0; iMax < array.length(); iMax++) {
                 JSONObject obj = array.getJSONObject(iMax);
                 //開啟資料庫 用ProductNo比對SQL的cProductID
-                setThingSQL();
+                helper = new MyDBhelper(PurchaseOrderActivity.this, DB_NAME, null, 7);
+                db = helper.getWritableDatabase();
                 Cursor c = db.query("tblTable",                            // 資料表名字
                         null,                                              // 要取出的欄位資料
                         "cProductID=?",                                    // 查詢條件式(WHERE)
@@ -331,14 +358,29 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
 
     //商品清單SQL
-    private void setThingSQL() {
-        helper = new MyDBhelper(this, DB_NAME, null, 1);
+    private int setThingSQL(String barcode) {
+        helper = new MyDBhelper(this, DB_NAME, null, 7);
         db = helper.getWritableDatabase();
+
+        Cursor c2 = db.query("tblTable",                           // 資料表名字
+                null,                                              // 要取出的欄位資料
+                "cProductID=?",                                    // 查詢條件式(WHERE)
+                new String[]{barcode},                             // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                null,                                              // Group By字串語法
+                null,                                              // Having字串法
+                null);                                             // Order By字串語法(排序)
+
+        while (c2.moveToNext()) {
+            cProductIDeSQL = c2.getString(c2.getColumnIndex("cProductID"));
+            Log.e("條碼2", cProductIDeSQL);
+            Btrans.add(cProductIDeSQL);
+        }
+        return c2.getCount();
     }
 
     //商品條碼SQL
     private void setBarcodeSQL() {
-        helper4 = new MyDBhelper4(this, "tblTable4", null, 1);
+        helper4 = new MyDBhelper4(this, "tblTable4", null, 2);
         db4 = helper4.getWritableDatabase();
     }
 
@@ -466,6 +508,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     //設定 Switch功能
     private void setSwitch() {
         //switch 設定
+        final LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
         Switch sw = (Switch) findViewById(R.id.switch2);
         sw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             //switch 點擊
@@ -473,197 +516,72 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //點擊後 lineat就會顯示並且addNum=1
                 if (isChecked) {
-                    linear = (LinearLayout) findViewById(R.id.linear);
                     //顯示
                     linear.setVisibility(View.VISIBLE);
-                    addNum = 1;
-                    iMatch = 0;
-                    PicADD = 1;
+                    picAdd = true;
                 }
                 //沒有點擊 addNum=0
                 else {
                     //關閉
                     linear.setVisibility(View.GONE);
-                    addNum = 0;
-                    PicADD = 0;
+                    picAdd = false;
                 }
 
             }
         });
-
     }
 
     //打開Switch的按鍵
-    public void add1(View v) {
-        addNum = 1;
-        if (iCheck == 1) {
-            setNOWQty(addNum);
-        } else if (iCheck > 1) {
-            setNOWQty2(addNum);
+    public void add1 (View v){
+        int addInt = 1 ;
+        if (cProductIDeSQL == null && cProductIDeSQL.equals("")){
+            Log.e("addInt",cProductIDeSQL);
+        }else {
+            setNowQty(addInt,cProductIDeSQL,true);
+            Log.e("addInt", String.valueOf(addInt));
         }
-        iMatch = 0;
+        iMatch = true;
     }
+    public void add5 (View v){
 
-    public void add5(View v) {
-        addNum = 5;
-        if (iMatch == 1) {
-            addNum = 4;
-            if (iCheck == 1) {
-                setNOWQty(addNum);
-            } else if (iCheck > 1) {
-                setNOWQty2(addNum);
-            }
-        } else {
-            if (iCheck == 1) {
-                setNOWQty(addNum);
-            } else if (iCheck > 1) {
-                setNOWQty2(addNum);
-            }
+        if(iMatch == true){
+            addInt = 5 ;
+        }else {
+            addInt = 4 ;
+            iMatch = true;
         }
-        iMatch = 0;
+
+        if (cProductIDeSQL == null && cProductIDeSQL.equals("")){
+            Log.e("addInt",cProductIDeSQL);
+        }else {
+            setNowQty(addInt,cProductIDeSQL,true);
+            Log.e("addInt", String.valueOf(addInt));
+        }
     }
+    public void add10 (View v){
 
-    public void add10(View v) {
-        addNum = 10;
-        if (iMatch == 1) {
-            addNum = 9;
-            if (iCheck == 1) {
-                setNOWQty(addNum);
-            } else if (iCheck > 1) {
-                setNOWQty2(addNum);
-            }
-        } else {
-            if (iCheck == 1) {
-                setNOWQty(addNum);
-            } else if (iCheck > 1) {
-                setNOWQty2(addNum);
-            }
+        if(iMatch == true){
+            addInt = 10 ;
+        }else {
+            addInt = 9 ;
+            iMatch = true;
         }
-        iMatch = 0;
+        if (cProductIDeSQL == null && cProductIDeSQL.equals("")){
+            Log.e("addInt",cProductIDeSQL);
+        }else {
+            setNowQty(addInt,cProductIDeSQL,true);
+            Log.e("addInt", String.valueOf(addInt));
+        }
     }
-
-    public void addAll(View v) {
-        addNum = 9999;
-        if (iMatch == 1) {
-            addNum = 9998;
-            if (iCheck == 1) {
-                setNOWQty(addNum);
-            } else if (iCheck > 1) {
-                setNOWQty2(addNum);
-            }
-        } else {
-            if (iCheck == 1) {
-                setNOWQty(addNum);
-            } else if (iCheck > 1) {
-                setNOWQty2(addNum);
-            }
+    public void addAll (View v){
+        int addInt = 999999 ;
+        if (cProductIDeSQL == null && cProductIDeSQL.equals("")){
+            Log.e("addInt",cProductIDeSQL);
+        }else {
+            setNowQty(addInt,cProductIDeSQL,true);
+            Log.e("addInt", String.valueOf(addInt));
         }
-        iMatch = 0;
-    }
-
-    private void cBarcode() {
-        iMatch = 1;
-        Btrans = new ArrayList();
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String barcode = editText.getText().toString();
-        Log.e("barcode", barcode);
-        setBarcodeSQL();
-        Cursor c = db4.query("tblTable4",                            // 資料表名字
-                null,                                              // 要取出的欄位資料
-                "cBarcode = ? OR cProductID = ?",                                    // 查詢條件式(WHERE)
-                new String[]{barcode, barcode},                            // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
-                null,                                              // Group By字串語法
-                null,                                              // Having字串法
-                null);                                             // Order By字串語法(排序)
-
-        while (c.moveToNext()) {
-            cProductIDeSQL = c.getString(c.getColumnIndex("cProductID"));
-            Log.e("cBarcode", cProductIDeSQL);
-            Btrans.add(cProductIDeSQL);
-
-        }
-        iCheck = c.getCount();
-        Log.e("筆數", String.valueOf(iCheck));
-        //條碼找不到商品編號
-        if (iCheck == 0) {
-            setThingSQL();
-            Cursor c2 = db.query("tblTable",                            // 資料表名字
-                    null,                                              // 要取出的欄位資料
-                    "cProductID=?",                                    // 查詢條件式(WHERE)
-                    new String[]{barcode},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
-                    null,                                              // Group By字串語法
-                    null,                                              // Having字串法
-                    null);                                             // Order By字串語法(排序)
-
-            while (c2.moveToNext()) {
-                cProductIDeSQL = c2.getString(c2.getColumnIndex("cProductID"));
-                Log.e("cBarcode2", cProductIDeSQL);
-                Btrans.add(cProductIDeSQL);
-            }
-            iCheck = c2.getCount();
-            Log.e("筆數2", String.valueOf(iCheck));
-            if(iCheck ==0 ){
-                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
-                editText.setText("");
-            }else if (iCheck == 1) {
-                //先判斷條碼內的商品號碼是否有在listView裡
-                if (checkID() == true) {
-                    //Switch 關閉時
-                    if (addNum == 0) {
-                        //跳出輸入數字對話框
-                        setAlertDialog();
-                        Log.e("setAlertDialog","1");
-                    } else if (addNum == 1) {
-                        setNOWQty(1);
-                    } else if (addNum == 5) {
-                        setNOWQty(1);
-                    } else if (addNum == 10) {
-                        setNOWQty(1);
-                    } else if (addNum == 999999) {
-                        setNOWQty(1);
-                    }else {
-                        setNOWQty(1);
-                    }
-                } else {
-                    Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
-                    editText.setText("");
-                }
-                //條碼找到一筆以上商品編號
-            } else if (iCheck > 1) {
-                stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
-                chooseThings();
-                editText.setText("");
-            }
-
-
-            //條碼找到一筆商品編號
-        } else if (iCheck == 1) {
-            //先判斷條碼內的商品號碼是否有在listView裡
-            if (checkID() == true) {
-                //Switch 關閉時
-                if (addNum == 0) {
-                    //跳出輸入數字對話框
-                    setAlertDialog();
-                } else if (addNum == 1) {
-                    setNOWQty(1);
-                } else if (addNum == 5) {
-                    setNOWQty(1);
-                } else if (addNum == 10) {
-                    setNOWQty(1);
-                } else if (addNum == 999999) {
-                    setNOWQty(1);
-                } else {
-                    setNOWQty(1);
-                }
-            } else {
-                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
-                editText.setText("");
-            }
-            //條碼找到一筆以上商品編號
-        } else if (iCheck > 1) {
-            stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
-            chooseThings();
-        }
+        iMatch = true;
     }
 
     //判斷條碼內的商品是否有在list裡 有就回傳true
@@ -723,12 +641,12 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
 
                 Log.e("I2", String.valueOf(i2));
-                newMap = new HashMap<String, String>();
+                newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", String.valueOf(i2));
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
                 newMap.put("Qty", myList.get(i3).get("Qty"));
-                myList.set(i3, (LinkedHashMap<String, String>) newMap);
+                myList.set(i3, newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 checkListArray();
@@ -738,6 +656,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 editText.setText("");
             }
         }
+        Bsound();
     }
 
     //增加數量的方法(兩個以上商品編號)
@@ -775,12 +694,12 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
 
                 Log.e("I2", String.valueOf(i2));
-                newMap = new HashMap<String, String>();
+                newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", String.valueOf(i2));
                 newMap.put("ProductNo", myList.get(i3).get("ProductNo"));
                 newMap.put("cProductName", myList.get(i3).get("cProductName"));
                 newMap.put("Qty", myList.get(i3).get("Qty"));
-                myList.set(i3, (LinkedHashMap<String, String>) newMap);
+                myList.set(i3, newMap);
                 //myList.remove(i).get("NowQty");
                 //Log.e("myList",myList.remove(i).get("NowQty"));
                 checkListArray();
@@ -792,6 +711,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 }
             }
         }
+        Bsound();
     }
 
     //增加數量(兩個以上商品編號)
@@ -838,39 +758,21 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             }
         } else {
             Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+            Bsound1();
             EditText editText = (EditText) findViewById(R.id.editText);
             editText.setText("");
-
+            Bsound1();
         }
-
-    }
-
-    //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
-    private void chooseThings() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("請選擇商品編號");
-        builder.setItems(stringArray, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Log.e("點擊", stringArray[i]);
-                newStringArray[0] = stringArray[i];
-                Log.e("點擊2", newStringArray[0]);
-                Log.e("PRODUCTNO", map.get("ProductNo"));
-                addNOWQty();
-            }
-        });
-
-        builder.setCancelable(true);
-        AlertDialog dialog = builder.create();
-        dialog.show();
 
     }
 
     //按確定後 所執行
     public void enter(View v) {
-        iMatch = 1;
-        cBarcode();
+        final EditText editText = (EditText) findViewById(R.id.editText);
+        Application.barcoode = editText.getText().toString();
+        cBarcode(editText.getText().toString());
+        editText.requestFocus();
+        editText.setText("");
 
     }
 
@@ -1245,21 +1147,21 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
 
     //設定EditText 自動輸入
-    private void setEditText() {
+    private void setEditText(){
         final EditText editText = (EditText) findViewById(R.id.editText);
-
         editText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (editText.getText().length() >= 13) {
-                    cBarcode();
+                if(editText.getText().length()>=13){
+                    Application.barcoode = editText.getText().toString();
+                    cBarcode(editText.getText().toString());
+                    editText.requestFocus();
+                    editText.setText("");
                 }
 
                 return false;
             }
         });
-
-
     }
 
     private void setEditText2() {
@@ -1355,17 +1257,16 @@ public class PurchaseOrderActivity extends AppCompatActivity {
     }
 
     //設定輸入數量框
-    private void setAlertDialog() {
-
+    private void setAlertDialog(final String cID){
         final View item = LayoutInflater.from(PurchaseOrderActivity.this).inflate(R.layout.item, null);
         new AlertDialog.Builder(PurchaseOrderActivity.this)
                 .setTitle("請輸入數量")
                 .setView(item)
-                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                .setNegativeButton("取消", new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //editText歸零
-                        EditText editText = (EditText) findViewById(R.id.editText);
+                        EditText editText = (EditText)findViewById(R.id.editText);
                         editText.setText("");
                     }
                 })
@@ -1373,44 +1274,13 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         EditText editText = (EditText) item.findViewById(R.id.editText2);
-                        //如果有輸入數字 執行setNOWQty
                         if (editText.length() != 0) {
-                            getint = Integer.parseInt(editText.getText().toString());
-                            //判斷有無商品代碼 並帶入數字
-                            setNOWQty(getint);
-                            //editText歸零
-                            EditText editText1 = (EditText) findViewById(R.id.editText);
-                            editText1.setText("");
-
-                            hideSystemNavigationBar();
-                            View decorView = getWindow().getDecorView();
-                            decorView.setOnSystemUiVisibilityChangeListener
-                                    (new View.OnSystemUiVisibilityChangeListener() {
-                                        @Override
-                                        public void onSystemUiVisibilityChange(int visibility) {
-
-                                            if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-                                                hideSystemNavigationBar();
-                                            } else {
-                                                // TODO: The system bars are NOT visible. Make any desired
-                                                // adjustments to your UI, such as hiding the action bar or
-                                                // other navigational controls.
-                                                hideSystemNavigationBar();
-                                            }
-                                        }
-                                    });
-
-                        } else {
-                            EditText editText1 = (EditText) findViewById(R.id.editText);
-                            editText1.setText("");
+                            Log.e("數量",editText.getText().toString());
+                            setNowQty(Integer.parseInt(editText.getText().toString()),cID,true);
                         }
-
-
+                        hideSystemNavigationBar();
                     }
                 }).show();
-        //editText歸零
-        EditText editText1 = (EditText) findViewById(R.id.editText);
-        editText1.setText("");
     }
 
     public void onPic1(View v) {
@@ -1627,7 +1497,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 newMap.put("cProductName", myList.get(i).get("cProductName"));
                 newMap.put("Qty", myList.get(i).get("Qty"));
                 newMap.put("check", myList.get(i).get("ProductNo"));
-                myList.set(i, (LinkedHashMap<String, String>) newMap);
+                myList.set(i,  newMap);
             } else {
                 newMap = new LinkedHashMap<String, String>();
                 newMap.put("NowQty", myList.get(i).get("NowQty"));
@@ -1635,7 +1505,7 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 newMap.put("cProductName", myList.get(i).get("cProductName"));
                 newMap.put("Qty", myList.get(i).get("Qty"));
                 newMap.put("check", "0");
-                myList.set(i, (LinkedHashMap<String, String>) newMap); // 替換
+                myList.set(i,  newMap); // 替換
             }
         }
         //排序check (及撿完貨的排序)
@@ -1695,31 +1565,8 @@ public class PurchaseOrderActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
-    private void cBarcode22() {
-        iMatch = 1;
-        Btrans = new ArrayList();
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String barcode = editText.getText().toString();
-        Log.e("barcode", barcode);
-        setBarcodeSQL();
-        Cursor c = db4.query("tblTable4",                            // 資料表名字
-                null,                                              // 要取出的欄位資料
-                null,                                               // 查詢條件式(WHERE)
-                null,                                               // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
-                null,                                              // Group By字串語法
-                null,                                              // Having字串法
-                null);                                             // Order By字串語法(排序)
-
-        while (c.moveToNext()) {
-            cProductIDeSQL = c.getString(c.getColumnIndex("cProductID"));
-            Log.e("cBarcode22", cProductIDeSQL);
-            Btrans.add(cProductIDeSQL);
-
-        }
-    }
     public void onClickPic (View v){
         if(PicInt==0){
             LinearLayout LinTop = (LinearLayout)findViewById(R.id.LinTop);
@@ -1747,7 +1594,6 @@ public class PurchaseOrderActivity extends AppCompatActivity {
 
     }
     private void hideSystemNavigationBar() {
-
 
         if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) {
             View view = this.getWindow().getDecorView();
@@ -1834,5 +1680,236 @@ public class PurchaseOrderActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    //音效 短 (有找到)
+    private void Bsound(){
+        mSoundPool.play(mSoundID,1.0F,1.0F,0,0,0.0f);
+    }
+    //音效 長 (沒找到)
+    private void Bsound1(){
+        mSoundPool.play(mSoundID,1.0F,1.0F,0,0,1.0f);
+    }
+
+    // 判斷是否要+1還是輸入數量 (NUM or +1 )
+    public void onClickAdd (View v){
+        if(checkAdd==true){
+            checkAdd = false ;
+        }else {
+            checkAdd = true ;
+        }
+        if(checkAdd == false){
+            Button button = (Button)findViewById(R.id.button23);
+            button.setText("+1");
+        }else {
+            Button button = (Button)findViewById(R.id.button23);
+            button.setText("NUM");
+        }
+    }
+    //輸入的條碼 有兩個以上商品 跳出對話框 選擇商品
+    private void chooseThings() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("請選擇商品編號");
+        builder.setItems(stringArray, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.e("點擊", stringArray[i]);
+                //判斷是+1還是NUM
+                if (checkAdd == false){
+                    setNowQty(addInt,cProductIDeSQL,true);
+                }else {
+                    setAlertDialog(cProductIDeSQL);
+                }
+            }
+        });
+
+        builder.setCancelable(true);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
+    private void cBarcode(String barcode){
+
+        iMatch = false;
+        addInt = 1 ;
+        Btrans = new ArrayList();
+        Log.e("條碼",barcode);
+
+        int iCheck = setBarcodeSQL(barcode);
+        Log.e("ICHECK", String.valueOf(iCheck));
+        //icheck == 0 表示 條碼資料庫 比對 cBarcode cProductID 無資料
+        if(iCheck == 0){
+            //開啟商品清單資料庫 比對 cProductID
+            iCheck = setThingSQL(barcode);
+            Log.e("ICHECK2", String.valueOf(iCheck));
+            //iCheck == 0 表示商品清單資料庫 比對 cProductID 無資料
+            if (iCheck == 0 ){
+                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                Bsound1();
+                //iCheck == 1 表示商品清單資料庫 比對 cProductID 有一筆資料
+            }else if (iCheck == 1){
+                //判斷是否有在listView裡
+                if (checkID(cProductIDeSQL) == true){
+                    Bsound();
+                    Toast.makeText(this, cProductIDeSQL , Toast.LENGTH_SHORT).show();
+                    //判斷是+1還是NUM
+                    if (checkAdd == false){
+                        //直接+1
+                        setNowQty(addInt,cProductIDeSQL,true);
+                    }else {
+                        //跳出輸入數量
+                        setAlertDialog(cProductIDeSQL);
+                    }
+                    //沒有在listView
+                }else {
+                    Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                    Bsound1();
+                }
+                //表示商品清單資料庫 比對 cProductID 有多筆資料
+            }else {
+                stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
+                chooseThings();
+                //判斷是否有在listView裡
+                /*
+                if (checkID(cProductIDeSQL) == true){
+                    Bsound();
+                    Toast.makeText(this, "超過一筆資料", Toast.LENGTH_SHORT).show();
+                    stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
+                    chooseThings();
+                }else{
+                    Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                    Bsound1();
+                }
+                */
+
+            }
+            //icheck == 0 表示 條碼資料庫 比對 cBarcode cProductID 有一筆資料
+        }else if (iCheck == 1){
+            //判斷是否有在listView裡
+            if (checkID(cProductIDeSQL) == true){ //有
+                Bsound();
+                Toast.makeText(this, cProductIDeSQL, Toast.LENGTH_SHORT).show();
+                //判斷是+1還是NUM
+                if (checkAdd == false){
+                    setNowQty(addInt,cProductIDeSQL,true);
+                }else {
+                    setAlertDialog(cProductIDeSQL);
+                }
+            }else { //沒有
+                Toast.makeText(this, "查無商品", Toast.LENGTH_SHORT).show();
+                Bsound1();
+            }
+            //表示 條碼資料庫 比對 cBarcode cProductID 有多筆資料
+        }else {
+            stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
+            chooseThings();
+            //判斷是否有在listView裡
+            /*
+            if (checkID(cProductIDeSQL) == true){
+                Bsound();
+                Toast.makeText(this, "超過一筆資料", Toast.LENGTH_SHORT).show();
+                stringArray = (String[]) Btrans.toArray(new String[Btrans.size()]);
+                chooseThings();
+            }else {
+                Toast.makeText(this, "查無商品1", Toast.LENGTH_SHORT).show();
+            }
+                */
+        }
+    }
+
+    //商品條碼SQL
+    private int setBarcodeSQL(String barcode) {
+        helper4 = new MyDBhelper4(this, "tblTable4", null, 2);
+        db4 = helper4.getWritableDatabase();
+
+        Cursor c = db4.query("tblTable4",                          // 資料表名字
+                null,                                              // 要取出的欄位資料
+                "cBarcode = ? OR cProductID = ?",                  // 查詢條件式(WHERE)
+                new String[]{barcode,barcode},                     // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                null,                                              // Group By字串語法
+                null,                                              // Having字串法
+                null);                                             // Order By字串語法(排序)
+
+        while (c.moveToNext()) {
+            cProductIDeSQL = c.getString(c.getColumnIndex("cProductID"));
+            Log.e("條碼1", cProductIDeSQL);
+            Btrans.add(cProductIDeSQL);
+
+        }
+        return c.getCount();
+    }
+    //判斷條碼內的商品是否有在list裡 有就回傳true
+    private boolean checkID(String cProductIDeSQL) {
+        for (int i = 0; i < myList.size(); i++) {
+            if (cProductIDeSQL.equals(myList.get(i).get("ProductNo"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    private void setNowQty (int addInt , String cProductIDeSQL, boolean ok){
+        for (int i = 0; i< myList.size(); i++){
+            if(cProductIDeSQL.equals(myList.get(i).get("ProductNo"))){
+                // 取出
+                int i2 = Integer.parseInt(myList.get(i).get("NowQty"));
+                int i4 = Integer.parseInt(myList.get(i).get("Qty"));
+
+                //把改變的數量放入newMap 再置換 myList
+                newMap = new LinkedHashMap<String, String>();
+                newMap.put("NowQty", String.valueOf(checkAddInt(i2,i4,addInt,ok)));
+                newMap.put("ProductNo", myList.get(i).get("ProductNo"));
+                newMap.put("cProductName", myList.get(i).get("cProductName"));
+                newMap.put("Qty", myList.get(i).get("Qty"));
+                newMap.put("check",myList.get(i).get("check"));
+                newMap.put("Sort",myList.get(i).get("Sort"));
+                myList.set(i, newMap);
+                adapter.notifyDataSetChanged();
+
+            }
+        }
+        checkListArray();
+    }
+    private int checkAddInt (int i2 ,int i4 , int addInt , boolean ok){
+        Log.e("數量I",i2 +","+ i4+","+ addInt) ;
+        if (i2 + addInt >= i4 || addInt >= i4 ) {
+            i2 = i4;
+            if (ok == true){
+                vibrator();
+                Toast.makeText(PurchaseOrderActivity.this, "數量已滿", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            if(i2 + addInt < 0){
+                i2 = 0;
+            }else {
+                i2 = i2 + addInt;
+            }
+        }
+        return i2 ;
+    }
+    //手機震動
+    private void vibrator (){
+        Vibrator vb = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        vb.vibrate(1500);
+    }
+    private void setKeyboard(){
+        final EditText editText = (EditText) findViewById(R.id.editText);
+        //Android 對 EditText 取得 focus
+        editText.requestFocus();
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+    //虛擬鍵盤按下enter
+    private void enterExitText(){
+        final EditText editText = (EditText)findViewById(R.id.editText);
+        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                cBarcode(editText.getText().toString());
+                editText.setText("");
+                editText.requestFocus();
+                return false;
+            }
+        });
+
     }
 }

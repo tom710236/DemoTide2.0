@@ -45,7 +45,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
     String url = Application.TideUrl+"Blank.aspx";
     ArrayList mWarehouse,mInputType;
     String cUserName,cUserID,Sname,scrData,mBlackNo;
-    Object Warehouse,BlankNo,WHTypeName;
+    Object Warehouse,BlankNo,WHTypeName,WHYMany,Remark;
     Object InputType;
     int index,indexSpinner;
     SpecialAdapter adapter;
@@ -93,8 +93,10 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
-        cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID",null);
+        //cUserName = bag.getString("cUserName", null);
+        //cUserID = bag.getString("cUserID",null);
+        cUserName = Application.UserName;
+        cUserID = Application.UserID;
         indexSpinner = bag.getInt("indexSpinner",0);
         Log.e("cUserID",cUserID);
         TextView textView = (TextView) findViewById(R.id.textView3);
@@ -226,8 +228,9 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
             //要上傳的內容(JSON)--帳號登入
             final MediaType JSON
                     = MediaType.parse("application/json; charset=utf-8");
-            String json = "{\"Token\":\"\" ,\"Action\":\"list\",\"SearchType\":"+index+",\"SearchDate\":\""+scrData+"\"}";
+            String json = "{\"Token\":\"\" ,\"Action\":\"list\",\"SearchType\":"+index+",\"SearchDate\":\""+scrData+"\",\"UserID\":\"" + Application.UserID + "\"}";
             Log.e("POST",json);
+            Log.e("POSTURL",url);
             RequestBody body = RequestBody.create(JSON,json);
             Request request = new Request.Builder()
                     .url(url)
@@ -271,11 +274,15 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                             map = new LinkedHashMap<String, String>();
                             BlankNo = j2.getJSONArray("BlankList").getJSONObject(i).get("BlankNo");
                             WHTypeName = j2.getJSONArray("BlankList").getJSONObject(i).get("WHTypeName");
+                            WHYMany = j2.getJSONArray("BlankList").getJSONObject(i).get("TotalQty");
+                            Remark = j2.getJSONArray("BlankList").getJSONObject(i).get("Remark");
                             map.put("BlankNo", String.valueOf(BlankNo));
                             map.put("-", "-");
                             map.put("WHTypeName", String.valueOf(WHTypeName));
+                            map.put("many","數量:"+WHYMany);
+                            map.put("PS","備註:"+Remark);
                             myList.add(map);
-                            Log.e("myList", String.valueOf(myList));
+                            Log.e("cMark", String.valueOf(Remark));
                     }
 
                     setArraylist();
@@ -301,8 +308,8 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                 SeachBlackSingleActivity.this,
                 myList,
                 R.layout.lview7,
-                new String[]{"BlankNo", "-", "WHTypeName"},
-                new int[]{R.id.textView46, R.id.textView45, R.id.textView43});
+                new String[]{"BlankNo", "-", "WHTypeName","many","PS"},
+                new int[]{R.id.textView46, R.id.textView45, R.id.textView43, R.id.textView60 ,R.id.textView61});
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -316,8 +323,9 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
                 mBlackNo = myList.get(position).get("BlankNo");
-
-                Log.e("mBlackNo",mBlackNo);
+                Remark = myList.get(position).get("PS");
+                Log.e("myList", String.valueOf(myList));
+                Log.e("Remark", String.valueOf(Remark));
                 toOrder();
                 return false;
             }
@@ -328,6 +336,7 @@ public class SeachBlackSingleActivity extends AppCompatActivity {
                 bag.putString("mBlackNo",mBlackNo);
                 bag.putString("cUserName", cUserName);
                 bag.putString("cUserID",cUserID);
+                Application.cMark = String.valueOf(Remark);
                 intent.putExtras(bag);
                 startActivity(intent);
             }

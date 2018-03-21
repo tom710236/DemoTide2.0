@@ -2,22 +2,21 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.user.demotide20">
 
-
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 手機震動 -->
     <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -35,22 +34,25 @@
         <activity android:name=".SystemActivity" />
 
         <service
-        android:name=".Delay"
-        android:enabled="true"
-        android:exported="true" />
+            android:name=".Delay"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity
             android:name=".TakePictures"
-            android:configChanges="keyboard|keyboardHidden|orientation"
-            android:screenOrientation="portrait" />
+            android:configChanges="keyboard|keyboardHidden|orientation" />
         <activity android:name=".PurchaseOrderActivity" />
         <activity android:name=".StorageActivity" />
         <activity android:name=".StorageOrderActivity" />
-        <activity android:name=".BlackSingleActivity" />
+        <activity
+            android:name=".BlackSingleActivity"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity android:name=".SeachBlackSingleActivity" />
         <activity android:name=".PurchaseTakePictures" />
         <activity android:name=".BlackTakePictures" />
-        <activity android:name=".SearchBlackSingleListActivity"></activity>
+        <activity android:name=".SearchBlackSingleListActivity" />
+        <activity android:name=".Shipper2Activity" />
+        <activity android:name=".ShipperCheck"></activity>
     </application>
 
 </manifest>

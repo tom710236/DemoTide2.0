@@ -114,8 +114,10 @@ public class StorageOrderActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //取得Bundle物件後 再一一取得資料
         Bundle bag = intent.getExtras();
-        cUserName = bag.getString("cUserName", null);
-        cUserID = bag.getString("cUserID", null);
+        //cUserName = bag.getString("cUserName", null);
+        //cUserID = bag.getString("cUserID", null);
+        cUserName = Application.UserName;
+        cUserID = Application.UserID;
         mLackNO = bag.getString("mLackNO", null);
         mLackName = bag.getString("mLackName", null);
         indexSpinner = bag.getInt("indexSpinner",0);
@@ -225,7 +227,7 @@ public class StorageOrderActivity extends AppCompatActivity {
 
     //商品條碼SQL
     private void setBarcodeSQL() {
-        helper4 = new MyDBhelper4(this, "tblTable4", null, 1);
+        helper4 = new MyDBhelper4(this, "tblTable4", null, 2);
         db4 = helper4.getWritableDatabase();
     }
 
@@ -536,7 +538,6 @@ public class StorageOrderActivity extends AppCompatActivity {
                     newMap.put("Count", String.valueOf(newCount));
                     newMap.put("cProductName",myList.get(i2).get("cProductName"));
                     myList.set(i2, newMap);
-
                     adapter.notifyDataSetChanged();
                 }
             }
@@ -546,13 +547,14 @@ public class StorageOrderActivity extends AppCompatActivity {
             setThingSQL();
             Cursor c = db.query("tblTable",                            // 資料表名字
                     null,                                              // 要取出的欄位資料
-                    "cProductID=?",                                    // 查詢條件式(WHERE)
-                    new String[]{newStringArray[0]},          // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
+                    "cProductID = ? ",                                 // 查詢條件式(WHERE)
+                    new String[]{newStringArray[0]},                   // 查詢條件值字串陣列(若查詢條件式有問號 對應其問號的值)
                     null,                                              // Group By字串語法
                     null,                                              // Having字串法
                     null);                                             // Order By字串語法(排序)
 
             while (c.moveToNext()) {
+
                 cProductName = c.getString(c.getColumnIndex("cProductName"));
                 Log.e("cProductName", cProductName);
                 addMap = new LinkedHashMap<String, String>();
@@ -564,6 +566,7 @@ public class StorageOrderActivity extends AppCompatActivity {
 
                 Log.e("addMap", String.valueOf(myList));
             }
+            Log.e("數量", String.valueOf(c.getCount()));
         }
 
     }

@@ -31,13 +31,11 @@ import okhttp3.Response;
 
 
 public class LoginActivity extends AppCompatActivity {
-    String cStatus, userName, passWord, cUserName,cUserID;
-    //帳號登入的API
-    //String url = "http://demo.shinda.com.tw/ModernWebApi/WebApiLogin.aspx";
-    //String url = "192.168.0.2:8011/WebApiLogin.aspx";
     String url = Application.TideUrl+"WebApiLogin.aspx";
+    String mUserName,mPassWord;
     ProgressDialog myDialog;
-    String upDate ="V1.08"; //版本
+    String upDate ="V1.24"; //版本
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         //顯示版本
         TextView textView = (TextView)findViewById(R.id.textView14);
         textView.setText(upDate);
+        Application.upDate = upDate;
         //帳號若輸入正確 記住登入帳號
         SharedPreferences setting =
                 getSharedPreferences("Login", MODE_PRIVATE);
@@ -54,38 +53,40 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    // 登入鍵 - 執行執行緒
     public void login (View v){
+
+        EditText userName = (EditText)findViewById(R.id.userName);
+        mUserName = userName.getText().toString();
+
+        EditText passWord = (EditText)findViewById(R.id.passWord);
+        mPassWord = passWord.getText().toString();
+        hideSystemNavigationBar();
         if(isConnected()){
-            Post post = new Post();
-            post.start();
+            PostID post = new PostID();
+            post.run(mUserName,mPassWord);
             setDialog();
-        }else{
+        }else {
             Toast.makeText(this,"請確認網路是否有連線",Toast.LENGTH_SHORT).show();
-
         }
 
     }
-    // 執行緒 - 執行PostUserInfo()方法
-    class Post extends Thread{
-        @Override
-        public void run() {
-            PostUserInfo();
+
+
+    class PostID extends Thread{
+
+        public void run(String mUserName, String mPassWord) {
+            postUserInfo(mUserName , mPassWord);
+            super.run();
         }
     }
-    //把輸入的帳號密碼轉成JSON 用OkHttp Post登入API
-    private void PostUserInfo() {
-        //輸入帳號密碼
-        final EditText uId = (EditText) findViewById(R.id.userName);
-        EditText uPw = (EditText) findViewById(R.id.passWord);
-        userName = uId.getText().toString();
-        passWord = uPw.getText().toString();
+
+    private void postUserInfo(final String mUserName, String mPassWord) {
         Log.e("登入URL",url);
         final OkHttpClient client = new OkHttpClient();
         //要上傳的內容(JSON)--帳號登入
         final MediaType JSON
                 = MediaType.parse("application/json; charset=utf-8");
-        String json = "{\"Token\":\"\" ,\"cAccount\":\""+userName+"\",\"cPassword\":\""+passWord+"\"}";
+        String json = "{\"Token\":\"\" ,\"cAccount\":\""+mUserName+"\",\"cPassword\":\""+mPassWord+"\"}";
         Log.e("POST",json);
         RequestBody body = RequestBody.create(JSON,json);
         Request request = new Request.Builder()
@@ -93,64 +94,10 @@ public class LoginActivity extends AppCompatActivity {
                 .post(body)
                 .build();
         Call call = client.newCall(request);
-
         call.enqueue(new Callback() {
-            //post 失敗後執行
             @Override
             public void onFailure(Call call, IOException e) {
-                //非主執行緒顯示UI(Toast)
-                runOnUiThread(new Runnable() {
-                    @Override
-                   public void run() {
-                        myDialog.dismiss();
-                        Toast.makeText(LoginActivity.this, "請確認網路是否有連線", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-            //post 成功後執行
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                //取得回傳資料json 還是JSON檔
                 myDialog.dismiss();
-                String json = response.body().string();
-                Log.e("POST後的回傳值", json);
-                //所要執行的方法 - 解析JSON
-                parseJson(json);
-            }
-        });
-    }
-
-    private void parseJson(String json) {
-
-        try {
-            //從回傳資料json 抓取cStatus項目裡的內容
-            cStatus = new JSONObject(json).getString("result");
-            //從回傳資料json 抓取cUserName項目內的內容
-            Log.e("result",cStatus);
-
-
-            if (cStatus.equals("1")) {
-                //確定登入後再抓回傳的值 不然會一直try
-                cUserName = new JSONObject(json).getString("UserName");
-                Log.e("UserName", cUserName);
-                cUserID = new JSONObject(json).getString("UserID");
-                Log.e("UserID",cUserID);
-                //另一頁 用Bundle把所需資料帶到另一頁
-                Intent intent = new Intent(LoginActivity.this, AllListActivity.class);
-                Bundle bag = new Bundle();
-                bag.putString("cUserName", cUserName);
-                bag.putString("cUserID",cUserID);
-                intent.putExtras(bag);
-                startActivity(intent);
-                LoginActivity.this.finish();
-                //記住帳號
-                SharedPreferences setting =
-                        getSharedPreferences("Login", MODE_PRIVATE);
-                setting.edit()
-                        .putString("userName", userName)
-                        .commit();
-
-            } else if (cStatus.equals("0")) {
                 //非主執行緒顯示UI(Toast)
                 runOnUiThread(new Runnable() {
                     @Override
@@ -158,57 +105,88 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(LoginActivity.this, "登入失敗 請重新輸入", Toast.LENGTH_SHORT).show();
                     }
                 });
+
             }
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String json = response.body().string();
+                Log.e("POST後的回傳值", json);
+                myDialog.dismiss();
+                parseJson(json);
 
+            }
+
+            private void parseJson(String json) {
+                String cStatus,cUserName,cUserID ;
+                try {
+                    cStatus = new JSONObject(json).getString("result");
+                    if(cStatus.equals("1")){
+
+                        cUserName = new JSONObject(json).getString("UserName");
+                        cUserID = new JSONObject(json).getString("UserID");
+                        Application.UserName = cUserName;
+                        Application.UserID = cUserID;
+
+                        Intent intent = new Intent(LoginActivity.this, AllListActivity.class);
+                        startActivity(intent);
+                        LoginActivity.this.finish();
+
+                        //記住帳號
+                        SharedPreferences setting =
+                                getSharedPreferences("Login", MODE_PRIVATE);
+                        setting.edit()
+                                .putString("userName", mUserName)
+                                .commit();
+
+                    }else if (cStatus.equals("0")){
+                        //非主執行緒顯示UI(Toast)
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(LoginActivity.this, "登入失敗 請重新輸入", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
     }
 
-    //設定返回鍵
+
+
+
+    //判斷網路有無訊號
+    private boolean isConnected(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        }
+        return false;
+    }
+    //載入中
+    private void setDialog(){
+        myDialog = new ProgressDialog(LoginActivity.this);
+        myDialog.setTitle("載入中");
+        myDialog.setMessage("載入資訊中，請稍後！");
+        myDialog.setCancelable(false);
+        myDialog.show();
+        hideSystemNavigationBar();
+    }
+    //設定返回鍵 和 拍照鍵
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // TODO Auto-generated method stub
 
-        if (keyCode == KeyEvent.KEYCODE_BACK ) { // 攔截返回鍵
-            Log.e("MENU","MENU");
-            return true;
-        }else if (keyCode == KeyEvent.KEYCODE_SEARCH ) { // 攔截返回鍵
-            Log.e("MENU","MENU");
-            return true;
-        }else if (keyCode == KeyEvent.KEYCODE_MENU){
-            Log.e("MENU","MENU");
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_CAMERA) { // 攔截返回鍵
             return true;
         }
-
-        return super.onKeyDown(keyCode, event);
-        //return false;
-    }
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            Log.e("MENU","MENU");
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_SEARCH ) { // 攔截返回鍵
-            Log.e("MENU","MENU");
-            return true;
-        }
-        return super.onKeyUp(keyCode, event);
-    }
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        int keyCode = event.getKeyCode();
-        int action = event.getAction();
-        boolean isDown = action == 0;
-
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            Log.e("MENU","MENU");
-            return isDown ? this.onKeyDown(keyCode, event) : this.onKeyUp(keyCode, event);
-        }
-
-        return super.dispatchKeyEvent(event);
+        //return super.onKeyDown(keyCode, event);
+        return false;
     }
     private void hideSystemNavigationBar() {
 
@@ -219,12 +197,11 @@ public class LoginActivity extends AppCompatActivity {
         } else if (Build.VERSION.SDK_INT >= 19) {
             View decorView = getWindow().getDecorView();
             int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN |View.SYSTEM_UI_FLAG_IMMERSIVE;
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE;
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
-
-
+    //設定回到桌面在返回後 三鍵還是隱藏
     @Override
     protected void onResume() {
         hideSystemNavigationBar();
@@ -246,22 +223,4 @@ public class LoginActivity extends AppCompatActivity {
                 });
         super.onResume();
     }
-
-    private void setDialog(){
-        myDialog = new ProgressDialog(LoginActivity.this);
-        myDialog.setTitle("載入中");
-        myDialog.setMessage("載入資訊中，請稍後！");
-        myDialog.setCancelable(false);
-        myDialog.show();
-    }
-    //判斷網路有無訊號
-    private boolean isConnected(){
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        }
-        return false;
-    }
-
 }
